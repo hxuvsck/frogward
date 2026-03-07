@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Navigate, Link } from 'react-router-dom';
-import { ArrowLeft, Plus, Pencil, Archive, Star } from 'lucide-react';
+import { ArrowLeft, Plus, Pencil } from 'lucide-react';
 import Layout from '@/components/layout/Layout';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -21,19 +21,18 @@ const formatPrice = (p: number) => `₮${p.toLocaleString()}`;
 const AdminProducts = () => {
   const { user, isAuthenticated } = useAuthStore();
   const { toast } = useToast();
-  if (!isAuthenticated || !user || user.role !== 'admin') return <Navigate to="/login" replace />;
 
   const [productList, setProductList] = useState<Product[]>(initialProducts);
   const [search, setSearch] = useState('');
   const [editing, setEditing] = useState<Product | null>(null);
   const [isNew, setIsNew] = useState(false);
-
-  // Form state
   const [formName, setFormName] = useState('');
   const [formPrice, setFormPrice] = useState('');
   const [formCategory, setFormCategory] = useState('');
   const [formDesc, setFormDesc] = useState('');
   const [formInStock, setFormInStock] = useState(true);
+
+  if (!isAuthenticated || !user || user.role !== 'admin') return <Navigate to="/login" replace />;
 
   const filtered = productList.filter((p) =>
     p.name.toLowerCase().includes(search.toLowerCase())
@@ -148,7 +147,6 @@ const AdminProducts = () => {
           </div>
         </div>
 
-        {/* Create / Edit Dialog */}
         <Dialog open={isNew || !!editing} onOpenChange={() => { setEditing(null); setIsNew(false); }}>
           <DialogContent className="max-w-md">
             <DialogHeader>

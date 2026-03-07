@@ -12,14 +12,14 @@ const AccountProfile = () => {
   const { user, isAuthenticated, updateProfile } = useAuthStore();
   const { toast } = useToast();
 
-  if (!isAuthenticated || !user) return <Navigate to="/login" replace />;
+  const [name, setName] = useState(user?.name || '');
+  const [phone, setPhone] = useState(user?.phone || '');
+  const [email, setEmail] = useState(user?.email || '');
+  const [address, setAddress] = useState(user?.defaultAddress || '');
+  const [company, setCompany] = useState(user?.companyName || '');
+  const [notes, setNotes] = useState(user?.deliveryNotes || '');
 
-  const [name, setName] = useState(user.name);
-  const [phone, setPhone] = useState(user.phone);
-  const [email, setEmail] = useState(user.email || '');
-  const [address, setAddress] = useState(user.defaultAddress || '');
-  const [company, setCompany] = useState(user.companyName || '');
-  const [notes, setNotes] = useState(user.deliveryNotes || '');
+  if (!isAuthenticated || !user) return <Navigate to="/login" replace />;
 
   const handleSave = (e: React.FormEvent) => {
     e.preventDefault();

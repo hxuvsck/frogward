@@ -1,12 +1,14 @@
 import { Link } from 'react-router-dom';
-import { ShoppingCart, Menu, X } from 'lucide-react';
+import { ShoppingCart, Menu, X, User, Shield } from 'lucide-react';
 import { useState } from 'react';
 import { useCartStore } from '@/store/cart-store';
+import { useAuthStore } from '@/store/auth-store';
 import { Button } from '@/components/ui/button';
 
 const Navbar = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const totalItems = useCartStore((s) => s.totalItems());
+  const { isAuthenticated, user } = useAuthStore();
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 border-b border-border bg-background/80 backdrop-blur-xl">
@@ -15,7 +17,7 @@ const Navbar = () => {
           <span className="text-primary">FROG</span>WARD
         </Link>
 
-        <div className="hidden md:flex items-center gap-8">
+        <div className="hidden md:flex items-center gap-6">
           <Link to="/products" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
             Products
           </Link>
@@ -27,6 +29,22 @@ const Navbar = () => {
               </span>
             )}
           </Link>
+          {isAuthenticated && user ? (
+            <>
+              {user.role === 'admin' && (
+                <Link to="/admin" className="text-sm text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1">
+                  <Shield className="h-3.5 w-3.5" /> Admin
+                </Link>
+              )}
+              <Link to="/account" className="text-sm text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1">
+                <User className="h-3.5 w-3.5" /> {user.name.split(' ')[0]}
+              </Link>
+            </>
+          ) : (
+            <Link to="/login" className="text-sm text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1">
+              <User className="h-3.5 w-3.5" /> Sign In
+            </Link>
+          )}
         </div>
 
         <button className="md:hidden" onClick={() => setMobileOpen(!mobileOpen)}>
@@ -40,6 +58,16 @@ const Navbar = () => {
           <Link to="/cart" className="block text-sm" onClick={() => setMobileOpen(false)}>
             Cart {totalItems > 0 && `(${totalItems})`}
           </Link>
+          {isAuthenticated && user ? (
+            <>
+              {user.role === 'admin' && (
+                <Link to="/admin" className="block text-sm" onClick={() => setMobileOpen(false)}>Admin Dashboard</Link>
+              )}
+              <Link to="/account" className="block text-sm" onClick={() => setMobileOpen(false)}>My Account</Link>
+            </>
+          ) : (
+            <Link to="/login" className="block text-sm" onClick={() => setMobileOpen(false)}>Sign In</Link>
+          )}
         </div>
       )}
     </nav>

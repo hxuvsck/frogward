@@ -8,6 +8,15 @@ import Products from "./pages/Products";
 import ProductDetail from "./pages/ProductDetail";
 import Cart from "./pages/Cart";
 import Checkout from "./pages/Checkout";
+import Login from "./pages/Login";
+import VerifyOtp from "./pages/VerifyOtp";
+import Account from "./pages/Account";
+import AccountOrders from "./pages/AccountOrders";
+import AccountProfile from "./pages/AccountProfile";
+import AdminDashboard from "./pages/admin/AdminDashboard";
+import AdminOrders from "./pages/admin/AdminOrders";
+import AdminProducts from "./pages/admin/AdminProducts";
+import AdminCustomers from "./pages/admin/AdminCustomers";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -24,6 +33,15 @@ const App = () => (
           <Route path="/products/:slug" element={<ProductDetail />} />
           <Route path="/cart" element={<Cart />} />
           <Route path="/checkout" element={<Checkout />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/verify-otp" element={<VerifyOtp />} />
+          <Route path="/account" element={<Account />} />
+          <Route path="/account/orders" element={<AccountOrders />} />
+          <Route path="/account/profile" element={<AccountProfile />} />
+          <Route path="/admin" element={<AdminDashboard />} />
+          <Route path="/admin/orders" element={<AdminOrders />} />
+          <Route path="/admin/products" element={<AdminProducts />} />
+          <Route path="/admin/customers" element={<AdminCustomers />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

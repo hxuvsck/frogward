@@ -15,7 +15,6 @@ import {
 } from '@/components/ui/dialog';
 
 const formatPrice = (p: number) => `₮${p.toLocaleString()}`;
-
 const allStatuses: OrderStatus[] = ['pending', 'awaiting_payment', 'paid', 'processing', 'shipped', 'delivered', 'cancelled', 'failed'];
 
 const statusColor = (status: string) => {
@@ -27,12 +26,13 @@ const statusColor = (status: string) => {
 
 const AdminOrders = () => {
   const { user, isAuthenticated } = useAuthStore();
-  if (!isAuthenticated || !user || user.role !== 'admin') return <Navigate to="/login" replace />;
 
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [search, setSearch] = useState('');
   const [selectedOrder, setSelectedOrder] = useState<typeof mockOrders[0] | null>(null);
   const [orders, setOrders] = useState(mockOrders);
+
+  if (!isAuthenticated || !user || user.role !== 'admin') return <Navigate to="/login" replace />;
 
   const filtered = orders.filter((o) => {
     if (statusFilter !== 'all' && o.status !== statusFilter) return false;
@@ -58,13 +58,9 @@ const AdminOrders = () => {
         <div className="flex flex-col md:flex-row gap-3 mb-6">
           <Input placeholder="Search by ID or customer..." value={search} onChange={(e) => setSearch(e.target.value)} className="md:max-w-xs" />
           <div className="flex gap-2 flex-wrap">
-            <button onClick={() => setStatusFilter('all')} className={`rounded-full border px-3 py-1 text-xs font-medium transition-all ${statusFilter === 'all' ? 'border-primary bg-primary text-primary-foreground' : 'border-border text-muted-foreground hover:border-primary/30'}`}>
-              All
-            </button>
+            <button onClick={() => setStatusFilter('all')} className={`rounded-full border px-3 py-1 text-xs font-medium transition-all ${statusFilter === 'all' ? 'border-primary bg-primary text-primary-foreground' : 'border-border text-muted-foreground hover:border-primary/30'}`}>All</button>
             {allStatuses.map((s) => (
-              <button key={s} onClick={() => setStatusFilter(s)} className={`rounded-full border px-3 py-1 text-xs font-medium transition-all ${statusFilter === s ? 'border-primary bg-primary text-primary-foreground' : 'border-border text-muted-foreground hover:border-primary/30'}`}>
-                {s}
-              </button>
+              <button key={s} onClick={() => setStatusFilter(s)} className={`rounded-full border px-3 py-1 text-xs font-medium transition-all ${statusFilter === s ? 'border-primary bg-primary text-primary-foreground' : 'border-border text-muted-foreground hover:border-primary/30'}`}>{s}</button>
             ))}
           </div>
         </div>
@@ -94,18 +90,14 @@ const AdminOrders = () => {
                     <td className="px-4 py-3 font-heading font-semibold text-primary">{formatPrice(order.totalAmount)}</td>
                     <td className="px-4 py-3">
                       <span className="text-xs uppercase tracking-wider">{order.paymentMethod}</span>
-                      <span className={`ml-2 text-xs ${order.paymentStatus === 'paid' ? 'text-accent' : 'text-destructive'}`}>
-                        {order.paymentStatus}
-                      </span>
+                      <span className={`ml-2 text-xs ${order.paymentStatus === 'paid' ? 'text-accent' : 'text-destructive'}`}>{order.paymentStatus}</span>
                     </td>
                     <td className="px-4 py-3">
                       <span className={`text-xs px-2 py-0.5 rounded-full ${statusColor(order.status)}`}>{order.status}</span>
                     </td>
                     <td className="px-4 py-3 text-muted-foreground text-xs">{new Date(order.createdAt).toLocaleDateString()}</td>
                     <td className="px-4 py-3">
-                      <Button variant="ghost" size="icon" onClick={() => setSelectedOrder(order)}>
-                        <Eye className="h-4 w-4" />
-                      </Button>
+                      <Button variant="ghost" size="icon" onClick={() => setSelectedOrder(order)}><Eye className="h-4 w-4" /></Button>
                     </td>
                   </tr>
                 ))}
@@ -115,7 +107,6 @@ const AdminOrders = () => {
           {filtered.length === 0 && <p className="text-center text-muted-foreground py-8">No orders found.</p>}
         </div>
 
-        {/* Order Detail Dialog */}
         <Dialog open={!!selectedOrder} onOpenChange={() => setSelectedOrder(null)}>
           <DialogContent className="max-w-lg">
             <DialogHeader>
@@ -130,7 +121,6 @@ const AdminOrders = () => {
                   <div><span className="text-muted-foreground">Payment:</span> {selectedOrder.paymentMethod} ({selectedOrder.paymentStatus})</div>
                   <div><span className="text-muted-foreground">Created:</span> {new Date(selectedOrder.createdAt).toLocaleString()}</div>
                 </div>
-
                 <div className="space-y-2">
                   {selectedOrder.items.map((item) => (
                     <div key={item.id} className="flex items-center gap-3">
@@ -143,23 +133,15 @@ const AdminOrders = () => {
                     </div>
                   ))}
                 </div>
-
                 <div className="border-t border-border pt-3 flex justify-between">
                   <span className="font-heading font-semibold">Total</span>
                   <span className="font-heading font-bold text-primary text-lg">{formatPrice(selectedOrder.totalAmount)}</span>
                 </div>
-
                 <div className="space-y-2">
                   <p className="text-xs text-muted-foreground uppercase tracking-wider font-heading font-semibold">Update Status</p>
                   <div className="flex flex-wrap gap-2">
                     {allStatuses.map((s) => (
-                      <button
-                        key={s}
-                        onClick={() => updateOrderStatus(selectedOrder.id, s)}
-                        className={`rounded-full border px-3 py-1 text-xs font-medium transition-all ${selectedOrder.status === s ? 'border-primary bg-primary text-primary-foreground' : 'border-border text-muted-foreground hover:border-primary/30'}`}
-                      >
-                        {s}
-                      </button>
+                      <button key={s} onClick={() => updateOrderStatus(selectedOrder.id, s)} className={`rounded-full border px-3 py-1 text-xs font-medium transition-all ${selectedOrder.status === s ? 'border-primary bg-primary text-primary-foreground' : 'border-border text-muted-foreground hover:border-primary/30'}`}>{s}</button>
                     ))}
                   </div>
                 </div>
