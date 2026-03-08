@@ -5,12 +5,14 @@ import Layout from '@/components/layout/Layout';
 import ProductCard from '@/components/product/ProductCard';
 import { products, categories } from '@/data/mock-products';
 import { Input } from '@/components/ui/input';
+import { useT } from '@/store/lang-store';
 
 const Products = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const activeCategory = searchParams.get('category') || '';
   const [search, setSearch] = useState(searchParams.get('search') || '');
   const [sortBy, setSortBy] = useState<'default' | 'price-asc' | 'price-desc'>('default');
+  const t = useT();
 
   const filtered = useMemo(() => {
     let result = products;
@@ -24,13 +26,13 @@ const Products = () => {
   return (
     <Layout>
       <div className="container py-10">
-        <h1 className="font-heading text-3xl font-bold mb-8">All Products</h1>
+        <h1 className="font-heading text-3xl font-bold mb-8">{t('products.title')}</h1>
 
         <div className="flex flex-col md:flex-row gap-4 mb-8">
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
-              placeholder="Search products..."
+              placeholder={t('products.searchPlaceholder')}
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="pl-9"
@@ -43,7 +45,7 @@ const Products = () => {
                 !activeCategory ? 'border-primary bg-primary text-primary-foreground' : 'border-border text-muted-foreground hover:border-primary/30'
               }`}
             >
-              All
+              {t('products.all')}
             </button>
             {categories.map((cat) => (
               <button
@@ -60,15 +62,15 @@ const Products = () => {
         </div>
 
         <div className="flex justify-between items-center mb-6">
-          <p className="text-sm text-muted-foreground">{filtered.length} products</p>
+          <p className="text-sm text-muted-foreground">{filtered.length} {t('products.items')}</p>
           <select
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value as typeof sortBy)}
             className="text-sm bg-card border border-border rounded-md px-3 py-1.5 text-foreground"
           >
-            <option value="default">Default</option>
-            <option value="price-asc">Price: Low → High</option>
-            <option value="price-desc">Price: High → Low</option>
+            <option value="default">{t('products.default')}</option>
+            <option value="price-asc">{t('products.priceAsc')}</option>
+            <option value="price-desc">{t('products.priceDesc')}</option>
           </select>
         </div>
 
@@ -78,7 +80,7 @@ const Products = () => {
           ))}
         </div>
         {filtered.length === 0 && (
-          <p className="text-center text-muted-foreground py-20">No products found.</p>
+          <p className="text-center text-muted-foreground py-20">{t('products.noResults')}</p>
         )}
       </div>
     </Layout>

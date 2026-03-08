@@ -1,6 +1,6 @@
 import { Link, useNavigate } from 'react-router-dom';
-import { ShoppingCart, Menu, X, User, Search, Sun, Moon, Globe, LogOut } from 'lucide-react';
-import { useState } from 'react';
+import { ShoppingCart, Menu, X, User, Search, Sun, Moon, Globe, LogOut, Shield, ChevronDown } from 'lucide-react';
+import { useState, useRef, useEffect } from 'react';
 import { useCartStore } from '@/store/cart-store';
 import { useAuthStore } from '@/store/auth-store';
 import { useThemeStore } from '@/store/theme-store';
@@ -11,6 +11,8 @@ import { Input } from '@/components/ui/input';
 const Navbar = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const userMenuRef = useRef<HTMLDivElement>(null);
   const totalItems = useCartStore((s) => s.totalItems());
   const { isAuthenticated, user, logout } = useAuthStore();
   const { theme, toggleTheme } = useThemeStore();
@@ -19,6 +21,17 @@ const Navbar = () => {
   const navigate = useNavigate();
 
   const isAdmin = isAuthenticated && user?.role === 'admin';
+
+  // Close dropdown on outside click
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (userMenuRef.current && !userMenuRef.current.contains(e.target as Node)) {
+        setUserMenuOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, []);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -33,6 +46,7 @@ const Navbar = () => {
     logout();
     navigate('/');
     setMobileOpen(false);
+    setUserMenuOpen(false);
   };
 
   const toggleLang = () => setLang(lang === 'mn' ? 'en' : 'mn');
@@ -83,14 +97,42 @@ const Navbar = () => {
           </button>
 
           {isAuthenticated && user ? (
-            <>
-              <Link to="/account" className="text-sm text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1">
+            <div className="relative" ref={userMenuRef}>
+              <button
+                onClick={() => setUserMenuOpen(!userMenuOpen)}
+                className="text-sm text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1"
+              >
                 <User className="h-3.5 w-3.5" /> {user.name.split(' ')[0]}
-              </Link>
-              <button onClick={handleLogout} className="text-sm text-muted-foreground hover:text-destructive transition-colors flex items-center gap-1">
-                <LogOut className="h-3.5 w-3.5" /> {t('nav.logout')}
+                <ChevronDown className={`h-3 w-3 transition-transform ${userMenuOpen ? 'rotate-180' : ''}`} />
               </button>
-            </>
+              {userMenuOpen && (
+                <div className="absolute right-0 top-full mt-2 w-48 rounded-lg border border-border bg-card shadow-lg py-1 z-50 animate-fade-in">
+                  <Link
+                    to="/account"
+                    onClick={() => setUserMenuOpen(false)}
+                    className="flex items-center gap-2 px-4 py-2.5 text-sm text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
+                  >
+                    <User className="h-3.5 w-3.5" /> {t('account.title')}
+                  </Link>
+                  {isAdmin && (
+                    <Link
+                      to="/admin"
+                      onClick={() => setUserMenuOpen(false)}
+                      className="flex items-center gap-2 px-4 py-2.5 text-sm text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
+                    >
+                      <Shield className="h-3.5 w-3.5" /> {t('nav.admin')}
+                    </Link>
+                  )}
+                  <div className="border-t border-border my-1" />
+                  <button
+                    onClick={handleLogout}
+                    className="flex items-center gap-2 px-4 py-2.5 text-sm text-destructive hover:bg-muted/50 transition-colors w-full text-left"
+                  >
+                    <LogOut className="h-3.5 w-3.5" /> {t('nav.logout')}
+                  </button>
+                </div>
+              )}
+            </div>
           ) : (
             <Link to="/login" className="text-sm text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1">
               <User className="h-3.5 w-3.5" /> {t('nav.signIn')}
@@ -129,12 +171,19 @@ const Navbar = () => {
             </button>
           </div>
           {isAuthenticated && user ? (
-            <>
-              <Link to="/account" className="block text-sm" onClick={() => setMobileOpen(false)}>{user.name.split(' ')[0]}</Link>
+            <div className="space-y-2 pt-2 border-t border-border">
+              <Link to="/account" className="block text-sm" onClick={() => setMobileOpen(false)}>
+                <User className="h-3.5 w-3.5 inline mr-1" /> {user.name.split(' ')[0]}
+              </Link>
+              {isAdmin && (
+                <Link to="/admin" className="block text-sm" onClick={() => setMobileOpen(false)}>
+                  <Shield className="h-3.5 w-3.5 inline mr-1" /> {t('nav.admin')}
+                </Link>
+              )}
               <button onClick={handleLogout} className="block text-sm text-destructive">
                 <LogOut className="h-3.5 w-3.5 inline mr-1" /> {t('nav.logout')}
               </button>
-            </>
+            </div>
           ) : (
             <Link to="/login" className="block text-sm" onClick={() => setMobileOpen(false)}>{t('nav.signIn')}</Link>
           )}

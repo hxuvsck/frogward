@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import Layout from '@/components/layout/Layout';
 import { useAuthStore } from '@/store/auth-store';
 import { useOrderStore } from '@/store/order-store';
+import { useT } from '@/store/lang-store';
 
 const formatPrice = (p: number) => `₮${p.toLocaleString()}`;
 
@@ -16,6 +17,7 @@ const statusColor = (status: string) => {
 
 const AccountOrders = () => {
   const { user, isAuthenticated } = useAuthStore();
+  const t = useT();
   if (!isAuthenticated || !user) return <Navigate to="/login" replace />;
 
   const orders = useOrderStore((s) => s.orders);
@@ -25,12 +27,12 @@ const AccountOrders = () => {
     <Layout>
       <div className="container py-10 max-w-4xl">
         <Link to="/account" className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground mb-6">
-          <ArrowLeft className="h-4 w-4" /> Back to Account
+          <ArrowLeft className="h-4 w-4" /> {t('common.backToAccount')}
         </Link>
-        <h1 className="font-heading text-3xl font-bold mb-8">My Orders</h1>
+        <h1 className="font-heading text-3xl font-bold mb-8">{t('accountOrders.title')}</h1>
 
         {myOrders.length === 0 ? (
-          <p className="text-muted-foreground">You haven't placed any orders yet.</p>
+          <p className="text-muted-foreground">{t('accountOrders.empty')}</p>
         ) : (
           <div className="space-y-4">
             {myOrders.map((order) => (
@@ -45,7 +47,7 @@ const AccountOrders = () => {
                       {order.status}
                     </span>
                     <p className="text-xs text-muted-foreground">
-                      Payment: <span className={order.paymentStatus === 'paid' ? 'text-accent' : 'text-destructive'}>{order.paymentStatus}</span>
+                      {t('accountOrders.payment')}: <span className={order.paymentStatus === 'paid' ? 'text-accent' : 'text-destructive'}>{order.paymentStatus}</span>
                     </p>
                   </div>
                 </div>
