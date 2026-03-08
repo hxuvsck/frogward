@@ -29,8 +29,8 @@ const AdminOrders = () => {
 
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [search, setSearch] = useState('');
-  const [selectedOrder, setSelectedOrder] = useState<typeof mockOrders[0] | null>(null);
-  const [orders, setOrders] = useState(mockOrders);
+  const { orders, updateOrderStatus: storeUpdateStatus } = useOrderStore();
+  const [selectedOrder, setSelectedOrder] = useState<typeof orders[0] | null>(null);
 
   if (!isAuthenticated || !user || user.role !== 'admin') return <Navigate to="/login" replace />;
 
