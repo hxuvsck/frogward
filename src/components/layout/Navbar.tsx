@@ -84,11 +84,6 @@ const Navbar = () => {
 
           {isAuthenticated && user ? (
             <>
-              {isAdmin && (
-                <Link to="/admin" className="text-sm text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1">
-                  <Shield className="h-3.5 w-3.5" /> {t('nav.admin')}
-                </Link>
-              )}
               <Link to="/account" className="text-sm text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1">
                 <User className="h-3.5 w-3.5" /> {user.name.split(' ')[0]}
               </Link>
