@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Navigate, Link, useSearchParams } from 'react-router-dom';
-import { ArrowLeft, Eye, User, Package } from 'lucide-react';
+import { ArrowLeft, Eye, User, Package, Download } from 'lucide-react';
+import { motion } from 'framer-motion';
 import Layout from '@/components/layout/Layout';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -23,6 +24,17 @@ const statusColor = (status: string) => {
   if (['processing', 'shipped', 'paid'].includes(status)) return 'bg-primary/20 text-primary';
   if (['failed', 'cancelled'].includes(status)) return 'bg-destructive/20 text-destructive';
   return 'bg-muted text-muted-foreground';
+};
+
+const downloadCsv = (filename: string, headers: string[], rows: string[][]) => {
+  const csv = [headers.join(','), ...rows.map((r) => r.map((c) => `"${String(c).replace(/"/g, '""')}"`).join(','))].join('\n');
+  const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
 };
 
 const AdminOrders = () => {
@@ -59,13 +71,29 @@ const AdminOrders = () => {
     }
   };
 
+  const exportOrders = () => {
+    const headers = ['ID', 'Customer', 'Phone', 'Total', 'Payment Method', 'Payment Status', 'Status', 'Date', 'Items'];
+    const rows = filtered.map((o) => [
+      o.id, o.customerName, o.customerPhone, String(o.totalAmount),
+      o.paymentMethod, o.paymentStatus, o.status,
+      new Date(o.createdAt).toLocaleDateString(),
+      o.items.map((i) => `${i.name} x${i.quantity}`).join('; '),
+    ]);
+    downloadCsv('orders.csv', headers, rows);
+  };
+
   return (
     <Layout>
       <div className="container py-10">
         <Link to="/admin" className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground mb-6">
           <ArrowLeft className="h-4 w-4" /> {t('common.dashboard')}
         </Link>
-        <h1 className="font-heading text-3xl font-bold mb-6">{t('admin.orders')}</h1>
+        <div className="flex items-center justify-between mb-6">
+          <h1 className="font-heading text-3xl font-bold">{t('admin.orders')}</h1>
+          <Button variant="outline" onClick={exportOrders} className="font-heading font-semibold">
+            <Download className="mr-2 h-4 w-4" /> {t('admin.exportCsv')}
+          </Button>
+        </div>
 
         <div className="flex flex-col md:flex-row gap-3 mb-6">
           <Input placeholder={t('admin.searchOrders')} value={search} onChange={(e) => setSearch(e.target.value)} className="md:max-w-xs" />
@@ -92,8 +120,15 @@ const AdminOrders = () => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-border">
-                {filtered.map((order) => (
-                  <tr key={order.id} className="hover:bg-muted/30 transition-colors">
+                {filtered.map((order, i) => (
+                  <motion.tr
+                    key={order.id}
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: i * 0.03, duration: 0.2 }}
+                    whileHover={{ backgroundColor: 'hsl(var(--muted) / 0.4)' }}
+                    className="transition-colors"
+                  >
                     <td className="px-4 py-3 font-heading font-semibold">{order.id}</td>
                     <td className="px-4 py-3">
                       <Link to={`/admin/customers?view=${order.customerId}`} className="hover:text-primary transition-colors">
@@ -113,7 +148,7 @@ const AdminOrders = () => {
                     <td className="px-4 py-3">
                       <Button variant="ghost" size="icon" onClick={() => setSelectedOrder(order)}><Eye className="h-4 w-4" /></Button>
                     </td>
-                  </tr>
+                  </motion.tr>
                 ))}
               </tbody>
             </table>

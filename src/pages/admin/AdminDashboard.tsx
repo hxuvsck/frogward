@@ -1,5 +1,6 @@
 import { Navigate, Link } from 'react-router-dom';
 import { Package, ShoppingCart, Users, AlertTriangle } from 'lucide-react';
+import { motion } from 'framer-motion';
 import Layout from '@/components/layout/Layout';
 import { useAuthStore } from '@/store/auth-store';
 import { useOrderStore } from '@/store/order-store';
@@ -27,37 +28,50 @@ const AdminDashboard = () => {
     { label: t('admin.customers'), value: mockCustomers.length, icon: Users, color: 'text-foreground' },
   ];
 
+  const navCards = [
+    { to: '/admin/orders', icon: ShoppingCart, title: t('admin.manageOrders'), desc: t('admin.manageOrdersDesc') },
+    { to: '/admin/products', icon: Package, title: t('admin.manageProducts'), desc: t('admin.manageProductsDesc') },
+    { to: '/admin/customers', icon: Users, title: t('admin.customers'), desc: t('admin.customersDesc') },
+  ];
+
   return (
     <Layout>
       <div className="container py-10">
         <h1 className="font-heading text-3xl font-bold mb-8">{t('admin.dashboard')}</h1>
 
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-10">
-          {stats.map((s) => (
-            <div key={s.label} className="rounded-lg border border-border bg-card p-4 space-y-2">
+          {stats.map((s, i) => (
+            <motion.div
+              key={s.label}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: i * 0.06, duration: 0.3 }}
+              whileHover={{ y: -4, scale: 1.03, transition: { duration: 0.2 } }}
+              className="rounded-lg border border-border bg-card p-4 space-y-2 cursor-default"
+            >
               <s.icon className={`h-5 w-5 ${s.color}`} />
               <p className="font-heading text-2xl font-bold">{s.value}</p>
               <p className="text-xs text-muted-foreground">{s.label}</p>
-            </div>
+            </motion.div>
           ))}
         </div>
 
         <div className="grid md:grid-cols-3 gap-4">
-          <Link to="/admin/orders" className="rounded-lg border border-border bg-card p-6 hover:border-primary/30 transition-all">
-            <ShoppingCart className="h-6 w-6 text-primary mb-3" />
-            <h3 className="font-heading font-semibold">{t('admin.manageOrders')}</h3>
-            <p className="text-xs text-muted-foreground mt-1">{t('admin.manageOrdersDesc')}</p>
-          </Link>
-          <Link to="/admin/products" className="rounded-lg border border-border bg-card p-6 hover:border-primary/30 transition-all">
-            <Package className="h-6 w-6 text-primary mb-3" />
-            <h3 className="font-heading font-semibold">{t('admin.manageProducts')}</h3>
-            <p className="text-xs text-muted-foreground mt-1">{t('admin.manageProductsDesc')}</p>
-          </Link>
-          <Link to="/admin/customers" className="rounded-lg border border-border bg-card p-6 hover:border-primary/30 transition-all">
-            <Users className="h-6 w-6 text-primary mb-3" />
-            <h3 className="font-heading font-semibold">{t('admin.customers')}</h3>
-            <p className="text-xs text-muted-foreground mt-1">{t('admin.customersDesc')}</p>
-          </Link>
+          {navCards.map((card, i) => (
+            <motion.div
+              key={card.to}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 + i * 0.08, duration: 0.3 }}
+              whileHover={{ y: -6, scale: 1.02, transition: { duration: 0.2 } }}
+            >
+              <Link to={card.to} className="block rounded-lg border border-border bg-card p-6 hover:border-primary/30 transition-colors h-full">
+                <card.icon className="h-6 w-6 text-primary mb-3" />
+                <h3 className="font-heading font-semibold">{card.title}</h3>
+                <p className="text-xs text-muted-foreground mt-1">{card.desc}</p>
+              </Link>
+            </motion.div>
+          ))}
         </div>
       </div>
     </Layout>
