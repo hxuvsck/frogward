@@ -208,6 +208,40 @@ const translations = {
   'admin.orderHistory': { mn: 'Захиалгын түүх', en: 'Order History' },
   'admin.productsPurchased': { mn: 'Худалдан авсан бүтээгдэхүүн', en: 'Products Purchased' },
   'admin.exportCsv': { mn: 'CSV татах', en: 'Export CSV' },
+
+  // Product Detail
+  'detail.backToProducts': { mn: '← Бүтээгдэхүүн рүү буцах', en: '← Back to Products' },
+  'detail.notFound': { mn: 'Бүтээгдэхүүн олдсонгүй.', en: 'Product not found.' },
+  'detail.specifications': { mn: 'Техникийн үзүүлэлт', en: 'Specifications' },
+  'detail.related': { mn: 'Холбоотой бүтээгдэхүүн', en: 'Related Products' },
+  'detail.currentlyOut': { mn: 'Одоогоор нөөцгүй', en: 'Currently out of stock' },
+  'detail.addedToCart': { mn: 'Сагсанд нэмэгдсэн', en: 'Added to Cart' },
+
+  // Account Orders
+  'accountOrders.title': { mn: 'Миний захиалгууд', en: 'My Orders' },
+  'accountOrders.empty': { mn: 'Та одоогоор захиалга хийгээгүй байна.', en: "You haven't placed any orders yet." },
+  'accountOrders.payment': { mn: 'Төлбөр', en: 'Payment' },
+
+  // Account Profile
+  'profile.title': { mn: 'Профайл засах', en: 'Edit Profile' },
+  'profile.fullName': { mn: 'Бүтэн нэр', en: 'Full Name' },
+  'profile.phone': { mn: 'Утас', en: 'Phone' },
+  'profile.email': { mn: 'Имэйл', en: 'Email' },
+  'profile.company': { mn: 'Компанийн нэр', en: 'Company Name' },
+  'profile.address': { mn: 'Хүргэлтийн хаяг', en: 'Default Delivery Address' },
+  'profile.notes': { mn: 'Хүргэлтийн тэмдэглэл', en: 'Delivery Notes' },
+  'profile.notesPlaceholder': { mn: 'Хаалганы код, давхар г.м.', en: 'Gate code, floor, etc.' },
+  'profile.save': { mn: 'Хадгалах', en: 'Save Changes' },
+  'profile.saved': { mn: 'Профайл шинэчлэгдлээ', en: 'Profile updated' },
+  'profile.savedDesc': { mn: 'Таны өөрчлөлт хадгалагдлаа.', en: 'Your changes have been saved.' },
+
+  // Products page
+  'products.items': { mn: 'бүтээгдэхүүн', en: 'products' },
+  'products.searchPlaceholder': { mn: 'Бүтээгдэхүүн хайх...', en: 'Search products...' },
+
+  // 404
+  'notFound.title': { mn: 'Хуудас олдсонгүй', en: 'Page not found' },
+  'notFound.back': { mn: 'Нүүр хуудас руу буцах', en: 'Return to Home' },
 } as const;
 
 export type TranslationKey = keyof typeof translations;
