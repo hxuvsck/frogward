@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useAuthStore } from '@/store/auth-store';
 import { useOrderStore } from '@/store/order-store';
+import { useT } from '@/store/lang-store';
 import { products as initialProducts } from '@/data/mock-products';
 import type { Product } from '@/types/product';
 import {
@@ -22,6 +23,7 @@ const formatPrice = (p: number) => `₮${p.toLocaleString()}`;
 const AdminProducts = () => {
   const { user, isAuthenticated } = useAuthStore();
   const { toast } = useToast();
+  const t = useT();
   const orders = useOrderStore((s) => s.orders);
   const [searchParams, setSearchParams] = useSearchParams();
 
@@ -38,7 +40,6 @@ const AdminProducts = () => {
 
   if (!isAuthenticated || !user || user.role !== 'admin') return <Navigate to="/login" replace />;
 
-  // Auto-open product detail from URL param (cross-link from orders)
   const highlightId = searchParams.get('view');
   if (highlightId && !viewing) {
     const found = productList.find((p) => p.id === highlightId);
@@ -88,7 +89,7 @@ const AdminProducts = () => {
         image: 'https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=600&h=600&fit=crop',
       };
       setProductList((prev) => [newProduct, ...prev]);
-      toast({ title: 'Product created' });
+      toast({ title: t('admin.productCreated') });
     } else if (editing) {
       setProductList((prev) =>
         prev.map((p) =>
@@ -97,7 +98,7 @@ const AdminProducts = () => {
             : p
         )
       );
-      toast({ title: 'Product updated' });
+      toast({ title: t('admin.productUpdated') });
     }
     setEditing(null);
     setIsNew(false);
@@ -105,14 +106,13 @@ const AdminProducts = () => {
 
   const handleDelete = (id: string) => {
     setProductList((prev) => prev.filter((p) => p.id !== id));
-    toast({ title: 'Product deleted' });
+    toast({ title: t('admin.productDeleted') });
   };
 
   const toggleStock = (id: string) => {
     setProductList((prev) => prev.map((p) => p.id === id ? { ...p, inStock: !p.inStock } : p));
   };
 
-  // Get orders containing a specific product
   const getProductOrders = (productId: string) =>
     orders.filter((o) => o.items.some((i) => i.productId === productId));
 
@@ -126,28 +126,28 @@ const AdminProducts = () => {
     <Layout>
       <div className="container py-10">
         <Link to="/admin" className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground mb-6">
-          <ArrowLeft className="h-4 w-4" /> Dashboard
+          <ArrowLeft className="h-4 w-4" /> {t('common.dashboard')}
         </Link>
 
         <div className="flex items-center justify-between mb-6">
-          <h1 className="font-heading text-3xl font-bold">Products</h1>
+          <h1 className="font-heading text-3xl font-bold">{t('admin.products')}</h1>
           <Button onClick={openCreate} className="font-heading font-semibold">
-            <Plus className="mr-2 h-4 w-4" /> Add Product
+            <Plus className="mr-2 h-4 w-4" /> {t('admin.addProduct')}
           </Button>
         </div>
 
-        <Input placeholder="Search by name or category..." value={search} onChange={(e) => setSearch(e.target.value)} className="mb-6 max-w-sm" />
+        <Input placeholder={t('admin.searchProducts')} value={search} onChange={(e) => setSearch(e.target.value)} className="mb-6 max-w-sm" />
 
         <div className="rounded-lg border border-border overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead className="bg-muted/50">
                 <tr>
-                  <th className="text-left px-4 py-3 font-heading font-semibold text-xs uppercase tracking-wider text-muted-foreground">Product</th>
-                  <th className="text-left px-4 py-3 font-heading font-semibold text-xs uppercase tracking-wider text-muted-foreground">Category</th>
-                  <th className="text-left px-4 py-3 font-heading font-semibold text-xs uppercase tracking-wider text-muted-foreground">Price</th>
-                  <th className="text-left px-4 py-3 font-heading font-semibold text-xs uppercase tracking-wider text-muted-foreground">Sold</th>
-                  <th className="text-left px-4 py-3 font-heading font-semibold text-xs uppercase tracking-wider text-muted-foreground">Stock</th>
+                  <th className="text-left px-4 py-3 font-heading font-semibold text-xs uppercase tracking-wider text-muted-foreground">{t('admin.product')}</th>
+                  <th className="text-left px-4 py-3 font-heading font-semibold text-xs uppercase tracking-wider text-muted-foreground">{t('admin.category')}</th>
+                  <th className="text-left px-4 py-3 font-heading font-semibold text-xs uppercase tracking-wider text-muted-foreground">{t('admin.price')}</th>
+                  <th className="text-left px-4 py-3 font-heading font-semibold text-xs uppercase tracking-wider text-muted-foreground">{t('admin.sold')}</th>
+                  <th className="text-left px-4 py-3 font-heading font-semibold text-xs uppercase tracking-wider text-muted-foreground">{t('admin.stock')}</th>
                   <th className="px-4 py-3"></th>
                 </tr>
               </thead>
@@ -165,7 +165,7 @@ const AdminProducts = () => {
                     <td className="px-4 py-3 text-muted-foreground">{totalSold(product.id)}</td>
                     <td className="px-4 py-3">
                       <button onClick={() => toggleStock(product.id)} className={`text-xs px-2 py-0.5 rounded-full ${product.inStock ? 'bg-accent/20 text-accent' : 'bg-destructive/20 text-destructive'}`}>
-                        {product.inStock ? 'In Stock' : 'Out of Stock'}
+                        {product.inStock ? t('admin.inStock') : t('admin.outOfStock')}
                       </button>
                     </td>
                     <td className="px-4 py-3">
@@ -180,7 +180,7 @@ const AdminProducts = () => {
               </tbody>
             </table>
           </div>
-          {filtered.length === 0 && <p className="text-center text-muted-foreground py-8">No products found.</p>}
+          {filtered.length === 0 && <p className="text-center text-muted-foreground py-8">{t('admin.noProducts')}</p>}
         </div>
 
         {/* Product Detail Dialog */}
@@ -197,7 +197,7 @@ const AdminProducts = () => {
                     <p className="text-sm text-muted-foreground capitalize">{viewing.category}</p>
                     <p className="font-heading font-bold text-primary text-xl">{formatPrice(viewing.price)}</p>
                     <span className={`text-xs px-2 py-0.5 rounded-full ${viewing.inStock ? 'bg-accent/20 text-accent' : 'bg-destructive/20 text-destructive'}`}>
-                      {viewing.inStock ? 'In Stock' : 'Out of Stock'}
+                      {viewing.inStock ? t('admin.inStock') : t('admin.outOfStock')}
                     </span>
                   </div>
                 </div>
@@ -205,7 +205,7 @@ const AdminProducts = () => {
 
                 {viewing.specs && (
                   <div className="space-y-1">
-                    <p className="text-xs text-muted-foreground uppercase tracking-wider font-heading font-semibold">Specifications</p>
+                    <p className="text-xs text-muted-foreground uppercase tracking-wider font-heading font-semibold">{t('admin.specifications')}</p>
                     <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-sm">
                       {Object.entries(viewing.specs).map(([k, v]) => (
                         <div key={k}><span className="text-muted-foreground">{k}:</span> {v}</div>
@@ -216,10 +216,10 @@ const AdminProducts = () => {
 
                 <div className="space-y-2">
                   <p className="text-xs text-muted-foreground uppercase tracking-wider font-heading font-semibold flex items-center gap-1">
-                    <ShoppingCart className="h-3 w-3" /> Orders containing this product ({getProductOrders(viewing.id).length})
+                    <ShoppingCart className="h-3 w-3" /> {t('admin.ordersContaining')} ({getProductOrders(viewing.id).length})
                   </p>
                   {getProductOrders(viewing.id).length === 0 ? (
-                    <p className="text-sm text-muted-foreground">No orders yet.</p>
+                    <p className="text-sm text-muted-foreground">{t('admin.noOrdersYet')}</p>
                   ) : (
                     <div className="space-y-2 max-h-40 overflow-y-auto">
                       {getProductOrders(viewing.id).map((order) => (
@@ -242,10 +242,10 @@ const AdminProducts = () => {
 
                 <div className="flex gap-2">
                   <Button onClick={() => { openEdit(viewing); setViewing(null); }} variant="outline" className="flex-1 font-heading font-semibold">
-                    <Pencil className="mr-2 h-4 w-4" /> Edit
+                    <Pencil className="mr-2 h-4 w-4" /> {t('admin.edit')}
                   </Button>
                   <Button onClick={() => { handleDelete(viewing.id); setViewing(null); }} variant="outline" className="text-destructive hover:text-destructive font-heading font-semibold">
-                    <Trash2 className="mr-2 h-4 w-4" /> Delete
+                    <Trash2 className="mr-2 h-4 w-4" /> {t('admin.delete')}
                   </Button>
                 </div>
               </div>
@@ -257,33 +257,33 @@ const AdminProducts = () => {
         <Dialog open={isNew || !!editing} onOpenChange={() => { setEditing(null); setIsNew(false); }}>
           <DialogContent className="max-w-md">
             <DialogHeader>
-              <DialogTitle className="font-heading">{isNew ? 'Create Product' : 'Edit Product'}</DialogTitle>
+              <DialogTitle className="font-heading">{isNew ? t('admin.createProduct') : t('admin.editProduct')}</DialogTitle>
             </DialogHeader>
             <div className="space-y-4">
               <div className="space-y-2">
-                <Label>Name</Label>
+                <Label>{t('admin.name')}</Label>
                 <Input value={formName} onChange={(e) => setFormName(e.target.value)} />
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label>Price (₮)</Label>
+                  <Label>{t('admin.price')} (₮)</Label>
                   <Input type="number" value={formPrice} onChange={(e) => setFormPrice(e.target.value)} />
                 </div>
                 <div className="space-y-2">
-                  <Label>Category</Label>
+                  <Label>{t('admin.category')}</Label>
                   <Input value={formCategory} onChange={(e) => setFormCategory(e.target.value)} />
                 </div>
               </div>
               <div className="space-y-2">
-                <Label>Description</Label>
+                <Label>{t('admin.description')}</Label>
                 <Input value={formDesc} onChange={(e) => setFormDesc(e.target.value)} />
               </div>
               <div className="flex items-center gap-2">
                 <input type="checkbox" checked={formInStock} onChange={(e) => setFormInStock(e.target.checked)} id="inStock" className="rounded" />
-                <Label htmlFor="inStock">In Stock</Label>
+                <Label htmlFor="inStock">{t('admin.inStock')}</Label>
               </div>
               <Button onClick={handleSave} className="w-full font-heading font-semibold">
-                {isNew ? 'Create Product' : 'Save Changes'}
+                {isNew ? t('admin.createProduct') : t('admin.saveChanges')}
               </Button>
             </div>
           </DialogContent>
