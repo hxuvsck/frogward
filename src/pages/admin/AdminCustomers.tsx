@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Navigate, Link, useSearchParams } from 'react-router-dom';
-import { ArrowLeft, Eye, User, ShoppingCart, Phone, Mail, MapPin } from 'lucide-react';
+import { ArrowLeft, Eye, User, ShoppingCart, Phone, Mail, MapPin, Download } from 'lucide-react';
+import { motion } from 'framer-motion';
 import Layout from '@/components/layout/Layout';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -22,6 +23,17 @@ const statusColor = (status: string) => {
   if (['processing', 'shipped', 'paid'].includes(status)) return 'bg-primary/20 text-primary';
   if (['failed', 'cancelled'].includes(status)) return 'bg-destructive/20 text-destructive';
   return 'bg-muted text-muted-foreground';
+};
+
+const downloadCsv = (filename: string, headers: string[], rows: string[][]) => {
+  const csv = [headers.join(','), ...rows.map((r) => r.map((c) => `"${String(c).replace(/"/g, '""')}"`).join(','))].join('\n');
+  const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
 };
 
 const AdminCustomers = () => {
@@ -56,13 +68,29 @@ const AdminCustomers = () => {
   const getCustomerTotal = (customerId: string) =>
     getCustomerOrders(customerId).reduce((sum, o) => sum + o.totalAmount, 0);
 
+  const exportCustomers = () => {
+    const headers = ['Name', 'Phone', 'Email', 'Orders', 'Total Spent', 'Last Active'];
+    const rows = filtered.map((c) => [
+      c.name, c.phone, c.email || '',
+      String(getCustomerOrders(c.id).length),
+      String(getCustomerTotal(c.id)),
+      new Date(c.lastActive).toLocaleDateString(),
+    ]);
+    downloadCsv('customers.csv', headers, rows);
+  };
+
   return (
     <Layout>
       <div className="container py-10">
         <Link to="/admin" className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground mb-6">
           <ArrowLeft className="h-4 w-4" /> {t('common.dashboard')}
         </Link>
-        <h1 className="font-heading text-3xl font-bold mb-6">{t('admin.customers')}</h1>
+        <div className="flex items-center justify-between mb-6">
+          <h1 className="font-heading text-3xl font-bold">{t('admin.customers')}</h1>
+          <Button variant="outline" onClick={exportCustomers} className="font-heading font-semibold">
+            <Download className="mr-2 h-4 w-4" /> {t('admin.exportCsv')}
+          </Button>
+        </div>
 
         <Input placeholder={t('admin.searchCustomers')} value={search} onChange={(e) => setSearch(e.target.value)} className="mb-6 max-w-sm" />
 
@@ -81,8 +109,15 @@ const AdminCustomers = () => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-border">
-                {filtered.map((c) => (
-                  <tr key={c.id} className="hover:bg-muted/30 transition-colors">
+                {filtered.map((c, i) => (
+                  <motion.tr
+                    key={c.id}
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: i * 0.03, duration: 0.2 }}
+                    whileHover={{ backgroundColor: 'hsl(var(--muted) / 0.4)' }}
+                    className="transition-colors"
+                  >
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-2">
                         <div className="h-8 w-8 rounded-full bg-primary/20 flex items-center justify-center">
@@ -99,7 +134,7 @@ const AdminCustomers = () => {
                     <td className="px-4 py-3">
                       <Button variant="ghost" size="icon" onClick={() => setSelectedCustomer(c)}><Eye className="h-4 w-4" /></Button>
                     </td>
-                  </tr>
+                  </motion.tr>
                 ))}
               </tbody>
             </table>

@@ -207,6 +207,7 @@ const translations = {
   'admin.noCustomers': { mn: 'Харилцагч олдсонгүй.', en: 'No customers found.' },
   'admin.orderHistory': { mn: 'Захиалгын түүх', en: 'Order History' },
   'admin.productsPurchased': { mn: 'Худалдан авсан бүтээгдэхүүн', en: 'Products Purchased' },
+  'admin.exportCsv': { mn: 'CSV татах', en: 'Export CSV' },
 } as const;
 
 export type TranslationKey = keyof typeof translations;
