@@ -3,21 +3,23 @@ import { Trash2, Plus, Minus, ShoppingCart } from 'lucide-react';
 import Layout from '@/components/layout/Layout';
 import { Button } from '@/components/ui/button';
 import { useCartStore } from '@/store/cart-store';
+import { useT } from '@/store/lang-store';
 
 const formatPrice = (price: number) => `₮${price.toLocaleString()}`;
 
 const Cart = () => {
   const { items, removeItem, updateQuantity, clearCart, totalPrice } = useCartStore();
+  const t = useT();
 
   if (items.length === 0) {
     return (
       <Layout>
         <div className="container py-20 text-center space-y-4">
           <ShoppingCart className="h-16 w-16 mx-auto text-muted-foreground" />
-          <h1 className="font-heading text-2xl font-bold">Your cart is empty</h1>
-          <p className="text-muted-foreground">Browse our products and add items to your cart.</p>
+          <h1 className="font-heading text-2xl font-bold">{t('cart.empty')}</h1>
+          <p className="text-muted-foreground">{t('cart.emptyDesc')}</p>
           <Button asChild>
-            <Link to="/products">Browse Products</Link>
+            <Link to="/products">{t('cart.browse')}</Link>
           </Button>
         </div>
       </Layout>
@@ -27,7 +29,7 @@ const Cart = () => {
   return (
     <Layout>
       <div className="container py-10">
-        <h1 className="font-heading text-3xl font-bold mb-8">Your Cart</h1>
+        <h1 className="font-heading text-3xl font-bold mb-8">{t('cart.title')}</h1>
 
         <div className="grid lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2 space-y-4">
@@ -62,28 +64,28 @@ const Cart = () => {
               </div>
             ))}
             <button onClick={clearCart} className="text-xs text-muted-foreground hover:text-destructive transition-colors">
-              Clear Cart
+              {t('cart.clear')}
             </button>
           </div>
 
           <div className="rounded-lg border border-border bg-card p-6 h-fit space-y-4">
-            <h2 className="font-heading text-lg font-semibold">Order Summary</h2>
+            <h2 className="font-heading text-lg font-semibold">{t('cart.orderSummary')}</h2>
             <div className="space-y-2 text-sm">
               <div className="flex justify-between">
-                <span className="text-muted-foreground">Subtotal</span>
+                <span className="text-muted-foreground">{t('cart.subtotal')}</span>
                 <span>{formatPrice(totalPrice())}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-muted-foreground">Shipping</span>
-                <span className="text-accent">Free</span>
+                <span className="text-muted-foreground">{t('cart.shipping')}</span>
+                <span className="text-accent">{t('cart.free')}</span>
               </div>
             </div>
             <div className="border-t border-border pt-4 flex justify-between">
-              <span className="font-heading font-semibold">Total</span>
+              <span className="font-heading font-semibold">{t('cart.total')}</span>
               <span className="font-heading text-xl font-bold text-primary">{formatPrice(totalPrice())}</span>
             </div>
             <Button asChild size="lg" className="w-full font-heading font-semibold">
-              <Link to="/checkout">Proceed to Checkout</Link>
+              <Link to="/checkout">{t('cart.checkout')}</Link>
             </Button>
           </div>
         </div>

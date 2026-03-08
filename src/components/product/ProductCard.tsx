@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { ShoppingCart, Check } from 'lucide-react';
 import type { Product } from '@/types/product';
 import { useCartStore } from '@/store/cart-store';
+import { useT } from '@/store/lang-store';
 import { Button } from '@/components/ui/button';
 
 const formatPrice = (price: number) => `₮${price.toLocaleString()}`;
@@ -10,6 +11,7 @@ const ProductCard = ({ product }: { product: Product }) => {
   const addItem = useCartStore((s) => s.addItem);
   const items = useCartStore((s) => s.items);
   const inCart = items.some((i) => i.id === product.id);
+  const t = useT();
 
   return (
     <div className="group rounded-lg border border-border bg-card overflow-hidden hover:border-primary/30 transition-all duration-300">
@@ -30,9 +32,9 @@ const ProductCard = ({ product }: { product: Product }) => {
         <div className="flex items-center justify-between">
           <span className="font-heading text-lg font-bold text-primary">{formatPrice(product.price)}</span>
           {product.inStock ? (
-            <span className="text-xs text-accent">In Stock</span>
+            <span className="text-xs text-accent">{t('product.inStock')}</span>
           ) : (
-            <span className="text-xs text-destructive">Out of Stock</span>
+            <span className="text-xs text-destructive">{t('product.outOfStock')}</span>
           )}
         </div>
         <Button
@@ -46,11 +48,11 @@ const ProductCard = ({ product }: { product: Product }) => {
         >
           {inCart ? (
             <>
-              <Check className="mr-1.5 h-3.5 w-3.5" /> In Cart
+              <Check className="mr-1.5 h-3.5 w-3.5" /> {t('product.inCart')}
             </>
           ) : (
             <>
-              <ShoppingCart className="mr-1.5 h-3.5 w-3.5" /> Add to Cart
+              <ShoppingCart className="mr-1.5 h-3.5 w-3.5" /> {t('product.addToCart')}
             </>
           )}
         </Button>
