@@ -3,7 +3,7 @@ import { ArrowLeft } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import Layout from '@/components/layout/Layout';
 import { useAuthStore } from '@/store/auth-store';
-import { mockOrders } from '@/data/mock-orders';
+import { useOrderStore } from '@/store/order-store';
 
 const formatPrice = (p: number) => `₮${p.toLocaleString()}`;
 
@@ -18,7 +18,8 @@ const AccountOrders = () => {
   const { user, isAuthenticated } = useAuthStore();
   if (!isAuthenticated || !user) return <Navigate to="/login" replace />;
 
-  const myOrders = mockOrders.filter((o) => o.customerId === user.id);
+  const orders = useOrderStore((s) => s.orders);
+  const myOrders = orders.filter((o) => o.customerId === user.id);
 
   return (
     <Layout>

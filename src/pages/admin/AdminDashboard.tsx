@@ -2,16 +2,18 @@ import { Navigate, Link } from 'react-router-dom';
 import { Package, ShoppingCart, Users, AlertTriangle } from 'lucide-react';
 import Layout from '@/components/layout/Layout';
 import { useAuthStore } from '@/store/auth-store';
-import { mockOrders, mockCustomers } from '@/data/mock-orders';
+import { useOrderStore } from '@/store/order-store';
+import { mockCustomers } from '@/data/mock-orders';
 import { products } from '@/data/mock-products';
 
 const AdminDashboard = () => {
   const { user, isAuthenticated } = useAuthStore();
   if (!isAuthenticated || !user || user.role !== 'admin') return <Navigate to="/login" replace />;
 
-  const totalOrders = mockOrders.length;
-  const pendingPayment = mockOrders.filter((o) => o.paymentStatus !== 'paid').length;
-  const paidOrders = mockOrders.filter((o) => o.paymentStatus === 'paid').length;
+  const orders = useOrderStore((s) => s.orders);
+  const totalOrders = orders.length;
+  const pendingPayment = orders.filter((o) => o.paymentStatus !== 'paid').length;
+  const paidOrders = orders.filter((o) => o.paymentStatus === 'paid').length;
   const lowStock = products.filter((p) => !p.inStock).length;
 
   const stats = [

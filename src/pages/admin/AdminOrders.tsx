@@ -5,7 +5,7 @@ import Layout from '@/components/layout/Layout';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useAuthStore } from '@/store/auth-store';
-import { mockOrders } from '@/data/mock-orders';
+import { useOrderStore } from '@/store/order-store';
 import type { OrderStatus } from '@/types/order';
 import {
   Dialog,
@@ -29,8 +29,8 @@ const AdminOrders = () => {
 
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [search, setSearch] = useState('');
-  const [selectedOrder, setSelectedOrder] = useState<typeof mockOrders[0] | null>(null);
-  const [orders, setOrders] = useState(mockOrders);
+  const { orders, updateOrderStatus: storeUpdateStatus } = useOrderStore();
+  const [selectedOrder, setSelectedOrder] = useState<typeof orders[0] | null>(null);
 
   if (!isAuthenticated || !user || user.role !== 'admin') return <Navigate to="/login" replace />;
 
@@ -41,7 +41,7 @@ const AdminOrders = () => {
   });
 
   const updateOrderStatus = (orderId: string, newStatus: OrderStatus) => {
-    setOrders((prev) => prev.map((o) => o.id === orderId ? { ...o, status: newStatus, updatedAt: new Date().toISOString() } : o));
+    storeUpdateStatus(orderId, newStatus);
     if (selectedOrder?.id === orderId) {
       setSelectedOrder((prev) => prev ? { ...prev, status: newStatus } : null);
     }
