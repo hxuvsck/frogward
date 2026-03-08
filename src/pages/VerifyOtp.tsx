@@ -39,7 +39,10 @@ const VerifyOtp = () => {
       setError('Please enter a 6-digit code.');
       return;
     }
-    // Mock: any 6-digit code works
+    if (code !== '123456') {
+      setError('Invalid code. Try 123456.');
+      return;
+    }
     loginWithOtp(phone);
   };
 
@@ -92,7 +95,7 @@ const VerifyOtp = () => {
           </div>
 
           <p className="text-center text-xs text-muted-foreground">
-            Mock mode: enter any 6 digits to verify.
+            Mock OTP: <span className="text-primary font-mono">123456</span>
           </p>
         </form>
       </div>
