@@ -10,9 +10,10 @@ const AdminDashboard = () => {
   const { user, isAuthenticated } = useAuthStore();
   if (!isAuthenticated || !user || user.role !== 'admin') return <Navigate to="/login" replace />;
 
-  const totalOrders = mockOrders.length;
-  const pendingPayment = mockOrders.filter((o) => o.paymentStatus !== 'paid').length;
-  const paidOrders = mockOrders.filter((o) => o.paymentStatus === 'paid').length;
+  const orders = useOrderStore((s) => s.orders);
+  const totalOrders = orders.length;
+  const pendingPayment = orders.filter((o) => o.paymentStatus !== 'paid').length;
+  const paidOrders = orders.filter((o) => o.paymentStatus === 'paid').length;
   const lowStock = products.filter((p) => !p.inStock).length;
 
   const stats = [

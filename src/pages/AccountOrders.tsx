@@ -18,7 +18,8 @@ const AccountOrders = () => {
   const { user, isAuthenticated } = useAuthStore();
   if (!isAuthenticated || !user) return <Navigate to="/login" replace />;
 
-  const myOrders = mockOrders.filter((o) => o.customerId === user.id);
+  const orders = useOrderStore((s) => s.orders);
+  const myOrders = orders.filter((o) => o.customerId === user.id);
 
   return (
     <Layout>

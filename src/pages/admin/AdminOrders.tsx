@@ -41,7 +41,7 @@ const AdminOrders = () => {
   });
 
   const updateOrderStatus = (orderId: string, newStatus: OrderStatus) => {
-    setOrders((prev) => prev.map((o) => o.id === orderId ? { ...o, status: newStatus, updatedAt: new Date().toISOString() } : o));
+    storeUpdateStatus(orderId, newStatus);
     if (selectedOrder?.id === orderId) {
       setSelectedOrder((prev) => prev ? { ...prev, status: newStatus } : null);
     }
