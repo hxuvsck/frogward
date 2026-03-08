@@ -1,5 +1,5 @@
 import { Link, useNavigate } from 'react-router-dom';
-import { ShoppingCart, Menu, X, User, Shield, Search, Sun, Moon, Globe, LogOut } from 'lucide-react';
+import { ShoppingCart, Menu, X, User, Search, Sun, Moon, Globe, LogOut } from 'lucide-react';
 import { useState } from 'react';
 import { useCartStore } from '@/store/cart-store';
 import { useAuthStore } from '@/store/auth-store';
@@ -84,11 +84,6 @@ const Navbar = () => {
 
           {isAuthenticated && user ? (
             <>
-              {isAdmin && (
-                <Link to="/admin" className="text-sm text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1">
-                  <Shield className="h-3.5 w-3.5" /> {t('nav.admin')}
-                </Link>
-              )}
               <Link to="/account" className="text-sm text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1">
                 <User className="h-3.5 w-3.5" /> {user.name.split(' ')[0]}
               </Link>
@@ -135,9 +130,6 @@ const Navbar = () => {
           </div>
           {isAuthenticated && user ? (
             <>
-              {isAdmin && (
-                <Link to="/admin" className="block text-sm" onClick={() => setMobileOpen(false)}>{t('nav.admin')}</Link>
-              )}
               <Link to="/account" className="block text-sm" onClick={() => setMobileOpen(false)}>{user.name.split(' ')[0]}</Link>
               <button onClick={handleLogout} className="block text-sm text-destructive">
                 <LogOut className="h-3.5 w-3.5 inline mr-1" /> {t('nav.logout')}
