@@ -5,7 +5,7 @@ import Layout from '@/components/layout/Layout';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useAuthStore } from '@/store/auth-store';
-import { mockOrders } from '@/data/mock-orders';
+import { useOrderStore } from '@/store/order-store';
 import type { OrderStatus } from '@/types/order';
 import {
   Dialog,
