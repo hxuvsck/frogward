@@ -3,7 +3,7 @@ import { ArrowLeft } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import Layout from '@/components/layout/Layout';
 import { useAuthStore } from '@/store/auth-store';
-import { mockOrders } from '@/data/mock-orders';
+import { useOrderStore } from '@/store/order-store';
 
 const formatPrice = (p: number) => `₮${p.toLocaleString()}`;
 
