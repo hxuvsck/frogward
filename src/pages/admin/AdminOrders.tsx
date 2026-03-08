@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useAuthStore } from '@/store/auth-store';
 import { useOrderStore } from '@/store/order-store';
+import { useT } from '@/store/lang-store';
 import type { OrderStatus } from '@/types/order';
 import {
   Dialog,
@@ -26,6 +27,7 @@ const statusColor = (status: string) => {
 
 const AdminOrders = () => {
   const { user, isAuthenticated } = useAuthStore();
+  const t = useT();
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [search, setSearch] = useState('');
   const { orders, updateOrderStatus: storeUpdateStatus } = useOrderStore();
@@ -34,7 +36,6 @@ const AdminOrders = () => {
 
   if (!isAuthenticated || !user || user.role !== 'admin') return <Navigate to="/login" replace />;
 
-  // Auto-open order detail from URL param (cross-link from products/customers)
   const highlightId = searchParams.get('view');
   if (highlightId && !selectedOrder) {
     const found = orders.find((o) => o.id === highlightId);
@@ -62,14 +63,14 @@ const AdminOrders = () => {
     <Layout>
       <div className="container py-10">
         <Link to="/admin" className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground mb-6">
-          <ArrowLeft className="h-4 w-4" /> Dashboard
+          <ArrowLeft className="h-4 w-4" /> {t('common.dashboard')}
         </Link>
-        <h1 className="font-heading text-3xl font-bold mb-6">Orders</h1>
+        <h1 className="font-heading text-3xl font-bold mb-6">{t('admin.orders')}</h1>
 
         <div className="flex flex-col md:flex-row gap-3 mb-6">
-          <Input placeholder="Search by ID or customer..." value={search} onChange={(e) => setSearch(e.target.value)} className="md:max-w-xs" />
+          <Input placeholder={t('admin.searchOrders')} value={search} onChange={(e) => setSearch(e.target.value)} className="md:max-w-xs" />
           <div className="flex gap-2 flex-wrap">
-            <button onClick={() => setStatusFilter('all')} className={`rounded-full border px-3 py-1 text-xs font-medium transition-all ${statusFilter === 'all' ? 'border-primary bg-primary text-primary-foreground' : 'border-border text-muted-foreground hover:border-primary/30'}`}>All</button>
+            <button onClick={() => setStatusFilter('all')} className={`rounded-full border px-3 py-1 text-xs font-medium transition-all ${statusFilter === 'all' ? 'border-primary bg-primary text-primary-foreground' : 'border-border text-muted-foreground hover:border-primary/30'}`}>{t('admin.all')}</button>
             {allStatuses.map((s) => (
               <button key={s} onClick={() => setStatusFilter(s)} className={`rounded-full border px-3 py-1 text-xs font-medium transition-all ${statusFilter === s ? 'border-primary bg-primary text-primary-foreground' : 'border-border text-muted-foreground hover:border-primary/30'}`}>{s}</button>
             ))}
@@ -81,12 +82,12 @@ const AdminOrders = () => {
             <table className="w-full text-sm">
               <thead className="bg-muted/50">
                 <tr>
-                  <th className="text-left px-4 py-3 font-heading font-semibold text-xs uppercase tracking-wider text-muted-foreground">Order</th>
-                  <th className="text-left px-4 py-3 font-heading font-semibold text-xs uppercase tracking-wider text-muted-foreground">Customer</th>
-                  <th className="text-left px-4 py-3 font-heading font-semibold text-xs uppercase tracking-wider text-muted-foreground">Total</th>
-                  <th className="text-left px-4 py-3 font-heading font-semibold text-xs uppercase tracking-wider text-muted-foreground">Payment</th>
-                  <th className="text-left px-4 py-3 font-heading font-semibold text-xs uppercase tracking-wider text-muted-foreground">Status</th>
-                  <th className="text-left px-4 py-3 font-heading font-semibold text-xs uppercase tracking-wider text-muted-foreground">Date</th>
+                  <th className="text-left px-4 py-3 font-heading font-semibold text-xs uppercase tracking-wider text-muted-foreground">{t('admin.order')}</th>
+                  <th className="text-left px-4 py-3 font-heading font-semibold text-xs uppercase tracking-wider text-muted-foreground">{t('admin.customer')}</th>
+                  <th className="text-left px-4 py-3 font-heading font-semibold text-xs uppercase tracking-wider text-muted-foreground">{t('admin.total')}</th>
+                  <th className="text-left px-4 py-3 font-heading font-semibold text-xs uppercase tracking-wider text-muted-foreground">{t('admin.payment')}</th>
+                  <th className="text-left px-4 py-3 font-heading font-semibold text-xs uppercase tracking-wider text-muted-foreground">{t('admin.status')}</th>
+                  <th className="text-left px-4 py-3 font-heading font-semibold text-xs uppercase tracking-wider text-muted-foreground">{t('admin.date')}</th>
                   <th className="px-4 py-3"></th>
                 </tr>
               </thead>
@@ -117,27 +118,27 @@ const AdminOrders = () => {
               </tbody>
             </table>
           </div>
-          {filtered.length === 0 && <p className="text-center text-muted-foreground py-8">No orders found.</p>}
+          {filtered.length === 0 && <p className="text-center text-muted-foreground py-8">{t('admin.noOrders')}</p>}
         </div>
 
         <Dialog open={!!selectedOrder} onOpenChange={() => setSelectedOrder(null)}>
           <DialogContent className="max-w-lg">
             <DialogHeader>
-              <DialogTitle className="font-heading">Order {selectedOrder?.id}</DialogTitle>
+              <DialogTitle className="font-heading">{t('admin.order')} {selectedOrder?.id}</DialogTitle>
             </DialogHeader>
             {selectedOrder && (
               <div className="space-y-4">
                 <div className="grid grid-cols-2 gap-3 text-sm">
                   <div>
-                    <span className="text-muted-foreground">Customer: </span>
+                    <span className="text-muted-foreground">{t('admin.customer')}: </span>
                     <Link to={`/admin/customers?view=${selectedOrder.customerId}`} onClick={() => setSelectedOrder(null)} className="text-primary hover:underline">
                       {selectedOrder.customerName}
                     </Link>
                   </div>
-                  <div><span className="text-muted-foreground">Phone:</span> {selectedOrder.customerPhone}</div>
-                  <div className="col-span-2"><span className="text-muted-foreground">Address:</span> {selectedOrder.deliveryAddress}</div>
-                  <div><span className="text-muted-foreground">Payment:</span> {selectedOrder.paymentMethod} ({selectedOrder.paymentStatus})</div>
-                  <div><span className="text-muted-foreground">Created:</span> {new Date(selectedOrder.createdAt).toLocaleString()}</div>
+                  <div><span className="text-muted-foreground">{t('admin.phone')}:</span> {selectedOrder.customerPhone}</div>
+                  <div className="col-span-2"><span className="text-muted-foreground">{t('admin.address')}:</span> {selectedOrder.deliveryAddress}</div>
+                  <div><span className="text-muted-foreground">{t('admin.payment')}:</span> {selectedOrder.paymentMethod} ({selectedOrder.paymentStatus})</div>
+                  <div><span className="text-muted-foreground">{t('admin.created')}:</span> {new Date(selectedOrder.createdAt).toLocaleString()}</div>
                 </div>
                 <div className="space-y-2">
                   {selectedOrder.items.map((item) => (
@@ -157,11 +158,11 @@ const AdminOrders = () => {
                   ))}
                 </div>
                 <div className="border-t border-border pt-3 flex justify-between">
-                  <span className="font-heading font-semibold">Total</span>
+                  <span className="font-heading font-semibold">{t('admin.total')}</span>
                   <span className="font-heading font-bold text-primary text-lg">{formatPrice(selectedOrder.totalAmount)}</span>
                 </div>
                 <div className="space-y-2">
-                  <p className="text-xs text-muted-foreground uppercase tracking-wider font-heading font-semibold">Update Status</p>
+                  <p className="text-xs text-muted-foreground uppercase tracking-wider font-heading font-semibold">{t('admin.updateStatus')}</p>
                   <div className="flex flex-wrap gap-2">
                     {allStatuses.map((s) => (
                       <button key={s} onClick={() => updateOrderStatus(selectedOrder.id, s)} className={`rounded-full border px-3 py-1 text-xs font-medium transition-all ${selectedOrder.status === s ? 'border-primary bg-primary text-primary-foreground' : 'border-border text-muted-foreground hover:border-primary/30'}`}>{s}</button>

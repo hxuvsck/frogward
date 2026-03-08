@@ -11,6 +11,7 @@ const translations = {
   'nav.signIn': { mn: 'Нэвтрэх', en: 'Sign In' },
   'nav.admin': { mn: 'Админ', en: 'Admin' },
   'nav.search': { mn: 'Бүтээгдэхүүн хайх...', en: 'Search products...' },
+  'nav.logout': { mn: 'Гарах', en: 'Log Out' },
 
   // Hero / Index
   'hero.badge': { mn: 'Үйлдвэрийн зэрэглэлийн тоног төхөөрөмж', en: 'Industrial Grade Equipment' },
@@ -141,6 +142,71 @@ const translations = {
   // Common
   'common.backToAccount': { mn: 'Бүртгэл рүү буцах', en: 'Back to Account' },
   'common.dashboard': { mn: 'Хянах самбар', en: 'Dashboard' },
+
+  // Admin Dashboard
+  'admin.dashboard': { mn: 'Админ хянах самбар', en: 'Admin Dashboard' },
+  'admin.totalOrders': { mn: 'Нийт захиалга', en: 'Total Orders' },
+  'admin.pendingPayment': { mn: 'Төлбөр хүлээгдэж буй', en: 'Pending Payment' },
+  'admin.paidOrders': { mn: 'Төлсөн захиалга', en: 'Paid Orders' },
+  'admin.products': { mn: 'Бүтээгдэхүүн', en: 'Products' },
+  'admin.lowStock': { mn: 'Нөөц бага/Дууссан', en: 'Low/No Stock' },
+  'admin.customers': { mn: 'Харилцагчид', en: 'Customers' },
+  'admin.manageOrders': { mn: 'Захиалга удирдах', en: 'Manage Orders' },
+  'admin.manageOrdersDesc': { mn: 'Захиалга харах, шүүх, төлөв шинэчлэх', en: 'View, filter, and update order statuses' },
+  'admin.manageProducts': { mn: 'Бүтээгдэхүүн удирдах', en: 'Manage Products' },
+  'admin.manageProductsDesc': { mn: 'Бүтээгдэхүүн үүсгэх, засах, нөөц удирдах', en: 'Create, edit, and manage inventory' },
+  'admin.customersDesc': { mn: 'Харилцагчдын жагсаалт, идэвх харах', en: 'View customer list and activity' },
+
+  // Admin Orders
+  'admin.orders': { mn: 'Захиалгууд', en: 'Orders' },
+  'admin.searchOrders': { mn: 'ID эсвэл харилцагчаар хайх...', en: 'Search by ID or customer...' },
+  'admin.all': { mn: 'Бүгд', en: 'All' },
+  'admin.order': { mn: 'Захиалга', en: 'Order' },
+  'admin.customer': { mn: 'Харилцагч', en: 'Customer' },
+  'admin.total': { mn: 'Нийт', en: 'Total' },
+  'admin.payment': { mn: 'Төлбөр', en: 'Payment' },
+  'admin.status': { mn: 'Төлөв', en: 'Status' },
+  'admin.date': { mn: 'Огноо', en: 'Date' },
+  'admin.noOrders': { mn: 'Захиалга олдсонгүй.', en: 'No orders found.' },
+  'admin.phone': { mn: 'Утас', en: 'Phone' },
+  'admin.address': { mn: 'Хаяг', en: 'Address' },
+  'admin.created': { mn: 'Үүсгэсэн', en: 'Created' },
+  'admin.updateStatus': { mn: 'Төлөв шинэчлэх', en: 'Update Status' },
+
+  // Admin Products
+  'admin.addProduct': { mn: 'Бүтээгдэхүүн нэмэх', en: 'Add Product' },
+  'admin.searchProducts': { mn: 'Нэр эсвэл ангиллаар хайх...', en: 'Search by name or category...' },
+  'admin.product': { mn: 'Бүтээгдэхүүн', en: 'Product' },
+  'admin.category': { mn: 'Ангилал', en: 'Category' },
+  'admin.price': { mn: 'Үнэ', en: 'Price' },
+  'admin.sold': { mn: 'Зарагдсан', en: 'Sold' },
+  'admin.stock': { mn: 'Нөөц', en: 'Stock' },
+  'admin.inStock': { mn: 'Байгаа', en: 'In Stock' },
+  'admin.outOfStock': { mn: 'Дууссан', en: 'Out of Stock' },
+  'admin.noProducts': { mn: 'Бүтээгдэхүүн олдсонгүй.', en: 'No products found.' },
+  'admin.specifications': { mn: 'Техникийн үзүүлэлт', en: 'Specifications' },
+  'admin.ordersContaining': { mn: 'Энэ бүтээгдэхүүнтэй захиалга', en: 'Orders containing this product' },
+  'admin.noOrdersYet': { mn: 'Захиалга байхгүй.', en: 'No orders yet.' },
+  'admin.edit': { mn: 'Засах', en: 'Edit' },
+  'admin.delete': { mn: 'Устгах', en: 'Delete' },
+  'admin.createProduct': { mn: 'Бүтээгдэхүүн үүсгэх', en: 'Create Product' },
+  'admin.editProduct': { mn: 'Бүтээгдэхүүн засах', en: 'Edit Product' },
+  'admin.name': { mn: 'Нэр', en: 'Name' },
+  'admin.description': { mn: 'Тайлбар', en: 'Description' },
+  'admin.saveChanges': { mn: 'Хадгалах', en: 'Save Changes' },
+  'admin.productCreated': { mn: 'Бүтээгдэхүүн үүсгэгдлээ', en: 'Product created' },
+  'admin.productUpdated': { mn: 'Бүтээгдэхүүн шинэчлэгдлээ', en: 'Product updated' },
+  'admin.productDeleted': { mn: 'Бүтээгдэхүүн устгагдлаа', en: 'Product deleted' },
+
+  // Admin Customers
+  'admin.searchCustomers': { mn: 'Нэр, утас, имэйлээр хайх...', en: 'Search by name, phone, or email...' },
+  'admin.email': { mn: 'Имэйл', en: 'Email' },
+  'admin.ordersCount': { mn: 'Захиалга', en: 'Orders' },
+  'admin.totalSpent': { mn: 'Нийт зарцуулсан', en: 'Total Spent' },
+  'admin.lastActive': { mn: 'Сүүлд идэвхтэй', en: 'Last Active' },
+  'admin.noCustomers': { mn: 'Харилцагч олдсонгүй.', en: 'No customers found.' },
+  'admin.orderHistory': { mn: 'Захиалгын түүх', en: 'Order History' },
+  'admin.productsPurchased': { mn: 'Худалдан авсан бүтээгдэхүүн', en: 'Products Purchased' },
 } as const;
 
 export type TranslationKey = keyof typeof translations;

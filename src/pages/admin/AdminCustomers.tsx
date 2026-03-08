@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useAuthStore } from '@/store/auth-store';
 import { useOrderStore } from '@/store/order-store';
+import { useT } from '@/store/lang-store';
 import { mockCustomers } from '@/data/mock-orders';
 import {
   Dialog,
@@ -25,6 +26,7 @@ const statusColor = (status: string) => {
 
 const AdminCustomers = () => {
   const { user, isAuthenticated } = useAuthStore();
+  const t = useT();
   const orders = useOrderStore((s) => s.orders);
   const [search, setSearch] = useState('');
   const [selectedCustomer, setSelectedCustomer] = useState<typeof mockCustomers[0] | null>(null);
@@ -32,7 +34,6 @@ const AdminCustomers = () => {
 
   if (!isAuthenticated || !user || user.role !== 'admin') return <Navigate to="/login" replace />;
 
-  // Auto-open customer detail from URL param (cross-link from orders)
   const highlightId = searchParams.get('view');
   if (highlightId && !selectedCustomer) {
     const found = mockCustomers.find((c) => c.id === highlightId);
@@ -59,23 +60,23 @@ const AdminCustomers = () => {
     <Layout>
       <div className="container py-10">
         <Link to="/admin" className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground mb-6">
-          <ArrowLeft className="h-4 w-4" /> Dashboard
+          <ArrowLeft className="h-4 w-4" /> {t('common.dashboard')}
         </Link>
-        <h1 className="font-heading text-3xl font-bold mb-6">Customers</h1>
+        <h1 className="font-heading text-3xl font-bold mb-6">{t('admin.customers')}</h1>
 
-        <Input placeholder="Search by name, phone, or email..." value={search} onChange={(e) => setSearch(e.target.value)} className="mb-6 max-w-sm" />
+        <Input placeholder={t('admin.searchCustomers')} value={search} onChange={(e) => setSearch(e.target.value)} className="mb-6 max-w-sm" />
 
         <div className="rounded-lg border border-border overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead className="bg-muted/50">
                 <tr>
-                  <th className="text-left px-4 py-3 font-heading font-semibold text-xs uppercase tracking-wider text-muted-foreground">Customer</th>
-                  <th className="text-left px-4 py-3 font-heading font-semibold text-xs uppercase tracking-wider text-muted-foreground">Phone</th>
-                  <th className="text-left px-4 py-3 font-heading font-semibold text-xs uppercase tracking-wider text-muted-foreground">Email</th>
-                  <th className="text-left px-4 py-3 font-heading font-semibold text-xs uppercase tracking-wider text-muted-foreground">Orders</th>
-                  <th className="text-left px-4 py-3 font-heading font-semibold text-xs uppercase tracking-wider text-muted-foreground">Total Spent</th>
-                  <th className="text-left px-4 py-3 font-heading font-semibold text-xs uppercase tracking-wider text-muted-foreground">Last Active</th>
+                  <th className="text-left px-4 py-3 font-heading font-semibold text-xs uppercase tracking-wider text-muted-foreground">{t('admin.customer')}</th>
+                  <th className="text-left px-4 py-3 font-heading font-semibold text-xs uppercase tracking-wider text-muted-foreground">{t('admin.phone')}</th>
+                  <th className="text-left px-4 py-3 font-heading font-semibold text-xs uppercase tracking-wider text-muted-foreground">{t('admin.email')}</th>
+                  <th className="text-left px-4 py-3 font-heading font-semibold text-xs uppercase tracking-wider text-muted-foreground">{t('admin.ordersCount')}</th>
+                  <th className="text-left px-4 py-3 font-heading font-semibold text-xs uppercase tracking-wider text-muted-foreground">{t('admin.totalSpent')}</th>
+                  <th className="text-left px-4 py-3 font-heading font-semibold text-xs uppercase tracking-wider text-muted-foreground">{t('admin.lastActive')}</th>
                   <th className="px-4 py-3"></th>
                 </tr>
               </thead>
@@ -103,10 +104,9 @@ const AdminCustomers = () => {
               </tbody>
             </table>
           </div>
-          {filtered.length === 0 && <p className="text-center text-muted-foreground py-8">No customers found.</p>}
+          {filtered.length === 0 && <p className="text-center text-muted-foreground py-8">{t('admin.noCustomers')}</p>}
         </div>
 
-        {/* Customer Detail Dialog */}
         <Dialog open={!!selectedCustomer} onOpenChange={() => setSelectedCustomer(null)}>
           <DialogContent className="max-w-lg">
             <DialogHeader>
@@ -119,7 +119,6 @@ const AdminCustomers = () => {
             </DialogHeader>
             {selectedCustomer && (
               <div className="space-y-5">
-                {/* Contact Info */}
                 <div className="space-y-2 text-sm">
                   <div className="flex items-center gap-2 text-muted-foreground">
                     <Phone className="h-3.5 w-3.5" /> {selectedCustomer.phone}
@@ -129,7 +128,6 @@ const AdminCustomers = () => {
                       <Mail className="h-3.5 w-3.5" /> {selectedCustomer.email}
                     </div>
                   )}
-                  {/* Show address from their latest order */}
                   {getCustomerOrders(selectedCustomer.id).length > 0 && (
                     <div className="flex items-center gap-2 text-muted-foreground">
                       <MapPin className="h-3.5 w-3.5" /> {getCustomerOrders(selectedCustomer.id)[0].deliveryAddress}
@@ -137,29 +135,27 @@ const AdminCustomers = () => {
                   )}
                 </div>
 
-                {/* Stats */}
                 <div className="grid grid-cols-3 gap-3">
                   <div className="rounded-lg border border-border bg-muted/30 p-3 text-center">
                     <p className="font-heading text-xl font-bold">{getCustomerOrders(selectedCustomer.id).length}</p>
-                    <p className="text-xs text-muted-foreground">Orders</p>
+                    <p className="text-xs text-muted-foreground">{t('admin.ordersCount')}</p>
                   </div>
                   <div className="rounded-lg border border-border bg-muted/30 p-3 text-center">
                     <p className="font-heading text-xl font-bold text-primary">{formatPrice(getCustomerTotal(selectedCustomer.id))}</p>
-                    <p className="text-xs text-muted-foreground">Total Spent</p>
+                    <p className="text-xs text-muted-foreground">{t('admin.totalSpent')}</p>
                   </div>
                   <div className="rounded-lg border border-border bg-muted/30 p-3 text-center">
                     <p className="font-heading text-xl font-bold">{new Date(selectedCustomer.lastActive).toLocaleDateString()}</p>
-                    <p className="text-xs text-muted-foreground">Last Active</p>
+                    <p className="text-xs text-muted-foreground">{t('admin.lastActive')}</p>
                   </div>
                 </div>
 
-                {/* Order History */}
                 <div className="space-y-2">
                   <p className="text-xs text-muted-foreground uppercase tracking-wider font-heading font-semibold flex items-center gap-1">
-                    <ShoppingCart className="h-3 w-3" /> Order History
+                    <ShoppingCart className="h-3 w-3" /> {t('admin.orderHistory')}
                   </p>
                   {getCustomerOrders(selectedCustomer.id).length === 0 ? (
-                    <p className="text-sm text-muted-foreground">No orders yet.</p>
+                    <p className="text-sm text-muted-foreground">{t('admin.noOrdersYet')}</p>
                   ) : (
                     <div className="space-y-2 max-h-48 overflow-y-auto">
                       {getCustomerOrders(selectedCustomer.id).map((order) => (
@@ -183,9 +179,8 @@ const AdminCustomers = () => {
                   )}
                 </div>
 
-                {/* Purchased Products */}
                 <div className="space-y-2">
-                  <p className="text-xs text-muted-foreground uppercase tracking-wider font-heading font-semibold">Products Purchased</p>
+                  <p className="text-xs text-muted-foreground uppercase tracking-wider font-heading font-semibold">{t('admin.productsPurchased')}</p>
                   <div className="flex flex-wrap gap-2">
                     {Array.from(
                       new Map(

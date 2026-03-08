@@ -1,5 +1,5 @@
 import { Link, useNavigate } from 'react-router-dom';
-import { ShoppingCart, Menu, X, User, Shield, Search, Sun, Moon, Globe } from 'lucide-react';
+import { ShoppingCart, Menu, X, User, Shield, Search, Sun, Moon, Globe, LogOut } from 'lucide-react';
 import { useState } from 'react';
 import { useCartStore } from '@/store/cart-store';
 import { useAuthStore } from '@/store/auth-store';
@@ -12,7 +12,7 @@ const Navbar = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const totalItems = useCartStore((s) => s.totalItems());
-  const { isAuthenticated, user } = useAuthStore();
+  const { isAuthenticated, user, logout } = useAuthStore();
   const { theme, toggleTheme } = useThemeStore();
   const { lang, setLang } = useLangStore();
   const t = useT();
@@ -27,6 +27,12 @@ const Navbar = () => {
       setSearchQuery('');
       setMobileOpen(false);
     }
+  };
+
+  const handleLogout = () => {
+    logout();
+    navigate('/');
+    setMobileOpen(false);
   };
 
   const toggleLang = () => setLang(lang === 'mn' ? 'en' : 'mn');
@@ -86,6 +92,9 @@ const Navbar = () => {
               <Link to="/account" className="text-sm text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1">
                 <User className="h-3.5 w-3.5" /> {user.name.split(' ')[0]}
               </Link>
+              <button onClick={handleLogout} className="text-sm text-muted-foreground hover:text-destructive transition-colors flex items-center gap-1">
+                <LogOut className="h-3.5 w-3.5" /> {t('nav.logout')}
+              </button>
             </>
           ) : (
             <Link to="/login" className="text-sm text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1">
@@ -130,6 +139,9 @@ const Navbar = () => {
                 <Link to="/admin" className="block text-sm" onClick={() => setMobileOpen(false)}>{t('nav.admin')}</Link>
               )}
               <Link to="/account" className="block text-sm" onClick={() => setMobileOpen(false)}>{user.name.split(' ')[0]}</Link>
+              <button onClick={handleLogout} className="block text-sm text-destructive">
+                <LogOut className="h-3.5 w-3.5 inline mr-1" /> {t('nav.logout')}
+              </button>
             </>
           ) : (
             <Link to="/login" className="block text-sm" onClick={() => setMobileOpen(false)}>{t('nav.signIn')}</Link>
