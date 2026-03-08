@@ -8,6 +8,7 @@ import { Label } from '@/components/ui/label';
 import { useCartStore } from '@/store/cart-store';
 import { useAuthStore } from '@/store/auth-store';
 import { useOrderStore } from '@/store/order-store';
+import { useT } from '@/store/lang-store';
 import type { Order, PaymentMethod } from '@/types/order';
 
 const formatPrice = (price: number) => `₮${price.toLocaleString()}`;
@@ -16,6 +17,7 @@ const Checkout = () => {
   const { items, totalPrice, clearCart } = useCartStore();
   const { user } = useAuthStore();
   const addOrder = useOrderStore((s) => s.addOrder);
+  const t = useT();
   const [payment, setPayment] = useState<PaymentMethod>('qpay');
   const [submitted, setSubmitted] = useState(false);
   const formRef = useRef<HTMLFormElement>(null);
@@ -24,8 +26,8 @@ const Checkout = () => {
     return (
       <Layout>
         <div className="container py-20 text-center space-y-4">
-          <h1 className="font-heading text-2xl font-bold">No items to checkout</h1>
-          <Button asChild><Link to="/products">Browse Products</Link></Button>
+          <h1 className="font-heading text-2xl font-bold">{t('checkout.noItems')}</h1>
+          <Button asChild><Link to="/products">{t('cart.browse')}</Link></Button>
         </div>
       </Layout>
     );
@@ -38,11 +40,11 @@ const Checkout = () => {
           <div className="h-16 w-16 rounded-full bg-accent/20 flex items-center justify-center mx-auto">
             <QrCode className="h-8 w-8 text-accent" />
           </div>
-          <h1 className="font-heading text-2xl font-bold">Order Placed!</h1>
-          <p className="text-muted-foreground">Your order has been submitted. You will receive payment instructions shortly.</p>
+          <h1 className="font-heading text-2xl font-bold">{t('checkout.success')}</h1>
+          <p className="text-muted-foreground">{t('checkout.successDesc')}</p>
           <div className="flex gap-3 justify-center">
-            <Button asChild variant="outline"><Link to="/account/orders">View My Orders</Link></Button>
-            <Button asChild><Link to="/">Back to Home</Link></Button>
+            <Button asChild variant="outline"><Link to="/account/orders">{t('checkout.viewOrders')}</Link></Button>
+            <Button asChild><Link to="/">{t('checkout.backHome')}</Link></Button>
           </div>
         </div>
       </Layout>
@@ -53,7 +55,6 @@ const Checkout = () => {
     e.preventDefault();
     const form = formRef.current!;
     const fd = new FormData(form);
-
     const now = new Date().toISOString();
     const orderId = `ORD-${String(Date.now()).slice(-6)}`;
 
@@ -89,36 +90,36 @@ const Checkout = () => {
     <Layout>
       <div className="container py-10 max-w-3xl">
         <Link to="/cart" className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground mb-8">
-          <ArrowLeft className="h-4 w-4" /> Back to Cart
+          <ArrowLeft className="h-4 w-4" /> {t('checkout.backToCart')}
         </Link>
 
-        <h1 className="font-heading text-3xl font-bold mb-8">Checkout</h1>
+        <h1 className="font-heading text-3xl font-bold mb-8">{t('checkout.title')}</h1>
 
         <form ref={formRef} onSubmit={handleSubmit} className="space-y-8">
           <div className="rounded-lg border border-border bg-card p-6 space-y-4">
-            <h2 className="font-heading text-lg font-semibold">Customer Information</h2>
+            <h2 className="font-heading text-lg font-semibold">{t('checkout.customerInfo')}</h2>
             <div className="grid md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="name">Full Name</Label>
-                <Input id="name" name="name" defaultValue={user?.name ?? ''} placeholder="Bat Boldyn" required />
+                <Label htmlFor="name">{t('checkout.fullName')}</Label>
+                <Input id="name" name="name" defaultValue={user?.name ?? ''} required />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="phone">Phone</Label>
-                <Input id="phone" name="phone" type="tel" defaultValue={user?.phone ?? ''} placeholder="+976 9911 2233" required />
+                <Label htmlFor="phone">{t('checkout.phone')}</Label>
+                <Input id="phone" name="phone" type="tel" defaultValue={user?.phone ?? ''} required />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
-                <Input id="email" name="email" type="email" defaultValue={user?.email ?? ''} placeholder="bat@example.com" required />
+                <Label htmlFor="email">{t('checkout.email')}</Label>
+                <Input id="email" name="email" type="email" defaultValue={user?.email ?? ''} required />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="address">Delivery Address</Label>
-                <Input id="address" name="address" defaultValue={user?.defaultAddress ?? ''} placeholder="Ulaanbaatar, District..." required />
+                <Label htmlFor="address">{t('checkout.address')}</Label>
+                <Input id="address" name="address" defaultValue={user?.defaultAddress ?? ''} required />
               </div>
             </div>
           </div>
 
           <div className="rounded-lg border border-border bg-card p-6 space-y-3">
-            <h2 className="font-heading text-lg font-semibold">Order Summary</h2>
+            <h2 className="font-heading text-lg font-semibold">{t('checkout.orderSummary')}</h2>
             {items.map((item) => (
               <div key={item.id} className="flex justify-between text-sm">
                 <span className="text-muted-foreground">{item.name} × {item.quantity}</span>
@@ -126,13 +127,13 @@ const Checkout = () => {
               </div>
             ))}
             <div className="border-t border-border pt-3 flex justify-between font-heading font-semibold">
-              <span>Total</span>
+              <span>{t('cart.total')}</span>
               <span className="text-primary text-lg">{formatPrice(totalPrice())}</span>
             </div>
           </div>
 
           <div className="rounded-lg border border-border bg-card p-6 space-y-4">
-            <h2 className="font-heading text-lg font-semibold">Payment Method</h2>
+            <h2 className="font-heading text-lg font-semibold">{t('checkout.paymentMethod')}</h2>
             <div className="grid grid-cols-2 gap-3">
               <button type="button" onClick={() => setPayment('qpay')} className={`rounded-lg border p-4 text-center transition-all ${payment === 'qpay' ? 'border-primary bg-primary/10' : 'border-border hover:border-primary/30'}`}>
                 <QrCode className="h-6 w-6 mx-auto mb-2 text-primary" />
@@ -146,7 +147,7 @@ const Checkout = () => {
           </div>
 
           <Button type="submit" size="lg" className="w-full font-heading font-semibold text-base">
-            Place Order — {formatPrice(totalPrice())}
+            {t('checkout.placeOrder')} — {formatPrice(totalPrice())}
           </Button>
         </form>
       </div>

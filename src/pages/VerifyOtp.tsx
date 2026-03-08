@@ -4,26 +4,26 @@ import Layout from '@/components/layout/Layout';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useAuthStore } from '@/store/auth-store';
+import { useT } from '@/store/lang-store';
 
 const VerifyOtp = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const phone = (location.state as { phone?: string })?.phone || '';
   const { loginWithOtp, isAuthenticated, user } = useAuthStore();
+  const t = useT();
   const [code, setCode] = useState('');
   const [error, setError] = useState('');
   const [resendTimer, setResendTimer] = useState(30);
 
   useEffect(() => {
-    if (!phone) {
-      navigate('/login');
-    }
+    if (!phone) navigate('/login');
   }, [phone, navigate]);
 
   useEffect(() => {
     if (resendTimer > 0) {
-      const t = setTimeout(() => setResendTimer(resendTimer - 1), 1000);
-      return () => clearTimeout(t);
+      const timer = setTimeout(() => setResendTimer(resendTimer - 1), 1000);
+      return () => clearTimeout(timer);
     }
   }, [resendTimer]);
 
@@ -36,28 +36,23 @@ const VerifyOtp = () => {
   const handleVerify = (e: React.FormEvent) => {
     e.preventDefault();
     if (code.length !== 6) {
-      setError('Please enter a 6-digit code.');
+      setError(t('otp.enterCode'));
       return;
     }
     if (code !== '123456') {
-      setError('Invalid code. Try 123456.');
+      setError(t('otp.invalid'));
       return;
     }
     loginWithOtp(phone);
-  };
-
-  const handleResend = () => {
-    setResendTimer(30);
-    setError('');
   };
 
   return (
     <Layout>
       <div className="container max-w-md py-20">
         <div className="text-center mb-8">
-          <h1 className="font-heading text-2xl font-bold">Verify Your Phone</h1>
+          <h1 className="font-heading text-2xl font-bold">{t('otp.title')}</h1>
           <p className="text-muted-foreground mt-2 text-sm">
-            We sent a 6-digit code to <span className="text-foreground font-medium">{phone}</span>
+            {t('otp.sent')} <span className="text-foreground font-medium">{phone}</span>
           </p>
         </div>
 
@@ -79,17 +74,17 @@ const VerifyOtp = () => {
           </div>
 
           <Button type="submit" className="w-full h-12 font-heading font-semibold">
-            Verify Code
+            {t('otp.verify')}
           </Button>
 
           <div className="text-center">
             {resendTimer > 0 ? (
               <p className="text-sm text-muted-foreground">
-                Resend code in <span className="text-foreground font-medium">{resendTimer}s</span>
+                {t('otp.resendIn')} <span className="text-foreground font-medium">{resendTimer}s</span>
               </p>
             ) : (
-              <button type="button" onClick={handleResend} className="text-sm text-primary hover:underline">
-                Resend Code
+              <button type="button" onClick={() => setResendTimer(30)} className="text-sm text-primary hover:underline">
+                {t('otp.resend')}
               </button>
             )}
           </div>
