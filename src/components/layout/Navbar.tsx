@@ -130,9 +130,6 @@ const Navbar = () => {
           </div>
           {isAuthenticated && user ? (
             <>
-              {isAdmin && (
-                <Link to="/admin" className="block text-sm" onClick={() => setMobileOpen(false)}>{t('nav.admin')}</Link>
-              )}
               <Link to="/account" className="block text-sm" onClick={() => setMobileOpen(false)}>{user.name.split(' ')[0]}</Link>
               <button onClick={handleLogout} className="block text-sm text-destructive">
                 <LogOut className="h-3.5 w-3.5 inline mr-1" /> {t('nav.logout')}
