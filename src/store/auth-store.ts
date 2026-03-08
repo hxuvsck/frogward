@@ -46,8 +46,8 @@ export const useAuthStore = create<AuthStore>()(
         set({ user: mockCustomer, isAuthenticated: true });
       },
       loginWithOtp: (phone: string) => {
-        // Mock: if phone matches admin, log in as admin
-        if (phone === '+976 9900 0001') {
+        const normalized = phone.replace(/[\s+\-()]/g, '');
+        if (normalized === '99112233' || normalized === '97699112233') {
           set({ user: mockAdmin, isAuthenticated: true });
         } else {
           set({ user: { ...mockCustomer, phone }, isAuthenticated: true });

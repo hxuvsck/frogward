@@ -84,7 +84,7 @@ const Login = () => {
           </form>
 
           <p className="text-center text-xs text-muted-foreground">
-            Tip: Use phone <span className="text-primary font-mono">+976 9900 0001</span> to log in as admin.
+            Admin: <span className="text-primary font-mono">99112233</span> · OTP: <span className="text-primary font-mono">123456</span>
           </p>
         </div>
       </div>
