@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { Navigate, Link } from 'react-router-dom';
-import { ArrowLeft, Eye } from 'lucide-react';
+import { Navigate, Link, useSearchParams } from 'react-router-dom';
+import { ArrowLeft, Eye, User, Package } from 'lucide-react';
 import Layout from '@/components/layout/Layout';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -26,13 +26,24 @@ const statusColor = (status: string) => {
 
 const AdminOrders = () => {
   const { user, isAuthenticated } = useAuthStore();
-
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [search, setSearch] = useState('');
   const { orders, updateOrderStatus: storeUpdateStatus } = useOrderStore();
   const [selectedOrder, setSelectedOrder] = useState<typeof orders[0] | null>(null);
+  const [searchParams, setSearchParams] = useSearchParams();
 
   if (!isAuthenticated || !user || user.role !== 'admin') return <Navigate to="/login" replace />;
+
+  // Auto-open order detail from URL param (cross-link from products/customers)
+  const highlightId = searchParams.get('view');
+  if (highlightId && !selectedOrder) {
+    const found = orders.find((o) => o.id === highlightId);
+    if (found) {
+      setTimeout(() => setSelectedOrder(found), 0);
+      searchParams.delete('view');
+      setSearchParams(searchParams, { replace: true });
+    }
+  }
 
   const filtered = orders.filter((o) => {
     if (statusFilter !== 'all' && o.status !== statusFilter) return false;
@@ -84,7 +95,9 @@ const AdminOrders = () => {
                   <tr key={order.id} className="hover:bg-muted/30 transition-colors">
                     <td className="px-4 py-3 font-heading font-semibold">{order.id}</td>
                     <td className="px-4 py-3">
-                      <p>{order.customerName}</p>
+                      <Link to={`/admin/customers?view=${order.customerId}`} className="hover:text-primary transition-colors">
+                        <p className="flex items-center gap-1"><User className="h-3 w-3" /> {order.customerName}</p>
+                      </Link>
                       <p className="text-xs text-muted-foreground">{order.customerPhone}</p>
                     </td>
                     <td className="px-4 py-3 font-heading font-semibold text-primary">{formatPrice(order.totalAmount)}</td>
@@ -115,7 +128,12 @@ const AdminOrders = () => {
             {selectedOrder && (
               <div className="space-y-4">
                 <div className="grid grid-cols-2 gap-3 text-sm">
-                  <div><span className="text-muted-foreground">Customer:</span> {selectedOrder.customerName}</div>
+                  <div>
+                    <span className="text-muted-foreground">Customer: </span>
+                    <Link to={`/admin/customers?view=${selectedOrder.customerId}`} onClick={() => setSelectedOrder(null)} className="text-primary hover:underline">
+                      {selectedOrder.customerName}
+                    </Link>
+                  </div>
                   <div><span className="text-muted-foreground">Phone:</span> {selectedOrder.customerPhone}</div>
                   <div className="col-span-2"><span className="text-muted-foreground">Address:</span> {selectedOrder.deliveryAddress}</div>
                   <div><span className="text-muted-foreground">Payment:</span> {selectedOrder.paymentMethod} ({selectedOrder.paymentStatus})</div>
@@ -123,14 +141,19 @@ const AdminOrders = () => {
                 </div>
                 <div className="space-y-2">
                   {selectedOrder.items.map((item) => (
-                    <div key={item.id} className="flex items-center gap-3">
+                    <Link
+                      key={item.id}
+                      to={`/admin/products?view=${item.productId}`}
+                      onClick={() => setSelectedOrder(null)}
+                      className="flex items-center gap-3 rounded-md p-1.5 -mx-1.5 hover:bg-muted/50 transition-colors"
+                    >
                       <img src={item.image} alt={item.name} className="h-10 w-10 rounded object-cover bg-muted" />
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm truncate">{item.name}</p>
+                        <p className="text-sm truncate flex items-center gap-1"><Package className="h-3 w-3 text-primary" /> {item.name}</p>
                         <p className="text-xs text-muted-foreground">×{item.quantity}</p>
                       </div>
                       <p className="text-sm font-heading font-semibold">{formatPrice(item.price * item.quantity)}</p>
-                    </div>
+                    </Link>
                   ))}
                 </div>
                 <div className="border-t border-border pt-3 flex justify-between">
