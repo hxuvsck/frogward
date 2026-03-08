@@ -2,7 +2,8 @@ import { Navigate, Link } from 'react-router-dom';
 import { Package, ShoppingCart, Users, AlertTriangle } from 'lucide-react';
 import Layout from '@/components/layout/Layout';
 import { useAuthStore } from '@/store/auth-store';
-import { mockOrders, mockCustomers } from '@/data/mock-orders';
+import { useOrderStore } from '@/store/order-store';
+import { mockCustomers } from '@/data/mock-orders';
 import { products } from '@/data/mock-products';
 
 const AdminDashboard = () => {
