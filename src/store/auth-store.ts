@@ -27,7 +27,7 @@ const mockCustomer: User = {
 const mockAdmin: User = {
   id: 'admin-001',
   name: 'Admin Frogward',
-  phone: '+976 9900 0001',
+  phone: '99112233',
   email: 'admin@frogward.mn',
   role: 'admin',
   isPhoneVerified: true,
