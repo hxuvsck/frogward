@@ -1,73 +1,113 @@
-# Welcome to your Lovable project
+# FrogWard
 
-## Project info
+**FrogWard** is a modern online clothing store platform designed for selling curated apparel locally.
+The project focuses on a clean shopping experience, fast deployment, and scalable integrations for payment and order management.
 
-**URL**: https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID
+---
 
-## How can I edit this code?
+## Overview
 
-There are several ways of editing your application.
+FrogWard enables customers to browse and purchase clothing products online while providing a simple system for managing products and orders.
 
-**Use Lovable**
+The platform is designed with a lightweight frontend architecture and serverless deployment to allow rapid iteration and easy scaling.
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and start prompting.
+Future versions will include payment integrations, admin product management, and order tracking.
 
-Changes made via Lovable will be committed automatically to this repo.
+---
 
-**Use your preferred IDE**
+## Tech Stack
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+- **Frontend:** React + TypeScript
+- **Build Tool:** Vite
+- **UI Components:** shadcn/ui
+- **Styling:** TailwindCSS
+- **Deployment:** Vercel
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+---
 
-Follow these steps:
+## Project Structure
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+```
+frogward/
+├── public/           # Static assets
+├── src/
+│   ├── components/   # UI components
+│   ├── pages/        # Application pages
+│   ├── hooks/        # Custom hooks
+│   ├── lib/          # Utilities
+│   └── main.tsx      # Application entry
+│
+├── index.html
+├── package.json
+├── vite.config.ts
+└── README.md
+```
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+---
 
-# Step 3: Install the necessary dependencies.
-npm i
+## Local Development
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
+Clone the repository:
+
+```
+git clone https://github.com/hxuvsck/frogward.git
+cd frogward
+```
+
+Install dependencies:
+
+```
+npm install
+```
+
+Run development server:
+
+```
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+The application will be available at:
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+```
+http://localhost:5173
+```
 
-**Use GitHub Codespaces**
+---
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+## Build for Production
 
-## What technologies are used for this project?
+```
+npm run build
+```
 
-This project is built with:
+Preview production build:
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+```
+npm run preview
+```
 
-## How can I deploy this project?
+---
 
-Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
+## Deployment
 
-## Can I connect a custom domain to my Lovable project?
+This project is deployed using **Vercel**.
 
-Yes, you can!
+Every push to the `main` branch automatically triggers a new deployment.
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+---
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+## Future Roadmap
+
+Planned features include:
+
+- Product inventory management
+- Admin dashboard
+- qPay payment integration
+- Order tracking system
+- Customer authentication (OTP / social login)
+
+---
+
+## License
+
+This project is currently private and maintained by the Biotain Solutions team.
