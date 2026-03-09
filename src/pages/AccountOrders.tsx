@@ -5,6 +5,9 @@ import Layout from '@/components/layout/Layout';
 import { useAuthStore } from '@/store/auth-store';
 import { useOrderStore } from '@/store/order-store';
 import { useT } from '@/store/lang-store';
+import { getOrderStatusLabel, getPaymentStatusLabel } from '@/lib/order-label';
+import { useProductStore } from '@/store/product-store';
+import { resolveProductImage } from '@/lib/product-image';
 
 const formatPrice = (p: number) => `₮${p.toLocaleString()}`;
 
@@ -21,6 +24,7 @@ const AccountOrders = () => {
   if (!isAuthenticated || !user) return <Navigate to="/login" replace />;
 
   const orders = useOrderStore((s) => s.orders);
+  const products = useProductStore((s) => s.products);
   const myOrders = orders.filter((o) => o.customerId === user.id);
 
   return (
@@ -44,10 +48,10 @@ const AccountOrders = () => {
                   </div>
                   <div className="text-right space-y-1">
                     <span className={`text-xs px-2 py-0.5 rounded-full ${statusColor(order.status)}`}>
-                      {order.status}
+                      {getOrderStatusLabel(order.status, t)}
                     </span>
                     <p className="text-xs text-muted-foreground">
-                      {t('accountOrders.payment')}: <span className={order.paymentStatus === 'paid' ? 'text-accent' : 'text-destructive'}>{order.paymentStatus}</span>
+                      {t('accountOrders.payment')}: <span className={order.paymentStatus === 'paid' ? 'text-accent' : 'text-destructive'}>{getPaymentStatusLabel(order.paymentStatus, t)}</span>
                     </p>
                   </div>
                 </div>
@@ -55,7 +59,11 @@ const AccountOrders = () => {
                 <div className="space-y-2">
                   {order.items.map((item) => (
                     <div key={item.id} className="flex items-center gap-3">
-                      <img src={item.image} alt={item.name} className="h-10 w-10 rounded object-cover bg-muted" />
+                      <img
+                        src={resolveProductImage(products, item.productId, item.image)}
+                        alt={item.name}
+                        className="h-10 w-10 rounded object-cover bg-muted"
+                      />
                       <div className="flex-1 min-w-0">
                         <p className="text-sm truncate">{item.name}</p>
                         <p className="text-xs text-muted-foreground">×{item.quantity}</p>

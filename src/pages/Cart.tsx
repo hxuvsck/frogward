@@ -4,11 +4,14 @@ import Layout from '@/components/layout/Layout';
 import { Button } from '@/components/ui/button';
 import { useCartStore } from '@/store/cart-store';
 import { useT } from '@/store/lang-store';
+import { useProductStore } from '@/store/product-store';
+import { resolveProductImage } from '@/lib/product-image';
 
 const formatPrice = (price: number) => `₮${price.toLocaleString()}`;
 
 const Cart = () => {
   const { items, removeItem, updateQuantity, clearCart, totalPrice } = useCartStore();
+  const products = useProductStore((s) => s.products);
   const t = useT();
 
   if (items.length === 0) {
@@ -35,7 +38,11 @@ const Cart = () => {
           <div className="lg:col-span-2 space-y-4">
             {items.map((item) => (
               <div key={item.id} className="flex gap-4 rounded-lg border border-border bg-card p-4">
-                <img src={item.image} alt={item.name} className="h-20 w-20 rounded-md object-cover bg-muted" />
+                <img
+                  src={resolveProductImage(products, item.id, item.image)}
+                  alt={item.name}
+                  className="h-20 w-20 rounded-md object-cover bg-muted"
+                />
                 <div className="flex-1 min-w-0">
                   <h3 className="font-heading text-sm font-semibold truncate">{item.name}</h3>
                   <p className="text-primary font-heading font-bold mt-1">{formatPrice(item.price)}</p>

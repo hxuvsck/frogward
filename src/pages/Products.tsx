@@ -3,9 +3,11 @@ import { useSearchParams } from 'react-router-dom';
 import { Search } from 'lucide-react';
 import Layout from '@/components/layout/Layout';
 import ProductCard from '@/components/product/ProductCard';
-import { products, categories } from '@/data/mock-products';
+import { categories } from '@/data/mock-products';
+import { useProductStore } from '@/store/product-store';
 import { Input } from '@/components/ui/input';
 import { useT } from '@/store/lang-store';
+import { getCategoryLabel } from '@/lib/category-label';
 
 const Products = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -13,6 +15,7 @@ const Products = () => {
   const [search, setSearch] = useState(searchParams.get('search') || '');
   const [sortBy, setSortBy] = useState<'default' | 'price-asc' | 'price-desc'>('default');
   const t = useT();
+  const products = useProductStore((s) => s.products);
 
   const filtered = useMemo(() => {
     let result = products;
@@ -55,7 +58,7 @@ const Products = () => {
                   activeCategory === cat.id ? 'border-primary bg-primary text-primary-foreground' : 'border-border text-muted-foreground hover:border-primary/30'
                 }`}
               >
-                {cat.name}
+                {getCategoryLabel(cat.id, t, cat.name)}
               </button>
             ))}
           </div>

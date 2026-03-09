@@ -4,6 +4,7 @@ import type { Product } from '@/types/product';
 import { useCartStore } from '@/store/cart-store';
 import { useT } from '@/store/lang-store';
 import { Button } from '@/components/ui/button';
+import { DEFAULT_PRODUCT_IMAGE } from '@/lib/product-image';
 
 const formatPrice = (price: number) => `₮${price.toLocaleString()}`;
 
@@ -17,7 +18,7 @@ const ProductCard = ({ product }: { product: Product }) => {
     <div className="group rounded-lg border border-border bg-card overflow-hidden hover:border-primary/30 transition-all duration-300">
       <Link to={`/products/${product.slug}`} className="block aspect-square overflow-hidden bg-muted">
         <img
-          src={product.image}
+          src={product.image || DEFAULT_PRODUCT_IMAGE}
           alt={product.name}
           className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
           loading="lazy"
@@ -43,7 +44,12 @@ const ProductCard = ({ product }: { product: Product }) => {
           className="w-full"
           disabled={!product.inStock}
           onClick={() =>
-            addItem({ id: product.id, name: product.name, price: product.price, image: product.image })
+            addItem({
+              id: product.id,
+              name: product.name,
+              price: product.price,
+              image: product.image || DEFAULT_PRODUCT_IMAGE,
+            })
           }
         >
           {inCart ? (

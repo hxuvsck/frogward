@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { Navigate, Link, useSearchParams } from 'react-router-dom';
-import { ArrowLeft, Eye, User, Package, Download } from 'lucide-react';
+import { Navigate, Link, useNavigate } from 'react-router-dom';
+import { ArrowLeft, Eye, User, Download } from 'lucide-react';
 import { motion } from 'framer-motion';
 import Layout from '@/components/layout/Layout';
 import { Button } from '@/components/ui/button';
@@ -8,13 +8,8 @@ import { Input } from '@/components/ui/input';
 import { useAuthStore } from '@/store/auth-store';
 import { useOrderStore } from '@/store/order-store';
 import { useT } from '@/store/lang-store';
+import { getOrderStatusLabel, getPaymentStatusLabel } from '@/lib/order-label';
 import type { OrderStatus } from '@/types/order';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
 
 const formatPrice = (p: number) => `₮${p.toLocaleString()}`;
 const allStatuses: OrderStatus[] = ['pending', 'awaiting_payment', 'paid', 'processing', 'shipped', 'delivered', 'cancelled', 'failed'];
@@ -40,23 +35,12 @@ const downloadCsv = (filename: string, headers: string[], rows: string[][]) => {
 const AdminOrders = () => {
   const { user, isAuthenticated } = useAuthStore();
   const t = useT();
+  const navigate = useNavigate();
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [search, setSearch] = useState('');
-  const { orders, updateOrderStatus: storeUpdateStatus } = useOrderStore();
-  const [selectedOrder, setSelectedOrder] = useState<typeof orders[0] | null>(null);
-  const [searchParams, setSearchParams] = useSearchParams();
+  const { orders } = useOrderStore();
 
   if (!isAuthenticated || !user || user.role !== 'admin') return <Navigate to="/login" replace />;
-
-  const highlightId = searchParams.get('view');
-  if (highlightId && !selectedOrder) {
-    const found = orders.find((o) => o.id === highlightId);
-    if (found) {
-      setTimeout(() => setSelectedOrder(found), 0);
-      searchParams.delete('view');
-      setSearchParams(searchParams, { replace: true });
-    }
-  }
 
   const filtered = orders.filter((o) => {
     if (statusFilter !== 'all' && o.status !== statusFilter) return false;
@@ -64,18 +48,16 @@ const AdminOrders = () => {
     return true;
   });
 
-  const updateOrderStatus = (orderId: string, newStatus: OrderStatus) => {
-    storeUpdateStatus(orderId, newStatus);
-    if (selectedOrder?.id === orderId) {
-      setSelectedOrder((prev) => prev ? { ...prev, status: newStatus } : null);
-    }
-  };
-
   const exportOrders = () => {
     const headers = ['ID', 'Customer', 'Phone', 'Total', 'Payment Method', 'Payment Status', 'Status', 'Date', 'Items'];
     const rows = filtered.map((o) => [
-      o.id, o.customerName, o.customerPhone, String(o.totalAmount),
-      o.paymentMethod, o.paymentStatus, o.status,
+      o.id,
+      o.customerName,
+      o.customerPhone,
+      String(o.totalAmount),
+      o.paymentMethod,
+      getPaymentStatusLabel(o.paymentStatus, t),
+      getOrderStatusLabel(o.status, t),
       new Date(o.createdAt).toLocaleDateString(),
       o.items.map((i) => `${i.name} x${i.quantity}`).join('; '),
     ]);
@@ -100,7 +82,7 @@ const AdminOrders = () => {
           <div className="flex gap-2 flex-wrap">
             <button onClick={() => setStatusFilter('all')} className={`rounded-full border px-3 py-1 text-xs font-medium transition-all ${statusFilter === 'all' ? 'border-primary bg-primary text-primary-foreground' : 'border-border text-muted-foreground hover:border-primary/30'}`}>{t('admin.all')}</button>
             {allStatuses.map((s) => (
-              <button key={s} onClick={() => setStatusFilter(s)} className={`rounded-full border px-3 py-1 text-xs font-medium transition-all ${statusFilter === s ? 'border-primary bg-primary text-primary-foreground' : 'border-border text-muted-foreground hover:border-primary/30'}`}>{s}</button>
+              <button key={s} onClick={() => setStatusFilter(s)} className={`rounded-full border px-3 py-1 text-xs font-medium transition-all ${statusFilter === s ? 'border-primary bg-primary text-primary-foreground' : 'border-border text-muted-foreground hover:border-primary/30'}`}>{getOrderStatusLabel(s, t)}</button>
             ))}
           </div>
         </div>
@@ -127,11 +109,16 @@ const AdminOrders = () => {
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: i * 0.03, duration: 0.2 }}
                     whileHover={{ backgroundColor: 'hsl(var(--muted) / 0.4)' }}
-                    className="transition-colors"
+                    className="transition-colors cursor-pointer"
+                    onClick={() => navigate(`/admin/orders/${order.id}`)}
                   >
                     <td className="px-4 py-3 font-heading font-semibold">{order.id}</td>
                     <td className="px-4 py-3">
-                      <Link to={`/admin/customers?view=${order.customerId}`} className="hover:text-primary transition-colors">
+                      <Link
+                        to={`/admin/customers/${order.customerId}`}
+                        onClick={(e) => e.stopPropagation()}
+                        className="hover:text-primary transition-colors"
+                      >
                         <p className="flex items-center gap-1"><User className="h-3 w-3" /> {order.customerName}</p>
                       </Link>
                       <p className="text-xs text-muted-foreground">{order.customerPhone}</p>
@@ -139,14 +126,23 @@ const AdminOrders = () => {
                     <td className="px-4 py-3 font-heading font-semibold text-primary">{formatPrice(order.totalAmount)}</td>
                     <td className="px-4 py-3">
                       <span className="text-xs uppercase tracking-wider">{order.paymentMethod}</span>
-                      <span className={`ml-2 text-xs ${order.paymentStatus === 'paid' ? 'text-accent' : 'text-destructive'}`}>{order.paymentStatus}</span>
+                      <span className={`ml-2 text-xs ${order.paymentStatus === 'paid' ? 'text-accent' : 'text-destructive'}`}>{getPaymentStatusLabel(order.paymentStatus, t)}</span>
                     </td>
                     <td className="px-4 py-3">
-                      <span className={`text-xs px-2 py-0.5 rounded-full ${statusColor(order.status)}`}>{order.status}</span>
+                      <span className={`text-xs px-2 py-0.5 rounded-full ${statusColor(order.status)}`}>{getOrderStatusLabel(order.status, t)}</span>
                     </td>
                     <td className="px-4 py-3 text-muted-foreground text-xs">{new Date(order.createdAt).toLocaleDateString()}</td>
                     <td className="px-4 py-3">
-                      <Button variant="ghost" size="icon" onClick={() => setSelectedOrder(order)}><Eye className="h-4 w-4" /></Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          navigate(`/admin/orders/${order.id}`);
+                        }}
+                      >
+                        <Eye className="h-4 w-4" />
+                      </Button>
                     </td>
                   </motion.tr>
                 ))}
@@ -155,59 +151,6 @@ const AdminOrders = () => {
           </div>
           {filtered.length === 0 && <p className="text-center text-muted-foreground py-8">{t('admin.noOrders')}</p>}
         </div>
-
-        <Dialog open={!!selectedOrder} onOpenChange={() => setSelectedOrder(null)}>
-          <DialogContent className="max-w-lg">
-            <DialogHeader>
-              <DialogTitle className="font-heading">{t('admin.order')} {selectedOrder?.id}</DialogTitle>
-            </DialogHeader>
-            {selectedOrder && (
-              <div className="space-y-4">
-                <div className="grid grid-cols-2 gap-3 text-sm">
-                  <div>
-                    <span className="text-muted-foreground">{t('admin.customer')}: </span>
-                    <Link to={`/admin/customers?view=${selectedOrder.customerId}`} onClick={() => setSelectedOrder(null)} className="text-primary hover:underline">
-                      {selectedOrder.customerName}
-                    </Link>
-                  </div>
-                  <div><span className="text-muted-foreground">{t('admin.phone')}:</span> {selectedOrder.customerPhone}</div>
-                  <div className="col-span-2"><span className="text-muted-foreground">{t('admin.address')}:</span> {selectedOrder.deliveryAddress}</div>
-                  <div><span className="text-muted-foreground">{t('admin.payment')}:</span> {selectedOrder.paymentMethod} ({selectedOrder.paymentStatus})</div>
-                  <div><span className="text-muted-foreground">{t('admin.created')}:</span> {new Date(selectedOrder.createdAt).toLocaleString()}</div>
-                </div>
-                <div className="space-y-2">
-                  {selectedOrder.items.map((item) => (
-                    <Link
-                      key={item.id}
-                      to={`/admin/products?view=${item.productId}`}
-                      onClick={() => setSelectedOrder(null)}
-                      className="flex items-center gap-3 rounded-md p-1.5 -mx-1.5 hover:bg-muted/50 transition-colors"
-                    >
-                      <img src={item.image} alt={item.name} className="h-10 w-10 rounded object-cover bg-muted" />
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm truncate flex items-center gap-1"><Package className="h-3 w-3 text-primary" /> {item.name}</p>
-                        <p className="text-xs text-muted-foreground">×{item.quantity}</p>
-                      </div>
-                      <p className="text-sm font-heading font-semibold">{formatPrice(item.price * item.quantity)}</p>
-                    </Link>
-                  ))}
-                </div>
-                <div className="border-t border-border pt-3 flex justify-between">
-                  <span className="font-heading font-semibold">{t('admin.total')}</span>
-                  <span className="font-heading font-bold text-primary text-lg">{formatPrice(selectedOrder.totalAmount)}</span>
-                </div>
-                <div className="space-y-2">
-                  <p className="text-xs text-muted-foreground uppercase tracking-wider font-heading font-semibold">{t('admin.updateStatus')}</p>
-                  <div className="flex flex-wrap gap-2">
-                    {allStatuses.map((s) => (
-                      <button key={s} onClick={() => updateOrderStatus(selectedOrder.id, s)} className={`rounded-full border px-3 py-1 text-xs font-medium transition-all ${selectedOrder.status === s ? 'border-primary bg-primary text-primary-foreground' : 'border-border text-muted-foreground hover:border-primary/30'}`}>{s}</button>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            )}
-          </DialogContent>
-        </Dialog>
       </div>
     </Layout>
   );

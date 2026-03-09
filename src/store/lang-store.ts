@@ -19,7 +19,7 @@ const translations = {
   'hero.titleHighlight': { mn: 'хатуу', en: 'toughest' },
   'hero.title2': { mn: ' нөхцөлд зориулсан', en: ' conditions' },
   'hero.desc': { mn: 'Монголын үйлдвэрүүдэд итгэмжлэгдсэн мэргэжлийн ажлын хувцас болон хамгаалах хэрэгсэл.', en: 'Professional workwear and PPE equipment trusted by industries across Mongolia.' },
-  'hero.shopNow': { mn: 'Дэлгүүр үзэх', en: 'Shop Now' },
+  'hero.shopNow': { mn: 'Бараа үзэх', en: 'Shop Now' },
   'hero.certifiedSafety': { mn: 'Баталгаат аюулгүй байдал', en: 'Certified Safety' },
   'hero.certifiedSafetyDesc': { mn: 'Бүх бүтээгдэхүүн олон улсын аюулгүй байдлын стандартад нийцнэ', en: 'All products meet international safety standards' },
   'hero.fastDelivery': { mn: 'Хурдан хүргэлт', en: 'Fast Delivery' },
@@ -142,6 +142,20 @@ const translations = {
   // Common
   'common.backToAccount': { mn: 'Бүртгэл рүү буцах', en: 'Back to Account' },
   'common.dashboard': { mn: 'Хянах самбар', en: 'Dashboard' },
+  'common.items': { mn: 'бараа', en: 'items' },
+
+  // Order / Payment Status
+  'status.pending': { mn: 'Хүлээгдэж буй', en: 'Pending' },
+  'status.awaiting_payment': { mn: 'Төлбөр хүлээж буй', en: 'Awaiting Payment' },
+  'status.paid': { mn: 'Төлсөн', en: 'Paid' },
+  'status.processing': { mn: 'Боловсруулж байна', en: 'Processing' },
+  'status.shipped': { mn: 'Илгээсэн', en: 'Shipped' },
+  'status.delivered': { mn: 'Хүргэсэн', en: 'Delivered' },
+  'status.cancelled': { mn: 'Цуцалсан', en: 'Cancelled' },
+  'status.failed': { mn: 'Амжилтгүй', en: 'Failed' },
+  'payment.unpaid': { mn: 'Төлөөгүй', en: 'Unpaid' },
+  'payment.paid': { mn: 'Төлсөн', en: 'Paid' },
+  'payment.failed': { mn: 'Амжилтгүй', en: 'Failed' },
 
   // Admin Dashboard
   'admin.dashboard': { mn: 'Админ хянах самбар', en: 'Admin Dashboard' },
@@ -197,6 +211,11 @@ const translations = {
   'admin.productCreated': { mn: 'Бүтээгдэхүүн үүсгэгдлээ', en: 'Product created' },
   'admin.productUpdated': { mn: 'Бүтээгдэхүүн шинэчлэгдлээ', en: 'Product updated' },
   'admin.productDeleted': { mn: 'Бүтээгдэхүүн устгагдлаа', en: 'Product deleted' },
+  'admin.productNotFound': { mn: 'Бүтээгдэхүүн олдсонгүй.', en: 'Product not found.' },
+  'admin.uploadReplaceImage': { mn: 'Зураг оруулах / солих', en: 'Upload / Replace Image' },
+  'admin.removeImage': { mn: 'Зураг устгах', en: 'Remove Image' },
+  'admin.imageUpdated': { mn: 'Зураг шинэчлэгдлээ', en: 'Image updated' },
+  'admin.imageRemoved': { mn: 'Зураг устгагдлаа', en: 'Image removed' },
 
   // Admin Customers
   'admin.searchCustomers': { mn: 'Нэр, утас, имэйлээр хайх...', en: 'Search by name, phone, or email...' },
@@ -267,4 +286,9 @@ export const useLangStore = create<LangStore>()(
 );
 
 // Hook shortcut
-export const useT = () => useLangStore((s) => s.t);
+export const useT = () => {
+  const lang = useLangStore((s) => s.lang);
+  const t = useLangStore((s) => s.t);
+  void lang;
+  return t;
+};

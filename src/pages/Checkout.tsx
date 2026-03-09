@@ -9,6 +9,8 @@ import { useCartStore } from '@/store/cart-store';
 import { useAuthStore } from '@/store/auth-store';
 import { useOrderStore } from '@/store/order-store';
 import { useT } from '@/store/lang-store';
+import { useProductStore } from '@/store/product-store';
+import { resolveProductImage } from '@/lib/product-image';
 import type { Order, PaymentMethod } from '@/types/order';
 
 const formatPrice = (price: number) => `₮${price.toLocaleString()}`;
@@ -17,6 +19,7 @@ const Checkout = () => {
   const { items, totalPrice, clearCart } = useCartStore();
   const { user } = useAuthStore();
   const addOrder = useOrderStore((s) => s.addOrder);
+  const products = useProductStore((s) => s.products);
   const t = useT();
   const [payment, setPayment] = useState<PaymentMethod>('qpay');
   const [submitted, setSubmitted] = useState(false);
@@ -71,7 +74,7 @@ const Checkout = () => {
         name: item.name,
         price: item.price,
         quantity: item.quantity,
-        image: item.image,
+        image: resolveProductImage(products, item.id, item.image),
       })),
       totalAmount: totalPrice(),
       paymentMethod: payment,

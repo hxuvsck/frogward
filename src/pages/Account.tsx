@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { useAuthStore } from '@/store/auth-store';
 import { useOrderStore } from '@/store/order-store';
 import { useT } from '@/store/lang-store';
+import { getOrderStatusLabel } from '@/lib/order-label';
 
 const formatPrice = (p: number) => `₮${p.toLocaleString()}`;
 
@@ -76,7 +77,7 @@ const Account = () => {
                 </div>
                 <div className="text-right">
                   <p className="text-sm font-heading font-bold text-primary">{formatPrice(order.totalAmount)}</p>
-                  <span className={`text-xs px-2 py-0.5 rounded-full ${statusColor(order.status)}`}>{order.status}</span>
+                  <span className={`text-xs px-2 py-0.5 rounded-full ${statusColor(order.status)}`}>{getOrderStatusLabel(order.status, t)}</span>
                 </div>
               </div>
             ))}

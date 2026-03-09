@@ -1,15 +1,19 @@
 import { useState } from 'react';
-import { Navigate, Link, useSearchParams } from 'react-router-dom';
-import { ArrowLeft, Plus, Pencil, Trash2, Eye, Package, ShoppingCart } from 'lucide-react';
+import { Navigate, Link, useNavigate } from 'react-router-dom';
+import { ArrowLeft, Plus, Pencil, Trash2 } from 'lucide-react';
 import Layout from '@/components/layout/Layout';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { categories } from '@/data/mock-products';
 import { useAuthStore } from '@/store/auth-store';
 import { useOrderStore } from '@/store/order-store';
 import { useT } from '@/store/lang-store';
-import { products as initialProducts } from '@/data/mock-products';
+import { useProductStore } from '@/store/product-store';
 import type { Product } from '@/types/product';
+import { getCategoryLabel } from '@/lib/category-label';
+import { DEFAULT_PRODUCT_IMAGE } from '@/lib/product-image';
 import {
   Dialog,
   DialogContent,
@@ -24,13 +28,16 @@ const AdminProducts = () => {
   const { user, isAuthenticated } = useAuthStore();
   const { toast } = useToast();
   const t = useT();
+  const navigate = useNavigate();
   const orders = useOrderStore((s) => s.orders);
-  const [searchParams, setSearchParams] = useSearchParams();
+  const productList = useProductStore((s) => s.products);
+  const addProduct = useProductStore((s) => s.addProduct);
+  const updateProduct = useProductStore((s) => s.updateProduct);
+  const deleteProduct = useProductStore((s) => s.deleteProduct);
+  const toggleStock = useProductStore((s) => s.toggleStock);
 
-  const [productList, setProductList] = useState<Product[]>(initialProducts);
   const [search, setSearch] = useState('');
   const [editing, setEditing] = useState<Product | null>(null);
-  const [viewing, setViewing] = useState<Product | null>(null);
   const [isNew, setIsNew] = useState(false);
   const [formName, setFormName] = useState('');
   const [formPrice, setFormPrice] = useState('');
@@ -39,16 +46,6 @@ const AdminProducts = () => {
   const [formInStock, setFormInStock] = useState(true);
 
   if (!isAuthenticated || !user || user.role !== 'admin') return <Navigate to="/login" replace />;
-
-  const highlightId = searchParams.get('view');
-  if (highlightId && !viewing) {
-    const found = productList.find((p) => p.id === highlightId);
-    if (found) {
-      setTimeout(() => setViewing(found), 0);
-      searchParams.delete('view');
-      setSearchParams(searchParams, { replace: true });
-    }
-  }
 
   const filtered = productList.filter((p) =>
     p.name.toLowerCase().includes(search.toLowerCase()) ||
@@ -70,13 +67,14 @@ const AdminProducts = () => {
     setIsNew(true);
     setFormName('');
     setFormPrice('');
-    setFormCategory('');
+    setFormCategory(categories[0]?.id ?? '');
     setFormDesc('');
     setFormInStock(true);
   };
 
   const handleSave = () => {
-    if (!formName || !formPrice) return;
+    if (!formName || !formPrice || !formCategory) return;
+
     if (isNew) {
       const newProduct: Product = {
         id: `new-${Date.now()}`,
@@ -88,33 +86,27 @@ const AdminProducts = () => {
         inStock: formInStock,
         image: 'https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=600&h=600&fit=crop',
       };
-      setProductList((prev) => [newProduct, ...prev]);
+      addProduct(newProduct);
       toast({ title: t('admin.productCreated') });
     } else if (editing) {
-      setProductList((prev) =>
-        prev.map((p) =>
-          p.id === editing.id
-            ? { ...p, name: formName, price: Number(formPrice), category: formCategory, description: formDesc, inStock: formInStock }
-            : p
-        )
-      );
+      updateProduct(editing.id, {
+        name: formName,
+        price: Number(formPrice),
+        category: formCategory,
+        description: formDesc,
+        inStock: formInStock,
+      });
       toast({ title: t('admin.productUpdated') });
     }
+
     setEditing(null);
     setIsNew(false);
   };
 
   const handleDelete = (id: string) => {
-    setProductList((prev) => prev.filter((p) => p.id !== id));
+    deleteProduct(id);
     toast({ title: t('admin.productDeleted') });
   };
-
-  const toggleStock = (id: string) => {
-    setProductList((prev) => prev.map((p) => p.id === id ? { ...p, inStock: !p.inStock } : p));
-  };
-
-  const getProductOrders = (productId: string) =>
-    orders.filter((o) => o.items.some((i) => i.productId === productId));
 
   const totalSold = (productId: string) =>
     orders
@@ -153,26 +145,56 @@ const AdminProducts = () => {
               </thead>
               <tbody className="divide-y divide-border">
                 {filtered.map((product) => (
-                  <tr key={product.id} className="hover:bg-muted/30 transition-colors">
+                  <tr
+                    key={product.id}
+                    className="hover:bg-muted/30 transition-colors cursor-pointer"
+                    onClick={() => navigate(`/admin/products/${product.id}`)}
+                  >
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-3">
-                        <img src={product.image} alt={product.name} className="h-10 w-10 rounded object-cover bg-muted" />
+                        <img src={product.image || DEFAULT_PRODUCT_IMAGE} alt={product.name} className="h-10 w-10 rounded object-cover bg-muted" />
                         <span className="font-heading font-semibold">{product.name}</span>
                       </div>
                     </td>
-                    <td className="px-4 py-3 text-muted-foreground capitalize">{product.category}</td>
+                    <td className="px-4 py-3 text-muted-foreground capitalize">
+                      {getCategoryLabel(product.category, t, product.category)}
+                    </td>
                     <td className="px-4 py-3 font-heading font-semibold text-primary">{formatPrice(product.price)}</td>
                     <td className="px-4 py-3 text-muted-foreground">{totalSold(product.id)}</td>
                     <td className="px-4 py-3">
-                      <button onClick={() => toggleStock(product.id)} className={`text-xs px-2 py-0.5 rounded-full ${product.inStock ? 'bg-accent/20 text-accent' : 'bg-destructive/20 text-destructive'}`}>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          toggleStock(product.id);
+                        }}
+                        className={`text-xs px-2 py-0.5 rounded-full ${product.inStock ? 'bg-accent/20 text-accent' : 'bg-destructive/20 text-destructive'}`}
+                      >
                         {product.inStock ? t('admin.inStock') : t('admin.outOfStock')}
                       </button>
                     </td>
                     <td className="px-4 py-3">
                       <div className="flex gap-1">
-                        <Button variant="ghost" size="icon" onClick={() => setViewing(product)}><Eye className="h-4 w-4" /></Button>
-                        <Button variant="ghost" size="icon" onClick={() => openEdit(product)}><Pencil className="h-4 w-4" /></Button>
-                        <Button variant="ghost" size="icon" onClick={() => handleDelete(product.id)} className="text-destructive hover:text-destructive"><Trash2 className="h-4 w-4" /></Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            openEdit(product);
+                          }}
+                        >
+                          <Pencil className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDelete(product.id);
+                          }}
+                          className="text-destructive hover:text-destructive"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
                       </div>
                     </td>
                   </tr>
@@ -183,77 +205,6 @@ const AdminProducts = () => {
           {filtered.length === 0 && <p className="text-center text-muted-foreground py-8">{t('admin.noProducts')}</p>}
         </div>
 
-        {/* Product Detail Dialog */}
-        <Dialog open={!!viewing} onOpenChange={() => setViewing(null)}>
-          <DialogContent className="max-w-lg">
-            <DialogHeader>
-              <DialogTitle className="font-heading flex items-center gap-2"><Package className="h-5 w-5 text-primary" /> {viewing?.name}</DialogTitle>
-            </DialogHeader>
-            {viewing && (
-              <div className="space-y-5">
-                <div className="flex gap-4">
-                  <img src={viewing.image} alt={viewing.name} className="h-24 w-24 rounded-lg object-cover bg-muted" />
-                  <div className="space-y-1">
-                    <p className="text-sm text-muted-foreground capitalize">{viewing.category}</p>
-                    <p className="font-heading font-bold text-primary text-xl">{formatPrice(viewing.price)}</p>
-                    <span className={`text-xs px-2 py-0.5 rounded-full ${viewing.inStock ? 'bg-accent/20 text-accent' : 'bg-destructive/20 text-destructive'}`}>
-                      {viewing.inStock ? t('admin.inStock') : t('admin.outOfStock')}
-                    </span>
-                  </div>
-                </div>
-                <p className="text-sm text-muted-foreground">{viewing.description}</p>
-
-                {viewing.specs && (
-                  <div className="space-y-1">
-                    <p className="text-xs text-muted-foreground uppercase tracking-wider font-heading font-semibold">{t('admin.specifications')}</p>
-                    <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-sm">
-                      {Object.entries(viewing.specs).map(([k, v]) => (
-                        <div key={k}><span className="text-muted-foreground">{k}:</span> {v}</div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                <div className="space-y-2">
-                  <p className="text-xs text-muted-foreground uppercase tracking-wider font-heading font-semibold flex items-center gap-1">
-                    <ShoppingCart className="h-3 w-3" /> {t('admin.ordersContaining')} ({getProductOrders(viewing.id).length})
-                  </p>
-                  {getProductOrders(viewing.id).length === 0 ? (
-                    <p className="text-sm text-muted-foreground">{t('admin.noOrdersYet')}</p>
-                  ) : (
-                    <div className="space-y-2 max-h-40 overflow-y-auto">
-                      {getProductOrders(viewing.id).map((order) => (
-                        <Link
-                          key={order.id}
-                          to={`/admin/orders?view=${order.id}`}
-                          onClick={() => setViewing(null)}
-                          className="flex items-center justify-between rounded-md border border-border p-2 hover:border-primary/30 transition-all text-sm"
-                        >
-                          <div>
-                            <span className="font-heading font-semibold">{order.id}</span>
-                            <span className="text-muted-foreground ml-2">{order.customerName}</span>
-                          </div>
-                          <span className="text-primary font-heading font-semibold">{formatPrice(order.totalAmount)}</span>
-                        </Link>
-                      ))}
-                    </div>
-                  )}
-                </div>
-
-                <div className="flex gap-2">
-                  <Button onClick={() => { openEdit(viewing); setViewing(null); }} variant="outline" className="flex-1 font-heading font-semibold">
-                    <Pencil className="mr-2 h-4 w-4" /> {t('admin.edit')}
-                  </Button>
-                  <Button onClick={() => { handleDelete(viewing.id); setViewing(null); }} variant="outline" className="text-destructive hover:text-destructive font-heading font-semibold">
-                    <Trash2 className="mr-2 h-4 w-4" /> {t('admin.delete')}
-                  </Button>
-                </div>
-              </div>
-            )}
-          </DialogContent>
-        </Dialog>
-
-        {/* Create/Edit Dialog */}
         <Dialog open={isNew || !!editing} onOpenChange={() => { setEditing(null); setIsNew(false); }}>
           <DialogContent className="max-w-md">
             <DialogHeader>
@@ -271,12 +222,27 @@ const AdminProducts = () => {
                 </div>
                 <div className="space-y-2">
                   <Label>{t('admin.category')}</Label>
-                  <Input value={formCategory} onChange={(e) => setFormCategory(e.target.value)} />
+                  <select
+                    value={formCategory}
+                    onChange={(e) => setFormCategory(e.target.value)}
+                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground"
+                  >
+                    {categories.map((cat) => (
+                      <option key={cat.id} value={cat.id}>
+                        {getCategoryLabel(cat.id, t, cat.name)}
+                      </option>
+                    ))}
+                  </select>
                 </div>
               </div>
               <div className="space-y-2">
                 <Label>{t('admin.description')}</Label>
-                <Input value={formDesc} onChange={(e) => setFormDesc(e.target.value)} />
+                <Textarea
+                  value={formDesc}
+                  onChange={(e) => setFormDesc(e.target.value)}
+                  rows={5}
+                  className="min-h-28 leading-relaxed resize-y"
+                />
               </div>
               <div className="flex items-center gap-2">
                 <input type="checkbox" checked={formInStock} onChange={(e) => setFormInStock(e.target.checked)} id="inStock" className="rounded" />

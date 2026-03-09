@@ -16,8 +16,11 @@ import AccountOrders from "./pages/AccountOrders";
 import AccountProfile from "./pages/AccountProfile";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import AdminOrders from "./pages/admin/AdminOrders";
+import AdminOrderProfile from "./pages/admin/AdminOrderProfile";
 import AdminProducts from "./pages/admin/AdminProducts";
+import AdminProductProfile from "./pages/admin/AdminProductProfile";
 import AdminCustomers from "./pages/admin/AdminCustomers";
+import AdminCustomerProfile from "./pages/admin/AdminCustomerProfile";
 import About from "./pages/About";
 import NotFound from "./pages/NotFound";
 
@@ -60,8 +63,11 @@ const App = () => (
           <Route path="/account/profile" element={<AccountProfile />} />
           <Route path="/admin" element={<AdminDashboard />} />
           <Route path="/admin/orders" element={<AdminOrders />} />
+          <Route path="/admin/orders/:id" element={<AdminOrderProfile />} />
           <Route path="/admin/products" element={<AdminProducts />} />
+          <Route path="/admin/products/:id" element={<AdminProductProfile />} />
           <Route path="/admin/customers" element={<AdminCustomers />} />
+          <Route path="/admin/customers/:id" element={<AdminCustomerProfile />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

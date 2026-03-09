@@ -4,8 +4,8 @@ import { motion } from 'framer-motion';
 import Layout from '@/components/layout/Layout';
 import { useAuthStore } from '@/store/auth-store';
 import { useOrderStore } from '@/store/order-store';
+import { useProductStore } from '@/store/product-store';
 import { mockCustomers } from '@/data/mock-orders';
-import { products } from '@/data/mock-products';
 import { useT } from '@/store/lang-store';
 
 const AdminDashboard = () => {
@@ -14,6 +14,7 @@ const AdminDashboard = () => {
   if (!isAuthenticated || !user || user.role !== 'admin') return <Navigate to="/login" replace />;
 
   const orders = useOrderStore((s) => s.orders);
+  const products = useProductStore((s) => s.products);
   const totalOrders = orders.length;
   const pendingPayment = orders.filter((o) => o.paymentStatus !== 'paid').length;
   const paidOrders = orders.filter((o) => o.paymentStatus === 'paid').length;

@@ -3,25 +3,16 @@ import { ArrowRight, Shield, Truck, Headphones } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Layout from '@/components/layout/Layout';
 import ProductCard from '@/components/product/ProductCard';
-import { products, categories } from '@/data/mock-products';
+import { categories } from '@/data/mock-products';
 import { useT } from '@/store/lang-store';
-import { useLangStore } from '@/store/lang-store';
+import { useProductStore } from '@/store/product-store';
 import heroBg from '@/assets/hero-bg.jpg';
-import type { TranslationKey } from '@/store/lang-store';
-
-const catKeys: Record<string, TranslationKey> = {
-  helmets: 'cat.helmets',
-  vests: 'cat.vests',
-  gloves: 'cat.gloves',
-  boots: 'cat.boots',
-  eyewear: 'cat.eyewear',
-  coveralls: 'cat.coveralls',
-};
+import { getCategoryLabel } from '@/lib/category-label';
 
 const Index = () => {
+  const products = useProductStore((s) => s.products);
   const featured = products.slice(0, 4);
   const t = useT();
-  const lang = useLangStore((s) => s.lang);
 
   return (
     <Layout>
@@ -83,7 +74,7 @@ const Index = () => {
               className="group rounded-lg border border-border bg-card p-4 text-center hover:border-primary/30 transition-all"
             >
               <h3 className="font-heading text-sm font-semibold group-hover:text-primary transition-colors">
-                {catKeys[cat.id] ? t(catKeys[cat.id]) : cat.name}
+                {getCategoryLabel(cat.id, t, cat.name)}
               </h3>
               <p className="text-xs text-muted-foreground mt-1">{cat.count} {t('product.items')}</p>
             </Link>
