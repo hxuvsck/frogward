@@ -3,6 +3,11 @@ import { persist } from 'zustand/middleware';
 
 type Theme = 'light' | 'dark';
 
+const applyTheme = (theme: Theme) => {
+  if (typeof document === 'undefined') return;
+  document.documentElement.classList.toggle('dark', theme === 'dark');
+};
+
 interface ThemeStore {
   theme: Theme;
   setTheme: (theme: Theme) => void;
@@ -14,12 +19,12 @@ export const useThemeStore = create<ThemeStore>()(
     (set, get) => ({
       theme: 'dark',
       setTheme: (theme) => {
-        document.documentElement.classList.toggle('dark', theme === 'dark');
+        applyTheme(theme);
         set({ theme });
       },
       toggleTheme: () => {
         const next = get().theme === 'dark' ? 'light' : 'dark';
-        document.documentElement.classList.toggle('dark', next === 'dark');
+        applyTheme(next);
         set({ theme: next });
       },
     }),
@@ -27,7 +32,7 @@ export const useThemeStore = create<ThemeStore>()(
       name: 'frogward-theme',
       onRehydrateStorage: () => (state) => {
         if (state) {
-          document.documentElement.classList.toggle('dark', state.theme === 'dark');
+          applyTheme(state.theme);
         }
       },
     }
