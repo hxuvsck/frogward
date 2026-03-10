@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useRef, useState, type ChangeEvent } from 'react';
 import { Navigate, Link } from 'react-router-dom';
-import { ArrowLeft, Megaphone, Pencil, Plus, Trash2 } from 'lucide-react';
+import { ArrowLeft, Megaphone, Pencil, Plus, Trash2, Upload } from 'lucide-react';
 import Layout from '@/components/layout/Layout';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -35,6 +35,7 @@ const AdminMarketing = () => {
   const [editing, setEditing] = useState<MarketingBanner | null>(null);
   const [isNew, setIsNew] = useState(false);
   const [form, setForm] = useState(EMPTY_FORM);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   if (!isAuthenticated || !user || user.role !== 'admin') return <Navigate to="/login" replace />;
 
@@ -108,6 +109,30 @@ const AdminMarketing = () => {
     toast({ title: t('admin.bannerDeleted') });
   };
 
+  const onPickImage = () => {
+    fileInputRef.current?.click();
+  };
+
+  const onImageSelected = (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      const result = typeof reader.result === 'string' ? reader.result : '';
+      if (!result) return;
+      setForm((state) => ({ ...state, image: result }));
+      toast({ title: t('admin.imageUpdated') });
+    };
+    reader.readAsDataURL(file);
+    event.target.value = '';
+  };
+
+  const removeImage = () => {
+    setForm((state) => ({ ...state, image: '' }));
+    toast({ title: t('admin.imageRemoved') });
+  };
+
   return (
     <Layout>
       <div className="container py-10">
@@ -177,13 +202,22 @@ const AdminMarketing = () => {
         </div>
 
         <Dialog open={isNew || !!editing} onOpenChange={resetForm}>
-          <DialogContent className="max-w-2xl">
+          <DialogContent className="max-h-[88vh] max-w-2xl overflow-hidden p-0">
             <DialogHeader>
-              <DialogTitle className="font-heading">
+              <DialogTitle className="border-b border-border px-6 py-4 font-heading">
                 {isNew ? t('admin.createBanner') : t('admin.editBanner')}
               </DialogTitle>
             </DialogHeader>
-            <div className="grid gap-4">
+            <div className="max-h-[calc(88vh-72px)] overflow-y-auto px-6 py-5">
+              <div className="grid gap-4">
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={onImageSelected}
+              />
+
               <div className="space-y-2">
                 <Label>{t('admin.bannerTitle')}</Label>
                 <Input value={form.title} onChange={(e) => setForm((state) => ({ ...state, title: e.target.value }))} />
@@ -211,7 +245,25 @@ const AdminMarketing = () => {
 
               <div className="space-y-2">
                 <Label>{t('admin.bannerImage')}</Label>
-                <Input value={form.image} onChange={(e) => setForm((state) => ({ ...state, image: e.target.value }))} placeholder="https://..." />
+                {form.image ? (
+                  <div className="overflow-hidden rounded-xl border border-border bg-muted">
+                    <img src={form.image} alt={form.title || 'Banner preview'} className="h-48 w-full object-cover" />
+                  </div>
+                ) : (
+                  <div className="rounded-xl border border-dashed border-border bg-muted/40 px-4 py-10 text-center text-sm text-muted-foreground">
+                    {t('admin.noBannerImage')}
+                  </div>
+                )}
+                <div className="flex flex-wrap gap-2">
+                  <Button type="button" variant="outline" onClick={onPickImage}>
+                    <Upload className="mr-2 h-4 w-4" /> {t('admin.uploadReplaceImage')}
+                  </Button>
+                  {form.image ? (
+                    <Button type="button" variant="outline" onClick={removeImage}>
+                      <Trash2 className="mr-2 h-4 w-4" /> {t('admin.removeImage')}
+                    </Button>
+                  ) : null}
+                </div>
               </div>
 
               <label className="flex items-center gap-2 text-sm">
@@ -227,6 +279,7 @@ const AdminMarketing = () => {
               <Button onClick={handleSave} className="w-full font-heading font-semibold">
                 {isNew ? t('admin.createBanner') : t('admin.saveChanges')}
               </Button>
+              </div>
             </div>
           </DialogContent>
         </Dialog>

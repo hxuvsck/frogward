@@ -241,6 +241,7 @@ const translations = {
   'admin.bannerSummary': { mn: 'Товч тайлбар', en: 'Short Summary' },
   'admin.bannerContent': { mn: 'Нийтлэлийн агуулга', en: 'Post Content' },
   'admin.bannerImage': { mn: 'Зургийн холбоос', en: 'Image URL' },
+  'admin.noBannerImage': { mn: 'Баннерын зураг оруулаагүй байна.', en: 'No banner image uploaded yet.' },
   'admin.bannerCta': { mn: 'Үйлдлийн товч', en: 'Call to action' },
   'admin.bannerCtaLabel': { mn: 'Товчны текст', en: 'CTA Label' },
   'admin.bannerCtaHref': { mn: 'Товчны холбоос', en: 'CTA Link' },
