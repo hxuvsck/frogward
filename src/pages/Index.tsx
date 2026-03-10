@@ -13,7 +13,6 @@ import { getCategoryLabel } from '@/lib/category-label';
 const Index = () => {
   const products = useProductStore((s) => s.products);
   const banners = useMarketingStore((s) => s.banners);
-  const featured = products.slice(0, 4);
   const t = useT();
 
   return (
@@ -73,7 +72,7 @@ const Index = () => {
           </Link>
         </div>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {featured.map((p) => (
+          {products.map((p) => (
             <ProductCard key={p.id} product={p} />
           ))}
         </div>

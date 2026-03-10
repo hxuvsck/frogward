@@ -7,6 +7,7 @@ const translations = {
   // Navbar
   'nav.products': { mn: 'Бүтээгдэхүүн', en: 'Products' },
   'nav.about': { mn: 'Бидний тухай', en: 'About Us' },
+  'nav.contact': { mn: 'Холбоо барих', en: 'Contact Us' },
   'nav.cart': { mn: 'Сагс', en: 'Cart' },
   'nav.signIn': { mn: 'Нэвтрэх', en: 'Sign In' },
   'nav.admin': { mn: 'Админ', en: 'Admin' },
@@ -130,6 +131,14 @@ const translations = {
   'about.missionText1': { mn: 'FrogWard нь энгийн асуудлыг шийдэхийн тулд байгуулагдсан: Монголд чанартай аюулгүйн тоног төхөөрөмж олоход хэцүү байх ёсгүй. Бид баталгаажсан үйлдвэрлэгчдээс шууд авч, ажилчид болон бизнесүүдэд хүргэдэг.', en: "FrogWard was founded to solve a simple problem: getting high-quality safety equipment in Mongolia shouldn't be hard. We source directly from certified manufacturers and deliver industrial workwear, PPE, and safety equipment to workers and businesses who need reliable protection every day." },
   'about.missionText2': { mn: 'Эрдэнэтийн уурхайн баг, Дарханы барилгын баг, эсвэл Улаанбаатарт хувийн хамгаалах хэрэгсэл хэрэгтэй бол — FrogWard QPay болон StorePay-ээр хурдан төлбөр тооцоотой.', en: "Whether you're outfitting a mining crew in Erdenet, a construction team in Darkhan, or need personal safety gear in Ulaanbaatar — FrogWard has you covered with fast checkout via QPay and StorePay." },
   'about.contact': { mn: 'Асуулт байна уу? Бидэнтэй холбогдоорой', en: 'Questions? Reach us at' },
+
+  // Contact
+  'contact.title': { mn: 'Холбоо барих', en: 'Contact Us' },
+  'contact.desc': { mn: 'Борлуулалт, захиалга, байгууллагын нийлүүлэлтийн талаар бидэнтэй холбогдоорой.', en: 'Reach us for sales, orders, and company supply inquiries.' },
+  'contact.email': { mn: 'И-мэйл', en: 'Email' },
+  'contact.phone': { mn: 'Утас', en: 'Phone' },
+  'contact.address': { mn: 'Хаяг', en: 'Address' },
+  'contact.addressValue': { mn: 'Улаанбаатар, Монгол', en: 'Ulaanbaatar, Mongolia' },
 
   // Footer
   'footer.desc': { mn: 'Үйлдвэрийн ажлын хувцас & аюулгүйн тоног төхөөрөмж. Хамгийн хатуу нөхцөлд зориулсан.', en: 'Industrial workwear & safety equipment. Built for the toughest conditions.' },

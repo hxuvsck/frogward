@@ -23,6 +23,7 @@ import AdminCustomers from "./pages/admin/AdminCustomers";
 import AdminCustomerProfile from "./pages/admin/AdminCustomerProfile";
 import AdminMarketing from "./pages/admin/AdminMarketing";
 import About from "./pages/About";
+import Contact from "./pages/Contact";
 import NotFound from "./pages/NotFound";
 import StoryDetail from "./pages/StoryDetail";
 
@@ -59,6 +60,7 @@ const App = () => (
           <Route path="/checkout" element={<Checkout />} />
           <Route path="/login" element={<Login />} />
           <Route path="/about" element={<About />} />
+          <Route path="/contact" element={<Contact />} />
           <Route path="/stories/:slug" element={<StoryDetail />} />
           <Route path="/verify-otp" element={<VerifyOtp />} />
           <Route path="/account" element={<Account />} />
