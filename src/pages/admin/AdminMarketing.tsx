@@ -259,7 +259,11 @@ const AdminMarketing = () => {
                 <Label>{t('admin.bannerImage')}</Label>
                 {form.image ? (
                   <div className="overflow-hidden rounded-xl border border-border bg-muted">
-                    <img src={resolveMarketingImage(form.image)} alt={form.title || 'Banner preview'} className="h-48 w-full object-cover" />
+                    <img
+                      src={resolveMarketingImage(form.image)}
+                      alt={form.title || 'Banner preview'}
+                      className="h-48 w-full bg-muted object-contain"
+                    />
                   </div>
                 ) : (
                   <div className="rounded-xl border border-dashed border-border bg-muted/40 px-4 py-10 text-center text-sm text-muted-foreground">
