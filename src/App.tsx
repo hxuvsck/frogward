@@ -3,7 +3,8 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useEffect } from "react";
-import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation, useNavigate } from "react-router-dom";
+import { useAuthStore } from "@/store/auth-store";
 import Index from "./pages/Index";
 import Products from "./pages/Products";
 import ProductDetail from "./pages/ProductDetail";
@@ -28,6 +29,8 @@ import NotFound from "./pages/NotFound";
 import StoryDetail from "./pages/StoryDetail";
 
 const queryClient = new QueryClient();
+const ADMIN_SESSION_TIMEOUT_MS = 15 * 60 * 1000;
+const ADMIN_ACTIVITY_KEY = "frogward-admin-last-activity";
 
 const ScrollToTop = () => {
   const { pathname } = useLocation();
@@ -45,6 +48,53 @@ const ScrollToTop = () => {
   return null;
 };
 
+const AdminSessionManager = () => {
+  const { user, isAuthenticated, logout } = useAuthStore();
+  const navigate = useNavigate();
+  const isAdmin = isAuthenticated && user?.role === "admin";
+
+  useEffect(() => {
+    if (!isAdmin) {
+      window.localStorage.removeItem(ADMIN_ACTIVITY_KEY);
+      return;
+    }
+
+    const updateActivity = () => {
+      window.localStorage.setItem(ADMIN_ACTIVITY_KEY, String(Date.now()));
+    };
+
+    const checkTimeout = () => {
+      const lastActivity = Number(window.localStorage.getItem(ADMIN_ACTIVITY_KEY) || Date.now());
+      if (Date.now() - lastActivity >= ADMIN_SESSION_TIMEOUT_MS) {
+        logout();
+        window.localStorage.removeItem(ADMIN_ACTIVITY_KEY);
+        navigate("/login", { replace: true });
+      }
+    };
+
+    updateActivity();
+
+    const events: Array<keyof WindowEventMap> = [
+      "mousedown",
+      "keydown",
+      "touchstart",
+      "scroll",
+      "mousemove",
+    ];
+
+    events.forEach((event) => window.addEventListener(event, updateActivity, { passive: true }));
+    const intervalId = window.setInterval(checkTimeout, 30_000);
+    checkTimeout();
+
+    return () => {
+      events.forEach((event) => window.removeEventListener(event, updateActivity));
+      window.clearInterval(intervalId);
+    };
+  }, [isAdmin, logout, navigate]);
+
+  return null;
+};
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
@@ -52,6 +102,7 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <ScrollToTop />
+        <AdminSessionManager />
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/products" element={<Products />} />

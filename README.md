@@ -1,113 +1,93 @@
 # FrogWard
 
-**FrogWard** is a modern online clothing store platform designed for selling curated apparel locally.
-The project focuses on a clean shopping experience, fast deployment, and scalable integrations for payment and order management.
+FrogWard is a React + TypeScript storefront and admin demo for industrial workwear and safety products.
 
----
+## Current Scope
 
-## Overview
+Implemented in the current demo:
 
-FrogWard enables customers to browse and purchase clothing products online while providing a simple system for managing products and orders.
+- Customer storefront with product list, product detail, cart, checkout, about, contact, and account pages
+- Mock customer login via OTP and Facebook
+- Mock admin login and admin dashboard
+- Admin product management
+- Admin customer and order viewing
+- Admin-managed hero marketing banners with story pages
+- Mongolian / English language switching
+- Local persistence via Zustand `persist`
+- Admin auto logout after 15 minutes of inactivity
 
-The platform is designed with a lightweight frontend architecture and serverless deployment to allow rapid iteration and easy scaling.
+## Important Demo Limitations
 
-Future versions will include payment integrations, admin product management, and order tracking.
+Not fully implemented yet:
 
----
+- No real backend or database
+- No real authentication provider
+- No real OTP delivery or Facebook OAuth
+- No payment gateway integration such as qPay
+- No server-side order processing
+- No shipment or delivery tracking integration
+- No role-based API security
+- No real file upload service; images are stored as local data URLs in browser storage
+- No shared multi-user persistence; data is device/browser-local
+- No audit log, analytics, or reporting backend
+- No automated admin permission granularity beyond the simple mock admin role
+
+Behavior to be aware of:
+
+- Customer, product, order, cart, and banner data are mock/demo data stored in local browser storage
+- Clearing browser storage resets most app state
+- Admin session timeout is client-side inactivity handling, not server-enforced session invalidation
 
 ## Tech Stack
 
-- **Frontend:** React + TypeScript
-- **Build Tool:** Vite
-- **UI Components:** shadcn/ui
-- **Styling:** TailwindCSS
-- **Deployment:** Vercel
-
----
+- Frontend: React + TypeScript
+- Build tool: Vite
+- UI: shadcn/ui
+- Styling: Tailwind CSS
+- State: Zustand
+- Routing: React Router
+- Testing: Vitest + Testing Library
 
 ## Project Structure
 
-```
+```text
 frogward/
-├── public/           # Static assets
+├── public/
 ├── src/
-│   ├── components/   # UI components
-│   ├── pages/        # Application pages
-│   ├── hooks/        # Custom hooks
-│   ├── lib/          # Utilities
-│   └── main.tsx      # Application entry
-│
+│   ├── components/
+│   ├── data/
+│   ├── hooks/
+│   ├── lib/
+│   ├── pages/
+│   ├── store/
+│   ├── test/
+│   └── types/
 ├── index.html
 ├── package.json
 ├── vite.config.ts
 └── README.md
 ```
 
----
-
 ## Local Development
 
-Clone the repository:
-
-```
-git clone https://github.com/hxuvsck/frogward.git
-cd frogward
-```
-
-Install dependencies:
-
-```
+```bash
 npm install
-```
-
-Run development server:
-
-```
 npm run dev
 ```
 
-The application will be available at:
+Default local URL:
 
-```
+```text
 http://localhost:5173
 ```
 
----
+## Build and Test
 
-## Build for Production
-
-```
+```bash
+npm test
 npm run build
 ```
 
-Preview production build:
-
-```
-npm run preview
-```
-
----
-
-## Deployment
-
-This project is deployed using **Vercel**.
-
-Every push to the `main` branch automatically triggers a new deployment.
-
----
-
-## Future Roadmap
-
-Planned features include:
-
-- Product inventory management
-- Admin dashboard
-- qPay payment integration
-- Order tracking system
-- Customer authentication (OTP / social login)
-
----
-
 ## License
 
-This project is currently private and maintained by the Biotain Solutions team.
+This project is private and maintained by the Biotain Solutions team.
