@@ -1,9 +1,11 @@
 import Layout from '@/components/layout/Layout';
 import { Wrench, Shield, Users, Truck } from 'lucide-react';
 import { useT } from '@/store/lang-store';
+import { useSiteContentStore } from '@/store/site-content-store';
 
 const About = () => {
   const t = useT();
+  const contactEmail = useSiteContentStore((s) => s.contactEmail);
 
   return (
     <Layout>
@@ -37,7 +39,7 @@ const About = () => {
         </div>
 
         <div className="mt-12 text-center text-sm text-muted-foreground">
-          <p>{t('about.contact')} <span className="text-primary font-medium">contact@frogward.mn</span></p>
+          <p>{t('about.contact')} <span className="text-primary font-medium">{contactEmail}</span></p>
         </div>
       </div>
     </Layout>

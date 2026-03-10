@@ -190,6 +190,9 @@ const translations = {
   'admin.marketing': { mn: 'Маркетинг баннер', en: 'Marketing Banners' },
   'admin.marketingDesc': { mn: 'Нүүр хуудасны cover зураг carousel-ийг удирдах', en: 'Manage homepage cover image carousel' },
   'admin.customersDesc': { mn: 'Харилцагчдын жагсаалт, идэвх харах', en: 'View customer list and activity' },
+  'admin.editInformation': { mn: 'Мэдээлэл засах', en: 'Edit Information' },
+  'admin.saveInformation': { mn: 'Мэдээлэл хадгалах', en: 'Save Information' },
+  'admin.siteInfoUpdated': { mn: 'Сайтын мэдээлэл шинэчлэгдлээ', en: 'Site information updated' },
 
   // Admin Orders
   'admin.orders': { mn: 'Захиалгууд', en: 'Orders' },

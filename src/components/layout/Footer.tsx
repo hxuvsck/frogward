@@ -1,8 +1,11 @@
 import { Link } from 'react-router-dom';
 import { useT } from '@/store/lang-store';
+import { useSiteContentStore } from '@/store/site-content-store';
 
 const Footer = () => {
   const t = useT();
+  const contactEmail = useSiteContentStore((s) => s.contactEmail);
+  const contactPhone = useSiteContentStore((s) => s.contactPhone);
 
   return (
     <footer className="border-t border-border bg-card mt-20">
@@ -25,8 +28,8 @@ const Footer = () => {
           <div>
             <h4 className="font-heading text-sm font-semibold mb-3 text-muted-foreground uppercase tracking-wider">{t('footer.support')}</h4>
             <div className="space-y-2 text-sm text-muted-foreground">
-              <p>info@frogward.mn</p>
-              <p>+976 9911 2233</p>
+              <p>{contactEmail}</p>
+              <p>{contactPhone}</p>
             </div>
           </div>
         </div>
