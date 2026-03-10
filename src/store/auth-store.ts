@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import { useCartStore } from '@/store/cart-store';
 import type { User } from '@/types/user';
 
 interface AuthStore {
@@ -24,6 +25,20 @@ const mockCustomer: User = {
   updatedAt: '2026-02-20T14:30:00Z',
 };
 
+const mockFacebookCustomer: User = {
+  id: 'cust-fb-001',
+  name: 'Anu T.',
+  phone: '+976 8811 2244',
+  email: 'anu.facebook@example.com',
+  facebookId: 'fb-mock-001',
+  role: 'customer',
+  defaultAddress: 'Ulaanbaatar, Sukhbaatar District, 8th Khoroo',
+  isPhoneVerified: false,
+  isEmailVerified: true,
+  createdAt: '2026-01-10T09:00:00Z',
+  updatedAt: '2026-03-05T11:15:00Z',
+};
+
 const mockAdmin: User = {
   id: 'admin-001',
   name: 'Admin Frogward',
@@ -42,18 +57,20 @@ export const useAuthStore = create<AuthStore>()(
       user: null,
       isAuthenticated: false,
       loginWithFacebook: () => {
-        // Mock: always logs in as customer
-        set({ user: mockCustomer, isAuthenticated: true });
+        // Mock: Facebook login uses a distinct demo customer
+        set({ user: mockFacebookCustomer, isAuthenticated: true });
       },
       loginWithOtp: (phone: string) => {
         const normalized = phone.replace(/[\s+\-()]/g, '');
         if (normalized === '99112233' || normalized === '97699112233') {
+          useCartStore.getState().clearCart();
           set({ user: mockAdmin, isAuthenticated: true });
         } else {
           set({ user: { ...mockCustomer, phone }, isAuthenticated: true });
         }
       },
       logout: () => {
+        useCartStore.getState().clearCart();
         set({ user: null, isAuthenticated: false });
       },
       updateProfile: (updates) => {

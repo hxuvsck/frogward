@@ -3,6 +3,7 @@ import { Trash2, Plus, Minus, ShoppingCart } from 'lucide-react';
 import Layout from '@/components/layout/Layout';
 import { Button } from '@/components/ui/button';
 import { useCartStore } from '@/store/cart-store';
+import { useAuthStore } from '@/store/auth-store';
 import { useT } from '@/store/lang-store';
 import { useProductStore } from '@/store/product-store';
 import { resolveProductImage } from '@/lib/product-image';
@@ -11,10 +12,12 @@ const formatPrice = (price: number) => `₮${price.toLocaleString()}`;
 
 const Cart = () => {
   const { items, removeItem, updateQuantity, clearCart, totalPrice } = useCartStore();
+  const { isAuthenticated, user } = useAuthStore();
   const products = useProductStore((s) => s.products);
   const t = useT();
+  const visibleItems = isAuthenticated && user?.role === 'customer' ? items : [];
 
-  if (items.length === 0) {
+  if (visibleItems.length === 0) {
     return (
       <Layout>
         <div className="container py-20 text-center space-y-4">
@@ -36,7 +39,7 @@ const Cart = () => {
 
         <div className="grid lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2 space-y-4">
-            {items.map((item) => (
+            {visibleItems.map((item) => (
               <div key={item.id} className="flex gap-4 rounded-lg border border-border bg-card p-4">
                 <img
                   src={resolveProductImage(products, item.id, item.image)}
