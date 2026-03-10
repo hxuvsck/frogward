@@ -24,6 +24,8 @@ import { useToast } from '@/hooks/use-toast';
 import { resolveMarketingImage } from '@/lib/marketing-image';
 import type { MarketingBanner } from '@/types/marketing-banner';
 
+const MAX_BANNER_IMAGE_BYTES = 350 * 1024;
+const MAX_BANNER_IMAGE_DIMENSION = 1600;
 const EMPTY_FORM = {
   title: '',
   summary: '',
@@ -44,6 +46,63 @@ const slugifyBanner = (title: string, fallbackId: string) =>
     .replace(/\s+/g, '-')
     .replace(/-+/g, '-')
     .replace(/^-|-$/g, '') || fallbackId;
+
+const loadImage = (src: string) =>
+  new Promise<HTMLImageElement>((resolve, reject) => {
+    const image = new Image();
+    image.onload = () => resolve(image);
+    image.onerror = () => reject(new Error('Image load failed'));
+    image.src = src;
+  });
+
+const readFileAsDataUrl = (file: File) =>
+  new Promise<string>((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      if (typeof reader.result === 'string') {
+        resolve(reader.result);
+        return;
+      }
+
+      reject(new Error('File read failed'));
+    };
+    reader.onerror = () => reject(new Error('File read failed'));
+    reader.readAsDataURL(file);
+  });
+
+const compressBannerImage = async (file: File) => {
+  const source = await readFileAsDataUrl(file);
+  const image = await loadImage(source);
+  const scale = Math.min(
+    1,
+    MAX_BANNER_IMAGE_DIMENSION / Math.max(image.width, image.height)
+  );
+
+  const canvas = document.createElement('canvas');
+  canvas.width = Math.max(1, Math.round(image.width * scale));
+  canvas.height = Math.max(1, Math.round(image.height * scale));
+
+  const context = canvas.getContext('2d');
+  if (!context) {
+    throw new Error('Canvas is unavailable');
+  }
+
+  context.drawImage(image, 0, 0, canvas.width, canvas.height);
+
+  const attempts = [0.82, 0.72, 0.62, 0.52];
+  for (const quality of attempts) {
+    const blob = await new Promise<Blob | null>((resolve) =>
+      canvas.toBlob(resolve, 'image/jpeg', quality)
+    );
+
+    if (!blob) continue;
+    if (blob.size > MAX_BANNER_IMAGE_BYTES) continue;
+
+    return await readFileAsDataUrl(new File([blob], `${file.name}.jpg`, { type: 'image/jpeg' }));
+  }
+
+  throw new Error('Image too large');
+};
 
 const AdminMarketing = () => {
   const { user, isAuthenticated } = useAuthStore();
@@ -162,16 +221,21 @@ const AdminMarketing = () => {
   const onImageSelected = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
-
-    const reader = new FileReader();
-    reader.onload = () => {
-      const result = typeof reader.result === 'string' ? reader.result : '';
-      if (!result) return;
-      setForm((state) => ({ ...state, image: result }));
-      toast({ title: t('admin.imageUpdated') });
-    };
-    reader.readAsDataURL(file);
     event.target.value = '';
+
+    void (async () => {
+      try {
+        const result = await compressBannerImage(file);
+        setForm((state) => ({ ...state, image: result }));
+        toast({ title: t('admin.imageUpdated') });
+      } catch {
+        toast({
+          title: 'Upload failed',
+          description: 'Banner image is too large for browser storage. Use a smaller image.',
+          variant: 'destructive',
+        });
+      }
+    })();
   };
 
   const removeImage = () => {

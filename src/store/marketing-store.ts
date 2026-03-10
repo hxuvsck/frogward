@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
+import { createJSONStorage, persist } from 'zustand/middleware';
 import { marketingBanners as initialBanners } from '@/data/mock-marketing-banners';
 import type { MarketingBanner } from '@/types/marketing-banner';
 
@@ -10,6 +10,8 @@ interface MarketingStore {
   deleteBanner: (id: string) => void;
   toggleBanner: (id: string) => void;
 }
+
+type MarketingStoreState = Pick<MarketingStore, 'banners'>;
 
 const slugifyBanner = (title: string, fallbackId: string) => {
   const base = title
@@ -26,10 +28,15 @@ const slugifyBanner = (title: string, fallbackId: string) => {
 
 const normalizeBanner = (banner: MarketingBanner): MarketingBanner => ({
   ...banner,
+  title: banner.title || 'Untitled banner',
+  summary: banner.summary || '',
+  content: banner.content || '',
+  image: typeof banner.image === 'string' ? banner.image : '',
   slug: banner.slug?.trim() || slugifyBanner(banner.title, banner.id),
   focalX: typeof banner.focalX === 'number' ? banner.focalX : 50,
   focalY: typeof banner.focalY === 'number' ? banner.focalY : 50,
   zoom: typeof banner.zoom === 'number' ? banner.zoom : 100,
+  active: typeof banner.active === 'boolean' ? banner.active : true,
 });
 
 const ensureUniqueSlugs = (banners: MarketingBanner[]) => {
@@ -48,6 +55,50 @@ const ensureUniqueSlugs = (banners: MarketingBanner[]) => {
     };
   });
 };
+
+const isMarketingBanner = (value: unknown): value is MarketingBanner => {
+  if (!value || typeof value !== 'object') return false;
+
+  const banner = value as Partial<MarketingBanner>;
+  return (
+    typeof banner.id === 'string' &&
+    typeof banner.title === 'string' &&
+    typeof banner.summary === 'string' &&
+    typeof banner.content === 'string'
+  );
+};
+
+const sanitizeBanners = (banners: unknown): MarketingBanner[] => {
+  if (!Array.isArray(banners)) return ensureUniqueSlugs(initialBanners);
+
+  const normalized = banners
+    .filter(isMarketingBanner)
+    .map((banner) => normalizeBanner(banner));
+
+  return normalized.length > 0 ? ensureUniqueSlugs(normalized) : ensureUniqueSlugs(initialBanners);
+};
+
+const safeStorage = createJSONStorage<MarketingStoreState>(() => ({
+  getItem: (name) => {
+    try {
+      return window.localStorage.getItem(name);
+    } catch {
+      return null;
+    }
+  },
+  setItem: (name, value) => {
+    try {
+      window.localStorage.setItem(name, value);
+    } catch {
+      window.localStorage.removeItem(name);
+    }
+  },
+  removeItem: (name) => {
+    try {
+      window.localStorage.removeItem(name);
+    } catch {}
+  },
+}));
 
 export const useMarketingStore = create<MarketingStore>()(
   persist(
@@ -74,14 +125,15 @@ export const useMarketingStore = create<MarketingStore>()(
     }),
     {
       name: 'frogward-marketing',
+      storage: safeStorage,
       version: 2,
       migrate: (persistedState) => {
-        const state = persistedState as MarketingStore | undefined;
+        const state = persistedState as Partial<MarketingStore> | undefined;
         if (!state) return { banners: ensureUniqueSlugs(initialBanners) } as MarketingStore;
 
         return {
           ...state,
-          banners: ensureUniqueSlugs(state.banners || initialBanners),
+          banners: sanitizeBanners(state.banners),
         } as MarketingStore;
       },
       merge: (persistedState, currentState) => {
@@ -91,7 +143,7 @@ export const useMarketingStore = create<MarketingStore>()(
         return {
           ...current,
           ...persisted,
-          banners: ensureUniqueSlugs(persisted?.banners || current.banners),
+          banners: sanitizeBanners(persisted?.banners || current.banners),
         };
       },
     }
