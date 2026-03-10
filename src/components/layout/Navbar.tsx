@@ -81,14 +81,16 @@ const Navbar = () => {
           <Link to="/contact" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
             {t('nav.contact')}
           </Link>
-          <Link to="/cart" className="relative">
-            <ShoppingCart className="h-5 w-5 text-muted-foreground hover:text-foreground transition-colors" />
-            {visibleCartCount > 0 && (
-              <span className="absolute -top-2 -right-2 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-primary-foreground">
-                {visibleCartCount}
-              </span>
-            )}
-          </Link>
+          {!isAdmin && (
+            <Link to="/cart" className="relative">
+              <ShoppingCart className="h-5 w-5 text-muted-foreground hover:text-foreground transition-colors" />
+              {visibleCartCount > 0 && (
+                <span className="absolute -top-2 -right-2 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-primary-foreground">
+                  {visibleCartCount}
+                </span>
+              )}
+            </Link>
+          )}
 
           {/* Theme toggle */}
           <button onClick={toggleTheme} className="text-muted-foreground hover:text-foreground transition-colors" title={theme === 'dark' ? t('theme.light') : t('theme.dark')}>
@@ -212,9 +214,11 @@ const Navbar = () => {
           <Link to="/products" className="block text-sm" onClick={() => setMobileOpen(false)}>{t('nav.products')}</Link>
           <Link to="/about" className="block text-sm" onClick={() => setMobileOpen(false)}>{t('nav.about')}</Link>
           <Link to="/contact" className="block text-sm" onClick={() => setMobileOpen(false)}>{t('nav.contact')}</Link>
-          <Link to="/cart" className="block text-sm" onClick={() => setMobileOpen(false)}>
-            {t('nav.cart')} {visibleCartCount > 0 && `(${visibleCartCount})`}
-          </Link>
+          {!isAdmin && (
+            <Link to="/cart" className="block text-sm" onClick={() => setMobileOpen(false)}>
+              {t('nav.cart')} {visibleCartCount > 0 && `(${visibleCartCount})`}
+            </Link>
+          )}
           <div className="flex items-center gap-3 pt-2 border-t border-border">
             <button onClick={toggleTheme} className="flex items-center gap-1.5 text-sm text-muted-foreground">
               {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}

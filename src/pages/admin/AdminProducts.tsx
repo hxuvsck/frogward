@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useRef, useState, type ChangeEvent } from 'react';
 import { Navigate, Link, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Plus, Pencil, Trash2 } from 'lucide-react';
+import { ArrowLeft, Plus, Pencil, Trash2, Upload } from 'lucide-react';
 import Layout from '@/components/layout/Layout';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -14,6 +14,16 @@ import { useProductStore } from '@/store/product-store';
 import type { Product } from '@/types/product';
 import { getCategoryLabel } from '@/lib/category-label';
 import { DEFAULT_PRODUCT_IMAGE } from '@/lib/product-image';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import {
   Dialog,
   DialogContent,
@@ -35,6 +45,7 @@ const AdminProducts = () => {
   const updateProduct = useProductStore((s) => s.updateProduct);
   const deleteProduct = useProductStore((s) => s.deleteProduct);
   const toggleStock = useProductStore((s) => s.toggleStock);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [search, setSearch] = useState('');
   const [editing, setEditing] = useState<Product | null>(null);
@@ -44,6 +55,8 @@ const AdminProducts = () => {
   const [formCategory, setFormCategory] = useState('');
   const [formDesc, setFormDesc] = useState('');
   const [formInStock, setFormInStock] = useState(true);
+  const [formImage, setFormImage] = useState('');
+  const [productToDelete, setProductToDelete] = useState<Product | null>(null);
 
   if (!isAuthenticated || !user || user.role !== 'admin') return <Navigate to="/login" replace />;
 
@@ -60,6 +73,7 @@ const AdminProducts = () => {
     setFormCategory(product.category);
     setFormDesc(product.description);
     setFormInStock(product.inStock);
+    setFormImage(product.image || '');
   };
 
   const openCreate = () => {
@@ -70,6 +84,7 @@ const AdminProducts = () => {
     setFormCategory(categories[0]?.id ?? '');
     setFormDesc('');
     setFormInStock(true);
+    setFormImage('');
   };
 
   const handleSave = () => {
@@ -84,7 +99,7 @@ const AdminProducts = () => {
         category: formCategory,
         description: formDesc,
         inStock: formInStock,
-        image: 'https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=600&h=600&fit=crop',
+        image: formImage || DEFAULT_PRODUCT_IMAGE,
       };
       addProduct(newProduct);
       toast({ title: t('admin.productCreated') });
@@ -95,17 +110,21 @@ const AdminProducts = () => {
         category: formCategory,
         description: formDesc,
         inStock: formInStock,
+        image: formImage || '',
       });
       toast({ title: t('admin.productUpdated') });
     }
 
     setEditing(null);
     setIsNew(false);
+    setFormImage('');
   };
 
-  const handleDelete = (id: string) => {
-    deleteProduct(id);
+  const handleDelete = () => {
+    if (!productToDelete) return;
+    deleteProduct(productToDelete.id);
     toast({ title: t('admin.productDeleted') });
+    setProductToDelete(null);
   };
 
   const totalSold = (productId: string) =>
@@ -113,6 +132,30 @@ const AdminProducts = () => {
       .flatMap((o) => o.items)
       .filter((i) => i.productId === productId)
       .reduce((sum, i) => sum + i.quantity, 0);
+
+  const onPickImage = () => {
+    fileInputRef.current?.click();
+  };
+
+  const onImageSelected = (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      const result = typeof reader.result === 'string' ? reader.result : '';
+      if (!result) return;
+      setFormImage(result);
+      toast({ title: t('admin.imageUpdated') });
+    };
+    reader.readAsDataURL(file);
+    event.target.value = '';
+  };
+
+  const removeImage = () => {
+    setFormImage('');
+    toast({ title: t('admin.imageRemoved') });
+  };
 
   return (
     <Layout>
@@ -189,7 +232,7 @@ const AdminProducts = () => {
                           size="icon"
                           onClick={(e) => {
                             e.stopPropagation();
-                            handleDelete(product.id);
+                            setProductToDelete(product);
                           }}
                           className="text-destructive hover:text-destructive"
                         >
@@ -205,12 +248,39 @@ const AdminProducts = () => {
           {filtered.length === 0 && <p className="text-center text-muted-foreground py-8">{t('admin.noProducts')}</p>}
         </div>
 
-        <Dialog open={isNew || !!editing} onOpenChange={() => { setEditing(null); setIsNew(false); }}>
-          <DialogContent className="max-w-md">
+        <Dialog open={isNew || !!editing} onOpenChange={() => { setEditing(null); setIsNew(false); setFormImage(''); }}>
+          <DialogContent className="max-h-[88vh] max-w-2xl overflow-hidden p-0">
             <DialogHeader>
-              <DialogTitle className="font-heading">{isNew ? t('admin.createProduct') : t('admin.editProduct')}</DialogTitle>
+              <DialogTitle className="border-b border-border px-6 py-4 font-heading">
+                {isNew ? t('admin.createProduct') : t('admin.editProduct')}
+              </DialogTitle>
             </DialogHeader>
-            <div className="space-y-4">
+            <div className="max-h-[calc(88vh-72px)] overflow-y-auto px-6 py-5">
+              <div className="space-y-4">
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={onImageSelected}
+              />
+              <div className="space-y-3">
+                <div className="overflow-hidden rounded-lg border border-border bg-muted">
+                  <img
+                    src={formImage || DEFAULT_PRODUCT_IMAGE}
+                    alt={formName || t('admin.product')}
+                    className="h-40 w-full object-cover md:h-52"
+                  />
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  <Button type="button" variant="outline" onClick={onPickImage}>
+                    <Upload className="mr-2 h-4 w-4" /> {t('admin.uploadReplaceImage')}
+                  </Button>
+                  <Button type="button" variant="outline" onClick={removeImage}>
+                    <Trash2 className="mr-2 h-4 w-4" /> {t('admin.removeImage')}
+                  </Button>
+                </div>
+              </div>
               <div className="space-y-2">
                 <Label>{t('admin.name')}</Label>
                 <Input value={formName} onChange={(e) => setFormName(e.target.value)} />
@@ -251,9 +321,25 @@ const AdminProducts = () => {
               <Button onClick={handleSave} className="w-full font-heading font-semibold">
                 {isNew ? t('admin.createProduct') : t('admin.saveChanges')}
               </Button>
+              </div>
             </div>
           </DialogContent>
         </Dialog>
+
+        <AlertDialog open={!!productToDelete} onOpenChange={(open) => { if (!open) setProductToDelete(null); }}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>{t('admin.confirmDeleteTitle')}</AlertDialogTitle>
+              <AlertDialogDescription>
+                {t('admin.confirmDeleteProduct')}
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>{t('common.no')}</AlertDialogCancel>
+              <AlertDialogAction onClick={handleDelete}>{t('common.yes')}</AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </div>
     </Layout>
   );

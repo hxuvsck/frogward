@@ -51,6 +51,13 @@ interface CustomerStore {
   touchCustomer: (id: string) => void;
 }
 
+const normalizeCustomerRecord = (customer: CustomerRecord): CustomerRecord => ({
+  ...customer,
+  customerType: customer.customerType ?? 'individual',
+  createdAt: customer.createdAt || customer.lastActive || new Date().toISOString(),
+  updatedAt: customer.updatedAt || customer.lastActive || new Date().toISOString(),
+});
+
 export const useCustomerStore = create<CustomerStore>()(
   persist(
     (set, get) => ({
@@ -112,6 +119,30 @@ export const useCustomerStore = create<CustomerStore>()(
           ),
         })),
     }),
-    { name: 'frogward-customers' }
+    {
+      name: 'frogward-customers',
+      version: 2,
+      migrate: (persistedState) => {
+        const state = persistedState as CustomerStore | undefined;
+        if (!state?.customers) return persistedState;
+
+        return {
+          ...state,
+          customers: state.customers.map((customer) => normalizeCustomerRecord(customer)),
+        };
+      },
+      merge: (persistedState, currentState) => {
+        const state = persistedState as Partial<CustomerStore> | undefined;
+        const persistedCustomers = state?.customers?.map((customer) =>
+          normalizeCustomerRecord(customer as CustomerRecord)
+        );
+
+        return {
+          ...currentState,
+          ...state,
+          customers: persistedCustomers ?? currentState.customers,
+        };
+      },
+    }
   )
 );

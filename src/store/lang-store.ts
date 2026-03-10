@@ -155,6 +155,8 @@ const translations = {
   'common.backToAccount': { mn: 'Бүртгэл рүү буцах', en: 'Back to Account' },
   'common.dashboard': { mn: 'Хянах самбар', en: 'Dashboard' },
   'common.items': { mn: 'бараа', en: 'items' },
+  'common.yes': { mn: 'Тийм', en: 'Yes' },
+  'common.no': { mn: 'Үгүй', en: 'No' },
 
   // Order / Payment Status
   'status.pending': { mn: 'Хүлээгдэж буй', en: 'Pending' },
@@ -229,6 +231,8 @@ const translations = {
   'admin.productUpdated': { mn: 'Бүтээгдэхүүн шинэчлэгдлээ', en: 'Product updated' },
   'admin.productDeleted': { mn: 'Бүтээгдэхүүн устгагдлаа', en: 'Product deleted' },
   'admin.productNotFound': { mn: 'Бүтээгдэхүүн олдсонгүй.', en: 'Product not found.' },
+  'admin.confirmDeleteTitle': { mn: 'Устгахдаа итгэлтэй байна уу?', en: 'Are you sure?' },
+  'admin.confirmDeleteProduct': { mn: 'Та энэ бүтээгдэхүүнийг устгахдаа итгэлтэй байна уу?', en: 'Are you sure you want to delete this product?' },
   'admin.addBanner': { mn: 'Баннер нэмэх', en: 'Add Banner' },
   'admin.searchBanners': { mn: 'Гарчиг, тайлбараар хайх...', en: 'Search by title or description...' },
   'admin.noBanners': { mn: 'Баннер олдсонгүй.', en: 'No banners found.' },

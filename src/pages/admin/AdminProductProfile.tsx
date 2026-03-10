@@ -11,6 +11,16 @@ import { useToast } from '@/hooks/use-toast';
 import { useAuthStore } from '@/store/auth-store';
 import { useT } from '@/store/lang-store';
 import { useProductStore } from '@/store/product-store';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import { getCategoryLabel } from '@/lib/category-label';
 import { DEFAULT_PRODUCT_IMAGE } from '@/lib/product-image';
 
@@ -34,6 +44,7 @@ const AdminProductProfile = () => {
   const [price, setPrice] = useState('');
   const [description, setDescription] = useState('');
   const [inStock, setInStock] = useState(true);
+  const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
 
   useEffect(() => {
     if (!product) return;
@@ -196,12 +207,27 @@ const AdminProductProfile = () => {
               <Button onClick={handleSave} className="font-heading font-semibold">
                 {t('admin.saveChanges')}
               </Button>
-              <Button variant="outline" onClick={handleDelete} className="text-destructive hover:text-destructive">
+              <Button variant="outline" onClick={() => setConfirmDeleteOpen(true)} className="text-destructive hover:text-destructive">
                 <Trash2 className="mr-2 h-4 w-4" /> {t('admin.delete')}
               </Button>
             </div>
           </div>
         </div>
+
+        <AlertDialog open={confirmDeleteOpen} onOpenChange={setConfirmDeleteOpen}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>{t('admin.confirmDeleteTitle')}</AlertDialogTitle>
+              <AlertDialogDescription>
+                {t('admin.confirmDeleteProduct')}
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>{t('common.no')}</AlertDialogCancel>
+              <AlertDialogAction onClick={handleDelete}>{t('common.yes')}</AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </div>
     </Layout>
   );
