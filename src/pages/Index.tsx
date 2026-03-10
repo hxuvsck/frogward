@@ -18,7 +18,7 @@ const Index = () => {
   return (
     <Layout>
       {/* Hero */}
-      <section className="relative h-[72vh] min-h-[440px] overflow-hidden">
+      <section className="relative h-[48vh] min-h-[280px] overflow-hidden sm:h-[56vh] sm:min-h-[360px] md:h-[72vh] md:min-h-[440px]">
         <HomeMarketingCarousel
           banners={banners.filter((banner) => banner.active)}
           fallbackImage={DEFAULT_MARKETING_IMAGE}

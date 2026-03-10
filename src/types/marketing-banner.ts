@@ -5,5 +5,8 @@ export interface MarketingBanner {
   summary: string;
   content: string;
   image: string;
+  focalX: number;
+  focalY: number;
+  zoom: number;
   active: boolean;
 }

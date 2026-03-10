@@ -30,6 +30,7 @@ const translations = {
   'hero.shopByCategory': { mn: 'Ангиллаар хайх', en: 'Shop by Category' },
   'hero.featured': { mn: 'Онцлох бүтээгдэхүүн', en: 'Featured Products' },
   'hero.viewAll': { mn: 'Бүгдийг үзэх', en: 'View All' },
+  'hero.visitPost': { mn: 'Зочлох', en: 'See post' },
 
   // Categories
   'cat.helmets': { mn: 'Аюулгүйн малгай', en: 'Safety Helmets' },
@@ -155,6 +156,7 @@ const translations = {
   'common.backToAccount': { mn: 'Бүртгэл рүү буцах', en: 'Back to Account' },
   'common.dashboard': { mn: 'Хянах самбар', en: 'Dashboard' },
   'common.items': { mn: 'бараа', en: 'items' },
+  'common.reset': { mn: 'Анхны байдал', en: 'Reset' },
   'common.yes': { mn: 'Тийм', en: 'Yes' },
   'common.no': { mn: 'Үгүй', en: 'No' },
 
@@ -248,6 +250,16 @@ const translations = {
   'admin.bannerSummary': { mn: 'Товч тайлбар', en: 'Short Summary' },
   'admin.bannerContent': { mn: 'Нийтлэлийн агуулга', en: 'Post Content' },
   'admin.bannerImage': { mn: 'Баннерын зураг', en: 'Banner Image' },
+  'admin.bannerFocusHorizontal': { mn: 'Хэвтээ төвлөрөл', en: 'Horizontal Focus' },
+  'admin.bannerFocusVertical': { mn: 'Босоо төвлөрөл', en: 'Vertical Focus' },
+  'admin.bannerZoom': { mn: 'Томруулах', en: 'Zoom' },
+  'admin.bannerFocusHint': { mn: 'Зураг дээр чирж, нүүр хуудсанд харагдах хэсгийг сонгоно уу.', en: 'Drag the image to choose which part stays visible in the homepage hero.' },
+  'admin.bannerMoveUp': { mn: 'Дээш зөөх', en: 'Move Up' },
+  'admin.bannerMoveDown': { mn: 'Доош зөөх', en: 'Move Down' },
+  'admin.bannerMoveLeft': { mn: 'Зүүн тийш зөөх', en: 'Move Left' },
+  'admin.bannerMoveRight': { mn: 'Баруун тийш зөөх', en: 'Move Right' },
+  'admin.bannerZoomIn': { mn: 'Томруулах', en: 'Zoom In' },
+  'admin.bannerZoomOut': { mn: 'Жижигрүүлэх', en: 'Zoom Out' },
   'admin.noBannerImage': { mn: 'Баннерын зураг оруулаагүй байна.', en: 'No banner image uploaded yet.' },
   'admin.bannerCta': { mn: 'Үйлдлийн товч', en: 'Call to action' },
   'admin.bannerCtaLabel': { mn: 'Товчны текст', en: 'CTA Label' },

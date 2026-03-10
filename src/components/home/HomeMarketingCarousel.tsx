@@ -9,9 +9,15 @@ import {
   CarouselPrevious,
 } from '@/components/ui/carousel';
 import { resolveMarketingImage } from '@/lib/marketing-image';
+import { useT } from '@/store/lang-store';
 import type { MarketingBanner } from '@/types/marketing-banner';
 
 const AUTO_ADVANCE_MS = 5000;
+const getHeroImageStyle = (banner: MarketingBanner, isHovered = false) => ({
+  objectPosition: `${banner.focalX ?? 50}% ${banner.focalY ?? 50}%`,
+  transform: `scale(${((banner.zoom ?? 100) / 100) * (isHovered ? 1.03 : 1)})`,
+  transformOrigin: `${banner.focalX ?? 50}% ${banner.focalY ?? 50}%`,
+});
 
 const HomeMarketingCarousel = ({
   banners,
@@ -21,6 +27,9 @@ const HomeMarketingCarousel = ({
   fallbackImage: string;
 }) => {
   const [api, setApi] = useState<CarouselApi>();
+  const [selectedIndex, setSelectedIndex] = useState(0);
+  const [isHeroHovered, setIsHeroHovered] = useState(false);
+  const t = useT();
 
   useEffect(() => {
     if (!api || banners.length <= 1) return;
@@ -37,6 +46,23 @@ const HomeMarketingCarousel = ({
     return () => window.clearInterval(timer);
   }, [api, banners.length]);
 
+  useEffect(() => {
+    if (!api) return;
+
+    const updateSelectedIndex = () => {
+      setSelectedIndex(api.selectedScrollSnap());
+    };
+
+    updateSelectedIndex();
+    api.on('select', updateSelectedIndex);
+    api.on('reInit', updateSelectedIndex);
+
+    return () => {
+      api.off('select', updateSelectedIndex);
+      api.off('reInit', updateSelectedIndex);
+    };
+  }, [api]);
+
   const slides =
     banners.length > 0
       ? banners
@@ -49,30 +75,52 @@ const HomeMarketingCarousel = ({
             active: true,
           } as MarketingBanner,
         ];
+  const activeSlide = slides[selectedIndex] ?? slides[0];
 
   return (
     <Carousel
       setApi={setApi}
       opts={{ align: 'start', loop: slides.length > 1 }}
       className="h-full w-full"
+      onMouseEnter={() => setIsHeroHovered(true)}
+      onMouseLeave={() => setIsHeroHovered(false)}
     >
       <CarouselContent className="ml-0 h-full">
-        {slides.map((banner) => (
-          <CarouselItem key={banner.id} className="pl-0">
+        {slides.map((banner, index) => (
+          <CarouselItem key={banner.id} className="h-full pl-0">
             {'slug' in banner && banner.slug ? (
-              <Link to={`/stories/${banner.slug}`} className="block h-full">
-                <img src={resolveMarketingImage(banner.image)} alt={banner.title} className="h-full w-full object-cover" />
+              <Link to={`/stories/${banner.slug}`} className="group block h-full overflow-hidden">
+                <img
+                  src={resolveMarketingImage(banner.image)}
+                  alt={banner.title}
+                  className="h-full w-full object-cover transition duration-300 ease-out"
+                  style={getHeroImageStyle(banner, isHeroHovered && index === selectedIndex)}
+                />
               </Link>
             ) : (
-              <img src={resolveMarketingImage(banner.image)} alt={banner.title} className="h-full w-full object-cover" />
+              <div className="h-full overflow-hidden">
+                <img
+                  src={resolveMarketingImage(banner.image)}
+                  alt={banner.title}
+                  className="h-full w-full object-cover transition duration-300 ease-out"
+                  style={getHeroImageStyle(banner, isHeroHovered && index === selectedIndex)}
+                />
+              </div>
             )}
           </CarouselItem>
         ))}
       </CarouselContent>
+      {'slug' in activeSlide && activeSlide.slug ? (
+        <div className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center">
+          <div className={`rounded-full border border-white/25 bg-background/78 px-4 py-2 text-sm font-semibold text-foreground shadow-sm backdrop-blur transition duration-200 ease-out ${isHeroHovered ? 'opacity-100 scale-100' : 'opacity-0 scale-95'}`}>
+            {t('hero.visitPost')}
+          </div>
+        </div>
+      ) : null}
       {slides.length > 1 ? (
         <>
-          <CarouselPrevious className="left-4 border-border bg-background/80 hover:bg-background" />
-          <CarouselNext className="right-4 border-border bg-background/80 hover:bg-background" />
+          <CarouselPrevious className="left-3 top-1/2 h-9 w-9 -translate-y-1/2 border-border bg-background/85 hover:bg-background sm:left-4 sm:h-10 sm:w-10" />
+          <CarouselNext className="right-3 top-1/2 h-9 w-9 -translate-y-1/2 border-border bg-background/85 hover:bg-background sm:right-4 sm:h-10 sm:w-10" />
         </>
       ) : null}
     </Carousel>

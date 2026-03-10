@@ -1,6 +1,6 @@
-import { useRef, useState, type ChangeEvent } from 'react';
+import { useRef, useState, type ChangeEvent, type PointerEvent as ReactPointerEvent } from 'react';
 import { Navigate, Link } from 'react-router-dom';
-import { ArrowLeft, Megaphone, Pencil, Plus, Trash2, Upload } from 'lucide-react';
+import { ArrowDown, ArrowLeft, ArrowRight, ArrowUp, Megaphone, Minus, Pencil, Plus, RotateCcw, Trash2, Upload } from 'lucide-react';
 import Layout from '@/components/layout/Layout';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -29,8 +29,21 @@ const EMPTY_FORM = {
   summary: '',
   content: '',
   image: '',
+  focalX: 50,
+  focalY: 50,
+  zoom: 100,
   active: true,
 };
+const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value));
+const slugifyBanner = (title: string, fallbackId: string) =>
+  title
+    .toLowerCase()
+    .normalize('NFKD')
+    .replace(/[^\p{L}\p{N}\s-]+/gu, '')
+    .trim()
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-')
+    .replace(/^-|-$/g, '') || fallbackId;
 
 const AdminMarketing = () => {
   const { user, isAuthenticated } = useAuthStore();
@@ -49,6 +62,7 @@ const AdminMarketing = () => {
   const [bannerToDelete, setBannerToDelete] = useState<MarketingBanner | null>(null);
   const [confirmRemoveImageOpen, setConfirmRemoveImageOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const heroPreviewRef = useRef<HTMLDivElement>(null);
 
   if (!isAuthenticated || !user || user.role !== 'admin') return <Navigate to="/login" replace />;
 
@@ -78,6 +92,9 @@ const AdminMarketing = () => {
       summary: banner.summary,
       content: banner.content,
       image: banner.image,
+      focalX: banner.focalX ?? 50,
+      focalY: banner.focalY ?? 50,
+      zoom: banner.zoom ?? 100,
       active: banner.active,
     });
   };
@@ -85,11 +102,19 @@ const AdminMarketing = () => {
   const handleSave = () => {
     if (!form.title || !form.summary || !form.content) return;
 
-    const slug = form.title
-      .toLowerCase()
-      .trim()
-      .replace(/[^a-z0-9\s-]/g, '')
-      .replace(/\s+/g, '-');
+    const baseSlug = slugifyBanner(form.title, isNew ? `banner-${Date.now()}` : editing?.id || `banner-${Date.now()}`);
+    const existingSlugs = new Set(
+      banners
+        .filter((banner) => banner.id !== editing?.id)
+        .map((banner) => banner.slug)
+        .filter(Boolean)
+    );
+    let slug = baseSlug;
+    let suffix = 2;
+    while (existingSlugs.has(slug)) {
+      slug = `${baseSlug}-${suffix}`;
+      suffix += 1;
+    }
 
     if (isNew) {
       addBanner({
@@ -99,6 +124,9 @@ const AdminMarketing = () => {
         summary: form.summary,
         content: form.content,
         image: form.image,
+        focalX: form.focalX,
+        focalY: form.focalY,
+        zoom: form.zoom,
         active: form.active,
       });
       toast({ title: t('admin.bannerCreated') });
@@ -109,6 +137,9 @@ const AdminMarketing = () => {
         summary: form.summary,
         content: form.content,
         image: form.image,
+        focalX: form.focalX,
+        focalY: form.focalY,
+        zoom: form.zoom,
         active: form.active,
       });
       toast({ title: t('admin.bannerUpdated') });
@@ -149,6 +180,59 @@ const AdminMarketing = () => {
     setConfirmRemoveImageOpen(false);
   };
 
+  const updateFocusFromPointer = (clientX: number, clientY: number) => {
+    const container = heroPreviewRef.current;
+    if (!container) return;
+
+    const rect = container.getBoundingClientRect();
+    if (!rect.width || !rect.height) return;
+
+    const nextX = clamp(((clientX - rect.left) / rect.width) * 100, 0, 100);
+    const nextY = clamp(((clientY - rect.top) / rect.height) * 100, 0, 100);
+
+    setForm((state) => ({ ...state, focalX: nextX, focalY: nextY }));
+  };
+
+  const handleHeroPreviewPointerDown = (event: ReactPointerEvent<HTMLDivElement>) => {
+    updateFocusFromPointer(event.clientX, event.clientY);
+    event.currentTarget.setPointerCapture(event.pointerId);
+  };
+
+  const handleHeroPreviewPointerMove = (event: ReactPointerEvent<HTMLDivElement>) => {
+    if (!event.buttons) return;
+    updateFocusFromPointer(event.clientX, event.clientY);
+  };
+
+  const handleHeroPreviewPointerUp = (event: ReactPointerEvent<HTMLDivElement>) => {
+    if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+      event.currentTarget.releasePointerCapture(event.pointerId);
+    }
+  };
+
+  const nudgeFocus = (deltaX: number, deltaY: number) => {
+    setForm((state) => ({
+      ...state,
+      focalX: clamp(state.focalX + deltaX, 0, 100),
+      focalY: clamp(state.focalY + deltaY, 0, 100),
+    }));
+  };
+
+  const adjustZoom = (delta: number) => {
+    setForm((state) => ({
+      ...state,
+      zoom: clamp(state.zoom + delta, 100, 200),
+    }));
+  };
+
+  const resetImagePosition = () => {
+    setForm((state) => ({
+      ...state,
+      focalX: 50,
+      focalY: 50,
+      zoom: 100,
+    }));
+  };
+
   return (
     <Layout>
       <div className="container py-10">
@@ -177,7 +261,16 @@ const AdminMarketing = () => {
           {filtered.map((banner) => (
             <article key={banner.id} className="grid gap-4 overflow-hidden rounded-2xl border border-border bg-card p-4 md:grid-cols-[240px_1fr_auto] md:items-center">
               <div className="overflow-hidden rounded-xl bg-muted">
-                <img src={resolveMarketingImage(banner.image)} alt={banner.title} className="h-40 w-full object-cover md:h-32" />
+                <img
+                  src={resolveMarketingImage(banner.image)}
+                  alt={banner.title}
+                  className="h-40 w-full object-cover md:h-32"
+                  style={{
+                    objectPosition: `${banner.focalX ?? 50}% ${banner.focalY ?? 50}%`,
+                    transform: `scale(${(banner.zoom ?? 100) / 100})`,
+                    transformOrigin: `${banner.focalX ?? 50}% ${banner.focalY ?? 50}%`,
+                  }}
+                />
               </div>
               <div className="space-y-2">
                 <div className="flex flex-wrap items-center gap-2">
@@ -258,12 +351,57 @@ const AdminMarketing = () => {
               <div className="space-y-2">
                 <Label>{t('admin.bannerImage')}</Label>
                 {form.image ? (
-                  <div className="overflow-hidden rounded-xl border border-border bg-muted">
-                    <img
-                      src={resolveMarketingImage(form.image)}
-                      alt={form.title || 'Banner preview'}
-                      className="h-48 w-full bg-muted object-contain"
-                    />
+                  <div className="space-y-3">
+                    <div
+                      ref={heroPreviewRef}
+                      className="relative mx-auto aspect-[21/11] w-full overflow-hidden rounded-xl border border-border bg-muted touch-none"
+                      onPointerDown={handleHeroPreviewPointerDown}
+                      onPointerMove={handleHeroPreviewPointerMove}
+                      onPointerUp={handleHeroPreviewPointerUp}
+                    >
+                      <img
+                        src={resolveMarketingImage(form.image)}
+                        alt={form.title || 'Banner preview'}
+                        className="h-full w-full object-cover"
+                        style={{
+                          objectPosition: `${form.focalX}% ${form.focalY}%`,
+                          transform: `scale(${form.zoom / 100})`,
+                          transformOrigin: `${form.focalX}% ${form.focalY}%`,
+                        }}
+                      />
+                      <div
+                        className="absolute inset-y-0 right-0 z-10 flex w-20 flex-col items-center justify-center gap-2 border-l border-white/10 bg-background/20 px-2 py-3 backdrop-blur-md"
+                        onPointerDown={(e) => e.stopPropagation()}
+                        onPointerMove={(e) => e.stopPropagation()}
+                        onPointerUp={(e) => e.stopPropagation()}
+                      >
+                        <Button type="button" size="icon" variant="secondary" className="h-9 w-9 bg-background/85" onClick={() => nudgeFocus(0, -5)} title={t('admin.bannerMoveUp')}>
+                          <ArrowUp className="h-4 w-4" />
+                        </Button>
+                        <Button type="button" size="icon" variant="secondary" className="h-9 w-9 bg-background/85" onClick={() => nudgeFocus(-5, 0)} title={t('admin.bannerMoveLeft')}>
+                          <ArrowLeft className="h-4 w-4" />
+                        </Button>
+                        <Button type="button" size="icon" variant="secondary" className="h-9 w-9 bg-background/85" onClick={() => nudgeFocus(5, 0)} title={t('admin.bannerMoveRight')}>
+                          <ArrowRight className="h-4 w-4" />
+                        </Button>
+                        <Button type="button" size="icon" variant="secondary" className="h-9 w-9 bg-background/85" onClick={() => nudgeFocus(0, 5)} title={t('admin.bannerMoveDown')}>
+                          <ArrowDown className="h-4 w-4" />
+                        </Button>
+                        <div className="my-1 h-px w-8 bg-white/20" />
+                        <Button type="button" size="icon" variant="secondary" className="h-9 w-9 bg-background/85" onClick={() => adjustZoom(-10)} title={t('admin.bannerZoomOut')}>
+                          <Minus className="h-4 w-4" />
+                        </Button>
+                        <div className="text-[10px] font-medium text-white">{Math.round(form.zoom)}%</div>
+                        <Button type="button" size="icon" variant="secondary" className="h-9 w-9 bg-background/85" onClick={() => adjustZoom(10)} title={t('admin.bannerZoomIn')}>
+                          <Plus className="h-4 w-4" />
+                        </Button>
+                        <div className="my-1 h-px w-8 bg-white/20" />
+                        <Button type="button" size="icon" variant="secondary" className="h-9 w-9 bg-background/85" onClick={resetImagePosition} title={t('common.reset')}>
+                          <RotateCcw className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </div>
+                    <p className="text-xs text-muted-foreground">{t('admin.bannerFocusHint')}</p>
                   </div>
                 ) : (
                   <div className="rounded-xl border border-dashed border-border bg-muted/40 px-4 py-10 text-center text-sm text-muted-foreground">
