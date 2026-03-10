@@ -114,7 +114,7 @@ const HomeMarketingCarousel = ({
       </CarouselContent>
       {'slug' in activeSlide && activeSlide.slug ? (
         <div className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center">
-          <div className={`rounded-full border border-white/25 bg-background/78 px-4 py-2 text-sm font-semibold text-foreground shadow-sm backdrop-blur transition duration-200 ease-out ${isHeroHovered ? 'opacity-100 scale-100' : 'opacity-0 scale-95'}`}>
+          <div className={`rounded-full border border-primary/50 bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground shadow-sm transition duration-200 ease-out ${isHeroHovered ? 'opacity-100 scale-100' : 'opacity-0 scale-95'}`}>
             {t('hero.visitPost')}
           </div>
         </div>
