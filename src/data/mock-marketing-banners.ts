@@ -3,31 +3,31 @@ import type { MarketingBanner } from '@/types/marketing-banner';
 export const marketingBanners: MarketingBanner[] = [
   {
     id: 'banner-1',
-    title: 'Premium Site Visibility Kits',
+    title: 'Шинэ үеийн өндөр харагдацтай иж бүрдэл',
     slug: 'premium-site-visibility-kits',
-    summary: 'High-visibility sets for mine crews, civil contractors, and industrial safety teams.',
+    summary: 'Уурхай, барилга, үйлдвэрийн талбайд ажиллах багуудад зориулсан өндөр харагдацтай шинэ иж бүрдэл.',
     content:
-      'FrogWard now offers new visibility kits built for crews working in low-light and high-traffic environments. Each kit combines high-visibility outerwear, durable reflective trims, and industrial-ready materials suited for repeated site use. This release is aimed at contractors and industrial buyers who need fast procurement for teams without sacrificing compliance or comfort.',
+      'FrogWard нь гэрэлтүүлэг багатай болон хөдөлгөөн ихтэй ажлын орчинд зориулагдсан өндөр харагдацтай шинэ иж бүрдлийг санал болгож байна.\n\nЭнэхүү иж бүрдэл нь өндөр харагдацтай гадуур хувцас, удаан эдэлгээтэй ойлгогч тууз, үйлдвэрийн орчинд давтан ашиглахад тохирсон материалуудыг хослуулсан.\n\nБагийн худалдан авалтыг хурдан шийдэх шаардлагатай байгууллага, гүйцэтгэгч нарт зориулсан энэхүү цуврал нь аюулгүй байдал, тав тухыг зэрэг хангах зорилготой.',
     image: 'https://images.unsplash.com/photo-1517048676732-d65bc937f952?w=1200&h=800&fit=crop',
     active: true,
   },
   {
     id: 'banner-2',
-    title: 'Boots Built For Long Shifts',
+    title: 'Урт ээлжийн ажилд зориулсан хамгаалалтын гутал',
     slug: 'boots-built-for-long-shifts',
-    summary: 'Waterproof, steel-toe, and cold-rated protection for demanding field work.',
+    summary: 'Ус нэвтрэхгүй, төмөр хоншоортой, хүйтэнд тэсвэртэй хамгаалалтын гутлын шинэ загвар.',
     content:
-      'This new boot line is designed for long industrial shifts, combining waterproof construction, reinforced toe protection, and cold-weather readiness. The goal is to give site workers a durable option that performs across mining, logistics, and heavy construction workloads while staying comfortable for extended wear.',
+      'Энэхүү шинэ гутлын цуврал нь үйлдвэрийн урт ээлжийн ажилд зориулан бүтээгдсэн.\n\nУс нэвтрэхгүй хийц, бэхэлсэн хоншоорын хамгаалалт, хүйтэн нөхцөлд ажиллах боломжийг нэг дор шингээсэн тул уурхай, логистик, хүнд барилгын ажлын орчинд тохиромжтой.\n\nӨдөржин өмсөхөд эвтэйхэн атлаа элэгдэл даах чадвартай шийдэл хэрэгтэй хэрэглэгчдэд зориулав.',
     image: 'https://images.unsplash.com/photo-1525966222134-fcfa99b8ae77?w=1200&h=800&fit=crop',
     active: true,
   },
   {
     id: 'banner-3',
-    title: 'Outfit Teams At Scale',
+    title: 'Байгууллагын хэмжээнд багийг бүрэн хангах шийдэл',
     slug: 'outfit-teams-at-scale',
-    summary: 'Fast procurement support for company-wide PPE restocks and seasonal rollout campaigns.',
+    summary: 'ХАБЭА хэрэгслийн улирлын нөөцлөлт болон багц худалдан авалтад зориулсан шуурхай нийлүүлэлт.',
     content:
-      'FrogWard supports larger procurement cycles for companies that need consistent PPE supply across departments or active projects. This campaign highlights our ability to prepare seasonal rollouts, repeat orders, and team-wide restocks with practical catalog coverage for industrial use cases.',
+      'FrogWard нь олон хэлтэс, олон төслийн хэмжээнд тогтмол хамгаалах хэрэгсэл шаарддаг байгууллагуудад зориулсан нийлүүлэлтийн шийдлийг санал болгодог.\n\nЭнэхүү санал нь улирлын нөөц бүрдүүлэлт, давтан захиалга, бүх багийг хамарсан худалдан авалтыг илүү хурдан бөгөөд цэгцтэй зохион байгуулахад чиглэнэ.\n\nҮйлдвэрлэл, барилга, уул уурхайд тохирох бүтээгдэхүүний сонголттойгоор байгууллагын хэрэгцээнд илүү ойр ажиллах зорилготой.',
     image: 'https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?w=1200&h=800&fit=crop',
     active: true,
   },
