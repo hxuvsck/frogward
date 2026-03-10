@@ -1,8 +1,9 @@
 import { useParams, Link } from 'react-router-dom';
-import { ArrowLeft, ShoppingCart, Check } from 'lucide-react';
+import { ArrowLeft, ShoppingCart, Check, Pencil } from 'lucide-react';
 import Layout from '@/components/layout/Layout';
 import ProductCard from '@/components/product/ProductCard';
 import { Button } from '@/components/ui/button';
+import { useAuthStore } from '@/store/auth-store';
 import { useProductStore } from '@/store/product-store';
 import { useCartStore } from '@/store/cart-store';
 import { useLangStore, useT } from '@/store/lang-store';
@@ -15,6 +16,7 @@ const formatPrice = (price: number) => `₮${price.toLocaleString()}`;
 
 const ProductDetail = () => {
   const { slug } = useParams();
+  const user = useAuthStore((s) => s.user);
   const products = useProductStore((s) => s.products);
   const product = products.find((p) => p.slug === (slug || ''));
   const items = useCartStore((s) => s.items);
@@ -34,6 +36,7 @@ const ProductDetail = () => {
   }
 
   const inCart = items.some((i) => i.id === product.id);
+  const isAdmin = user?.role === 'admin';
   const related = products.filter((p) => p.category === product.category && p.id !== product.id).slice(0, 4);
 
   return (
@@ -70,25 +73,33 @@ const ProductDetail = () => {
               <p className="text-destructive text-sm">{t('detail.currentlyOut')}</p>
             )}
 
-            <Button
-              size="lg"
-              className="w-full md:w-auto font-heading font-semibold"
-              disabled={!product.inStock}
-              onClick={() =>
-                addCustomerItem({
-                  id: product.id,
-                  name: product.name,
-                  price: product.price,
-                  image: product.image || DEFAULT_PRODUCT_IMAGE,
-                })
-              }
-            >
-              {inCart ? (
-                <><Check className="mr-2 h-4 w-4" /> {t('detail.addedToCart')}</>
-              ) : (
-                <><ShoppingCart className="mr-2 h-4 w-4" /> {t('product.addToCart')}</>
-              )}
-            </Button>
+            {isAdmin ? (
+              <Button asChild size="lg" className="w-full md:w-auto font-heading font-semibold">
+                <Link to={`/admin/products/${product.id}`}>
+                  <Pencil className="mr-2 h-4 w-4" /> {t('admin.editProduct')}
+                </Link>
+              </Button>
+            ) : (
+              <Button
+                size="lg"
+                className="w-full md:w-auto font-heading font-semibold"
+                disabled={!product.inStock}
+                onClick={() =>
+                  addCustomerItem({
+                    id: product.id,
+                    name: product.name,
+                    price: product.price,
+                    image: product.image || DEFAULT_PRODUCT_IMAGE,
+                  })
+                }
+              >
+                {inCart ? (
+                  <><Check className="mr-2 h-4 w-4" /> {t('detail.addedToCart')}</>
+                ) : (
+                  <><ShoppingCart className="mr-2 h-4 w-4" /> {t('product.addToCart')}</>
+                )}
+              </Button>
+            )}
 
             {product.specs && (
               <div className="border-t border-border pt-6">

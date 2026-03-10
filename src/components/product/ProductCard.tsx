@@ -1,7 +1,8 @@
 import { Link } from 'react-router-dom';
-import { ShoppingCart, Check } from 'lucide-react';
+import { ShoppingCart, Check, Pencil } from 'lucide-react';
 import type { Product } from '@/types/product';
 import { useCartStore } from '@/store/cart-store';
+import { useAuthStore } from '@/store/auth-store';
 import { useT } from '@/store/lang-store';
 import { Button } from '@/components/ui/button';
 import { DEFAULT_PRODUCT_IMAGE } from '@/lib/product-image';
@@ -11,9 +12,11 @@ const formatPrice = (price: number) => `₮${price.toLocaleString()}`;
 
 const ProductCard = ({ product }: { product: Product }) => {
   const items = useCartStore((s) => s.items);
+  const user = useAuthStore((s) => s.user);
   const { addCustomerItem } = useCustomerCart();
   const inCart = items.some((i) => i.id === product.id);
   const t = useT();
+  const isAdmin = user?.role === 'admin';
 
   return (
     <div className="group rounded-lg border border-border bg-card overflow-hidden hover:border-primary/30 transition-all duration-300">
@@ -43,30 +46,38 @@ const ProductCard = ({ product }: { product: Product }) => {
             </span>
           )}
         </div>
-        <Button
-          variant="outline"
-          size="sm"
-          className="w-full"
-          disabled={!product.inStock}
-          onClick={() =>
-            addCustomerItem({
-              id: product.id,
-              name: product.name,
-              price: product.price,
-              image: product.image || DEFAULT_PRODUCT_IMAGE,
-            })
-          }
-        >
-          {inCart ? (
-            <>
-              <Check className="mr-1.5 h-3.5 w-3.5" /> {t('product.inCart')}
-            </>
-          ) : (
-            <>
-              <ShoppingCart className="mr-1.5 h-3.5 w-3.5" /> {t('product.addToCart')}
-            </>
-          )}
-        </Button>
+        {isAdmin ? (
+          <Button asChild variant="outline" size="sm" className="w-full">
+            <Link to={`/admin/products/${product.id}`}>
+              <Pencil className="mr-1.5 h-3.5 w-3.5" /> {t('admin.editProduct')}
+            </Link>
+          </Button>
+        ) : (
+          <Button
+            variant="outline"
+            size="sm"
+            className="w-full"
+            disabled={!product.inStock}
+            onClick={() =>
+              addCustomerItem({
+                id: product.id,
+                name: product.name,
+                price: product.price,
+                image: product.image || DEFAULT_PRODUCT_IMAGE,
+              })
+            }
+          >
+            {inCart ? (
+              <>
+                <Check className="mr-1.5 h-3.5 w-3.5" /> {t('product.inCart')}
+              </>
+            ) : (
+              <>
+                <ShoppingCart className="mr-1.5 h-3.5 w-3.5" /> {t('product.addToCart')}
+              </>
+            )}
+          </Button>
+        )}
       </div>
     </div>
   );
