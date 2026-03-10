@@ -193,6 +193,7 @@ const translations = {
   'admin.all': { mn: 'Бүгд', en: 'All' },
   'admin.order': { mn: 'Захиалга', en: 'Order' },
   'admin.customer': { mn: 'Харилцагч', en: 'Customer' },
+  'admin.customerType': { mn: 'Төрөл', en: 'Type' },
   'admin.total': { mn: 'Нийт', en: 'Total' },
   'admin.payment': { mn: 'Төлбөр', en: 'Payment' },
   'admin.status': { mn: 'Төлөв', en: 'Status' },

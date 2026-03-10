@@ -36,7 +36,9 @@ const AdminCustomers = () => {
   const filtered = customers.filter((c) =>
     c.name.toLowerCase().includes(search.toLowerCase()) ||
     c.phone.includes(search) ||
-    (c.email?.toLowerCase().includes(search.toLowerCase()) ?? false)
+    (c.email?.toLowerCase().includes(search.toLowerCase()) ?? false) ||
+    (c.companyName?.toLowerCase().includes(search.toLowerCase()) ?? false) ||
+    (c.customerType?.toLowerCase().includes(search.toLowerCase()) ?? false)
   );
 
   const getCustomerOrders = (customerId: string) =>
@@ -46,9 +48,11 @@ const AdminCustomers = () => {
     getCustomerOrders(customerId).reduce((sum, o) => sum + o.totalAmount, 0);
 
   const exportCustomers = () => {
-    const headers = ['Name', 'Phone', 'Email', 'Orders', 'Total Spent', 'Last Active'];
+    const headers = ['Name', 'Type', 'Company', 'Phone', 'Email', 'Orders', 'Total Spent', 'Last Active'];
     const rows = filtered.map((c) => [
       c.name,
+      c.customerType === 'company' ? t('profile.companyCustomer') : t('profile.individual'),
+      c.companyName || '',
       c.phone,
       c.email || '',
       String(getCustomerOrders(c.id).length),
@@ -79,6 +83,8 @@ const AdminCustomers = () => {
               <thead className="bg-muted/50">
                 <tr>
                   <th className="text-left px-4 py-3 font-heading font-semibold text-xs uppercase tracking-wider text-muted-foreground">{t('admin.customer')}</th>
+                  <th className="text-left px-4 py-3 font-heading font-semibold text-xs uppercase tracking-wider text-muted-foreground">{t('admin.customerType')}</th>
+                  <th className="text-left px-4 py-3 font-heading font-semibold text-xs uppercase tracking-wider text-muted-foreground">{t('profile.company')}</th>
                   <th className="text-left px-4 py-3 font-heading font-semibold text-xs uppercase tracking-wider text-muted-foreground">{t('admin.phone')}</th>
                   <th className="text-left px-4 py-3 font-heading font-semibold text-xs uppercase tracking-wider text-muted-foreground">{t('admin.email')}</th>
                   <th className="text-left px-4 py-3 font-heading font-semibold text-xs uppercase tracking-wider text-muted-foreground">{t('admin.ordersCount')}</th>
@@ -105,6 +111,12 @@ const AdminCustomers = () => {
                         <span className="font-heading font-semibold">{c.name}</span>
                       </div>
                     </td>
+                    <td className="px-4 py-3">
+                      <span className={`rounded-full px-2.5 py-1 text-xs font-semibold ${c.customerType === 'company' ? 'bg-primary/15 text-primary' : 'bg-muted text-muted-foreground'}`}>
+                        {c.customerType === 'company' ? t('profile.companyCustomer') : t('profile.individual')}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3 text-muted-foreground">{c.companyName || '—'}</td>
                     <td className="px-4 py-3 text-muted-foreground">{c.phone}</td>
                     <td className="px-4 py-3 text-muted-foreground">{c.email || '—'}</td>
                     <td className="px-4 py-3">{getCustomerOrders(c.id).length}</td>

@@ -10,6 +10,7 @@ const initialCustomers: CustomerRecord[] = mockCustomers.map((customer) => ({
   name: customer.name,
   phone: customer.phone,
   email: customer.email,
+  customerType: 'individual',
   lastActive: customer.lastActive,
   createdAt: customer.lastActive,
   updatedAt: customer.lastActive,
