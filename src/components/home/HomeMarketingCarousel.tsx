@@ -58,8 +58,8 @@ const HomeMarketingCarousel = ({
       <CarouselContent className="ml-0 h-full">
         {slides.map((banner) => (
           <CarouselItem key={banner.id} className="pl-0">
-            {banner.ctaHref ? (
-              <Link to={banner.ctaHref} className="block h-full">
+            {'slug' in banner && banner.slug ? (
+              <Link to={`/stories/${banner.slug}`} className="block h-full">
                 <img src={banner.image} alt={banner.title} className="h-full w-full object-cover" />
               </Link>
             ) : (

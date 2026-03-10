@@ -109,13 +109,15 @@ const Navbar = () => {
               </button>
               {userMenuOpen && (
                 <div className="absolute right-0 top-full mt-2 w-48 rounded-lg border border-border bg-card shadow-lg py-1 z-50 animate-fade-in">
-                  <Link
-                    to="/account"
-                    onClick={() => setUserMenuOpen(false)}
-                    className="flex items-center gap-2 px-4 py-2.5 text-sm text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
-                  >
-                    <User className="h-3.5 w-3.5" /> {t('account.title')}
-                  </Link>
+                  {!isAdmin && (
+                    <Link
+                      to="/account"
+                      onClick={() => setUserMenuOpen(false)}
+                      className="flex items-center gap-2 px-4 py-2.5 text-sm text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
+                    >
+                      <User className="h-3.5 w-3.5" /> {t('account.title')}
+                    </Link>
+                  )}
                   {isAdmin && (
                     <Link
                       to="/admin"
@@ -174,9 +176,11 @@ const Navbar = () => {
           </div>
           {isAuthenticated && user ? (
             <div className="space-y-2 pt-2 border-t border-border">
-              <Link to="/account" className="block text-sm" onClick={() => setMobileOpen(false)}>
-                <User className="h-3.5 w-3.5 inline mr-1" /> {user.name.split(' ')[0]}
-              </Link>
+              {!isAdmin && (
+                <Link to="/account" className="block text-sm" onClick={() => setMobileOpen(false)}>
+                  <User className="h-3.5 w-3.5 inline mr-1" /> {user.name.split(' ')[0]}
+                </Link>
+              )}
               {isAdmin && (
                 <Link to="/admin" className="block text-sm" onClick={() => setMobileOpen(false)}>
                   <Shield className="h-3.5 w-3.5 inline mr-1" /> {t('nav.admin')}

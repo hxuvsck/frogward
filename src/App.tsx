@@ -24,6 +24,7 @@ import AdminCustomerProfile from "./pages/admin/AdminCustomerProfile";
 import AdminMarketing from "./pages/admin/AdminMarketing";
 import About from "./pages/About";
 import NotFound from "./pages/NotFound";
+import StoryDetail from "./pages/StoryDetail";
 
 const queryClient = new QueryClient();
 
@@ -58,6 +59,7 @@ const App = () => (
           <Route path="/checkout" element={<Checkout />} />
           <Route path="/login" element={<Login />} />
           <Route path="/about" element={<About />} />
+          <Route path="/stories/:slug" element={<StoryDetail />} />
           <Route path="/verify-otp" element={<VerifyOtp />} />
           <Route path="/account" element={<Account />} />
           <Route path="/account/orders" element={<AccountOrders />} />

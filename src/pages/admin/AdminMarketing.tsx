@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
 import { useAuthStore } from '@/store/auth-store';
 import { useMarketingStore } from '@/store/marketing-store';
 import { useT } from '@/store/lang-store';
@@ -14,8 +15,9 @@ import type { MarketingBanner } from '@/types/marketing-banner';
 
 const EMPTY_FORM = {
   title: '',
+  summary: '',
+  content: '',
   image: '',
-  ctaHref: '',
   active: true,
 };
 
@@ -37,7 +39,7 @@ const AdminMarketing = () => {
   if (!isAuthenticated || !user || user.role !== 'admin') return <Navigate to="/login" replace />;
 
   const filtered = banners.filter((banner) =>
-    [banner.title, banner.ctaHref, banner.image]
+    [banner.title, banner.summary, banner.content, banner.image]
       .filter(Boolean)
       .some((value) => value!.toLowerCase().includes(search.toLowerCase()))
   );
@@ -59,29 +61,40 @@ const AdminMarketing = () => {
     setIsNew(false);
     setForm({
       title: banner.title,
+      summary: banner.summary,
+      content: banner.content,
       image: banner.image,
-      ctaHref: banner.ctaHref || '',
       active: banner.active,
     });
   };
 
   const handleSave = () => {
-    if (!form.title || !form.image) return;
+    if (!form.title || !form.summary || !form.content || !form.image) return;
+
+    const slug = form.title
+      .toLowerCase()
+      .trim()
+      .replace(/[^a-z0-9\s-]/g, '')
+      .replace(/\s+/g, '-');
 
     if (isNew) {
       addBanner({
         id: `banner-${Date.now()}`,
         title: form.title,
+        slug,
+        summary: form.summary,
+        content: form.content,
         image: form.image,
-        ctaHref: form.ctaHref || '',
         active: form.active,
       });
       toast({ title: t('admin.bannerCreated') });
     } else if (editing) {
       updateBanner(editing.id, {
         title: form.title,
+        slug,
+        summary: form.summary,
+        content: form.content,
         image: form.image,
-        ctaHref: form.ctaHref || '',
         active: form.active,
       });
       toast({ title: t('admin.bannerUpdated') });
@@ -133,10 +146,13 @@ const AdminMarketing = () => {
                 </div>
                 <div>
                   <h2 className="font-heading text-xl font-bold">{banner.title}</h2>
-                  <p className="mt-1 max-w-2xl break-all text-sm leading-6 text-muted-foreground">{banner.image}</p>
+                  <p className="mt-1 max-w-2xl text-sm leading-6 text-muted-foreground">{banner.summary}</p>
                 </div>
                 <p className="text-xs text-muted-foreground">
-                  {t('admin.bannerLink')}: <span className="text-foreground">{banner.ctaHref || t('admin.noBannerLink')}</span>
+                  /stories/{banner.slug}
+                </p>
+                <p className="break-all text-xs text-muted-foreground">
+                  {banner.image}
                 </p>
               </div>
               <div className="flex items-center gap-2 md:flex-col">
@@ -174,13 +190,28 @@ const AdminMarketing = () => {
               </div>
 
               <div className="space-y-2">
-                <Label>{t('admin.bannerImage')}</Label>
-                <Input value={form.image} onChange={(e) => setForm((state) => ({ ...state, image: e.target.value }))} placeholder="https://..." />
+                <Label>{t('admin.bannerSummary')}</Label>
+                <Textarea
+                  value={form.summary}
+                  onChange={(e) => setForm((state) => ({ ...state, summary: e.target.value }))}
+                  rows={3}
+                  className="min-h-24 resize-y"
+                />
               </div>
 
               <div className="space-y-2">
-                <Label>{t('admin.bannerLink')}</Label>
-                <Input value={form.ctaHref} onChange={(e) => setForm((state) => ({ ...state, ctaHref: e.target.value }))} placeholder="/products" />
+                <Label>{t('admin.bannerContent')}</Label>
+                <Textarea
+                  value={form.content}
+                  onChange={(e) => setForm((state) => ({ ...state, content: e.target.value }))}
+                  rows={8}
+                  className="min-h-40 resize-y"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label>{t('admin.bannerImage')}</Label>
+                <Input value={form.image} onChange={(e) => setForm((state) => ({ ...state, image: e.target.value }))} placeholder="https://..." />
               </div>
 
               <label className="flex items-center gap-2 text-sm">

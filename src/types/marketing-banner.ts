@@ -1,10 +1,9 @@
 export interface MarketingBanner {
   id: string;
   title: string;
-  eyebrow?: string;
-  description: string;
+  slug: string;
+  summary: string;
+  content: string;
   image: string;
-  ctaLabel: string;
-  ctaHref: string;
   active: boolean;
 }

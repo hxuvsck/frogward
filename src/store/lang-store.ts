@@ -227,6 +227,8 @@ const translations = {
   'admin.bannerDeleted': { mn: 'Баннер устгагдлаа', en: 'Banner deleted' },
   'admin.bannerEyebrow': { mn: 'Дээд шошго', en: 'Eyebrow Label' },
   'admin.bannerTitle': { mn: 'Баннер гарчиг', en: 'Banner Title' },
+  'admin.bannerSummary': { mn: 'Товч тайлбар', en: 'Short Summary' },
+  'admin.bannerContent': { mn: 'Нийтлэлийн агуулга', en: 'Post Content' },
   'admin.bannerImage': { mn: 'Зургийн холбоос', en: 'Image URL' },
   'admin.bannerCta': { mn: 'Үйлдлийн товч', en: 'Call to action' },
   'admin.bannerCtaLabel': { mn: 'Товчны текст', en: 'CTA Label' },
