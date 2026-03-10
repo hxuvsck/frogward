@@ -189,12 +189,6 @@ const AdminMarketing = () => {
                   <h2 className="font-heading text-xl font-bold">{banner.title}</h2>
                   <p className="mt-1 max-w-2xl text-sm leading-6 text-muted-foreground">{banner.summary}</p>
                 </div>
-                <p className="text-xs text-muted-foreground">
-                  /stories/{banner.slug}
-                </p>
-                <p className="break-all text-xs text-muted-foreground">
-                  {banner.image}
-                </p>
               </div>
               <div className="flex items-center gap-2 md:flex-col">
                 <Button variant="outline" onClick={() => toggleBanner(banner.id)} className="font-heading font-semibold">
@@ -204,7 +198,7 @@ const AdminMarketing = () => {
                 <Button variant="ghost" size="icon" onClick={() => openEdit(banner)}>
                   <Pencil className="h-4 w-4" />
                 </Button>
-                <Button variant="ghost" size="icon" onClick={() => setBannerToDelete(banner)} className="text-destructive hover:text-destructive">
+                <Button variant="ghost" size="icon" onClick={() => setBannerToDelete(banner)} className="text-destructive hover:bg-destructive/10 hover:text-destructive">
                   <Trash2 className="h-4 w-4" />
                 </Button>
               </div>
@@ -230,7 +224,9 @@ const AdminMarketing = () => {
                 ref={fileInputRef}
                 type="file"
                 accept="image/*"
-                className="hidden"
+                hidden
+                aria-hidden="true"
+                tabIndex={-1}
                 onChange={onImageSelected}
               />
 
@@ -275,7 +271,7 @@ const AdminMarketing = () => {
                     <Upload className="mr-2 h-4 w-4" /> {t('admin.uploadReplaceImage')}
                   </Button>
                   {form.image ? (
-                    <Button type="button" variant="outline" onClick={() => setConfirmRemoveImageOpen(true)}>
+                    <Button type="button" variant="outline" onClick={() => setConfirmRemoveImageOpen(true)} className="border-destructive/30 bg-destructive/5 text-destructive hover:bg-destructive/15 hover:text-destructive">
                       <Trash2 className="mr-2 h-4 w-4" /> {t('admin.removeImage')}
                     </Button>
                   ) : null}

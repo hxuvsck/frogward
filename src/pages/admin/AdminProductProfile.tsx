@@ -137,7 +137,9 @@ const AdminProductProfile = () => {
               ref={fileInputRef}
               type="file"
               accept="image/*"
-              className="hidden"
+              hidden
+              aria-hidden="true"
+              tabIndex={-1}
               onChange={onImageSelected}
             />
 
@@ -145,7 +147,7 @@ const AdminProductProfile = () => {
               <Button variant="outline" onClick={onPickImage}>
                 <Upload className="mr-2 h-4 w-4" /> {t('admin.uploadReplaceImage')}
               </Button>
-              <Button variant="outline" onClick={() => setConfirmRemoveImageOpen(true)}>
+              <Button variant="outline" onClick={() => setConfirmRemoveImageOpen(true)} className="border-destructive/30 bg-destructive/5 text-destructive hover:bg-destructive/15 hover:text-destructive">
                 <Trash2 className="mr-2 h-4 w-4" /> {t('admin.removeImage')}
               </Button>
             </div>
@@ -209,7 +211,7 @@ const AdminProductProfile = () => {
               <Button onClick={handleSave} className="font-heading font-semibold">
                 {t('admin.saveChanges')}
               </Button>
-              <Button variant="outline" onClick={() => setConfirmDeleteOpen(true)} className="text-destructive hover:text-destructive">
+              <Button variant="outline" onClick={() => setConfirmDeleteOpen(true)} className="border-destructive/30 bg-destructive/5 text-destructive hover:bg-destructive/15 hover:text-destructive">
                 <Trash2 className="mr-2 h-4 w-4" /> {t('admin.delete')}
               </Button>
             </div>

@@ -181,7 +181,7 @@ const Navbar = () => {
                   <div className="border-t border-border my-1" />
                   <button
                     onClick={handleLogout}
-                    className="flex items-center gap-2 px-4 py-2.5 text-sm text-destructive hover:bg-muted/50 transition-colors w-full text-left"
+                    className="flex items-center gap-2 px-4 py-2.5 text-sm text-destructive hover:bg-destructive/10 transition-colors w-full text-left"
                   >
                     <LogOut className="h-3.5 w-3.5" /> {t('nav.logout')}
                   </button>
@@ -262,7 +262,7 @@ const Navbar = () => {
                   </Link>
                 </>
               )}
-              <button onClick={handleLogout} className="block text-sm text-destructive">
+              <button onClick={handleLogout} className="block text-sm text-destructive hover:text-destructive/90">
                 <LogOut className="h-3.5 w-3.5 inline mr-1" /> {t('nav.logout')}
               </button>
             </div>

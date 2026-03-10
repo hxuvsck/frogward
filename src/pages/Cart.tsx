@@ -80,7 +80,7 @@ const Cart = () => {
                   </div>
                 </div>
                 <div className="flex flex-col items-end justify-between">
-                  <button onClick={() => setItemToRemove(item)} className="text-muted-foreground hover:text-destructive transition-colors">
+                  <button onClick={() => setItemToRemove(item)} className="rounded p-1 text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-colors">
                     <Trash2 className="h-4 w-4" />
                   </button>
                   <p className="text-sm font-heading font-semibold">{formatPrice(item.price * item.quantity)}</p>
