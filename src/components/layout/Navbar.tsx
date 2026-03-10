@@ -1,5 +1,5 @@
 import { Link, useNavigate } from 'react-router-dom';
-import { ShoppingCart, Menu, X, User, Search, Sun, Moon, Globe, LogOut, Shield, ChevronDown } from 'lucide-react';
+import { ShoppingCart, Menu, X, User, Search, Sun, Moon, Globe, LogOut, Shield, ChevronDown, Package, Users, Megaphone } from 'lucide-react';
 import { useState, useRef, useEffect } from 'react';
 import { useCartStore } from '@/store/cart-store';
 import { useAuthStore } from '@/store/auth-store';
@@ -119,13 +119,43 @@ const Navbar = () => {
                     </Link>
                   )}
                   {isAdmin && (
-                    <Link
-                      to="/admin"
-                      onClick={() => setUserMenuOpen(false)}
-                      className="flex items-center gap-2 px-4 py-2.5 text-sm text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
-                    >
-                      <Shield className="h-3.5 w-3.5" /> {t('nav.admin')}
-                    </Link>
+                    <>
+                      <Link
+                        to="/admin"
+                        onClick={() => setUserMenuOpen(false)}
+                        className="flex items-center gap-2 px-4 py-2.5 text-sm text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
+                      >
+                        <Shield className="h-3.5 w-3.5" /> {t('nav.admin')}
+                      </Link>
+                      <Link
+                        to="/admin/orders"
+                        onClick={() => setUserMenuOpen(false)}
+                        className="flex items-center gap-2 px-4 py-2.5 text-sm text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
+                      >
+                        <ShoppingCart className="h-3.5 w-3.5" /> {t('admin.orders')}
+                      </Link>
+                      <Link
+                        to="/admin/products"
+                        onClick={() => setUserMenuOpen(false)}
+                        className="flex items-center gap-2 px-4 py-2.5 text-sm text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
+                      >
+                        <Package className="h-3.5 w-3.5" /> {t('admin.products')}
+                      </Link>
+                      <Link
+                        to="/admin/customers"
+                        onClick={() => setUserMenuOpen(false)}
+                        className="flex items-center gap-2 px-4 py-2.5 text-sm text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
+                      >
+                        <Users className="h-3.5 w-3.5" /> {t('admin.customers')}
+                      </Link>
+                      <Link
+                        to="/admin/marketing"
+                        onClick={() => setUserMenuOpen(false)}
+                        className="flex items-center gap-2 px-4 py-2.5 text-sm text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
+                      >
+                        <Megaphone className="h-3.5 w-3.5" /> {t('admin.marketing')}
+                      </Link>
+                    </>
                   )}
                   <div className="border-t border-border my-1" />
                   <button
@@ -182,9 +212,23 @@ const Navbar = () => {
                 </Link>
               )}
               {isAdmin && (
-                <Link to="/admin" className="block text-sm" onClick={() => setMobileOpen(false)}>
-                  <Shield className="h-3.5 w-3.5 inline mr-1" /> {t('nav.admin')}
-                </Link>
+                <>
+                  <Link to="/admin" className="block text-sm" onClick={() => setMobileOpen(false)}>
+                    <Shield className="h-3.5 w-3.5 inline mr-1" /> {t('nav.admin')}
+                  </Link>
+                  <Link to="/admin/orders" className="block text-sm" onClick={() => setMobileOpen(false)}>
+                    <ShoppingCart className="h-3.5 w-3.5 inline mr-1" /> {t('admin.orders')}
+                  </Link>
+                  <Link to="/admin/products" className="block text-sm" onClick={() => setMobileOpen(false)}>
+                    <Package className="h-3.5 w-3.5 inline mr-1" /> {t('admin.products')}
+                  </Link>
+                  <Link to="/admin/customers" className="block text-sm" onClick={() => setMobileOpen(false)}>
+                    <Users className="h-3.5 w-3.5 inline mr-1" /> {t('admin.customers')}
+                  </Link>
+                  <Link to="/admin/marketing" className="block text-sm" onClick={() => setMobileOpen(false)}>
+                    <Megaphone className="h-3.5 w-3.5 inline mr-1" /> {t('admin.marketing')}
+                  </Link>
+                </>
               )}
               <button onClick={handleLogout} className="block text-sm text-destructive">
                 <LogOut className="h-3.5 w-3.5 inline mr-1" /> {t('nav.logout')}
