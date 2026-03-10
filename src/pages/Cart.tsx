@@ -1,12 +1,24 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Trash2, Plus, Minus, ShoppingCart } from 'lucide-react';
 import Layout from '@/components/layout/Layout';
 import { Button } from '@/components/ui/button';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import { useCartStore } from '@/store/cart-store';
 import { useAuthStore } from '@/store/auth-store';
 import { useT } from '@/store/lang-store';
 import { useProductStore } from '@/store/product-store';
 import { resolveProductImage } from '@/lib/product-image';
+import type { CartItem } from '@/types/cart';
 
 const formatPrice = (price: number) => `₮${price.toLocaleString()}`;
 
@@ -15,6 +27,8 @@ const Cart = () => {
   const { isAuthenticated, user } = useAuthStore();
   const products = useProductStore((s) => s.products);
   const t = useT();
+  const [itemToRemove, setItemToRemove] = useState<CartItem | null>(null);
+  const [confirmClearOpen, setConfirmClearOpen] = useState(false);
   const visibleItems = isAuthenticated && user?.role === 'customer' ? items : [];
 
   if (visibleItems.length === 0) {
@@ -66,14 +80,14 @@ const Cart = () => {
                   </div>
                 </div>
                 <div className="flex flex-col items-end justify-between">
-                  <button onClick={() => removeItem(item.id)} className="text-muted-foreground hover:text-destructive transition-colors">
+                  <button onClick={() => setItemToRemove(item)} className="text-muted-foreground hover:text-destructive transition-colors">
                     <Trash2 className="h-4 w-4" />
                   </button>
                   <p className="text-sm font-heading font-semibold">{formatPrice(item.price * item.quantity)}</p>
                 </div>
               </div>
             ))}
-            <button onClick={clearCart} className="text-xs text-muted-foreground hover:text-destructive transition-colors">
+            <button onClick={() => setConfirmClearOpen(true)} className="text-xs text-muted-foreground hover:text-destructive transition-colors">
               {t('cart.clear')}
             </button>
           </div>
@@ -99,6 +113,42 @@ const Cart = () => {
             </Button>
           </div>
         </div>
+
+        <AlertDialog open={!!itemToRemove} onOpenChange={(open) => { if (!open) setItemToRemove(null); }}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>{t('cart.confirmDeleteTitle')}</AlertDialogTitle>
+              <AlertDialogDescription>{t('cart.confirmRemoveItem')}</AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>{t('common.no')}</AlertDialogCancel>
+              <AlertDialogAction onClick={() => {
+                if (itemToRemove) removeItem(itemToRemove.id);
+                setItemToRemove(null);
+              }}>
+                {t('common.yes')}
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+
+        <AlertDialog open={confirmClearOpen} onOpenChange={setConfirmClearOpen}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>{t('cart.confirmDeleteTitle')}</AlertDialogTitle>
+              <AlertDialogDescription>{t('cart.confirmClearCart')}</AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>{t('common.no')}</AlertDialogCancel>
+              <AlertDialogAction onClick={() => {
+                clearCart();
+                setConfirmClearOpen(false);
+              }}>
+                {t('common.yes')}
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </div>
     </Layout>
   );

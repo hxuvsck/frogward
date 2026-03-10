@@ -45,6 +45,7 @@ const AdminProductProfile = () => {
   const [description, setDescription] = useState('');
   const [inStock, setInStock] = useState(true);
   const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
+  const [confirmRemoveImageOpen, setConfirmRemoveImageOpen] = useState(false);
 
   useEffect(() => {
     if (!product) return;
@@ -112,6 +113,7 @@ const AdminProductProfile = () => {
   const removeImage = () => {
     updateProduct(product.id, { image: '' });
     toast({ title: t('admin.imageRemoved') });
+    setConfirmRemoveImageOpen(false);
   };
 
   return (
@@ -143,7 +145,7 @@ const AdminProductProfile = () => {
               <Button variant="outline" onClick={onPickImage}>
                 <Upload className="mr-2 h-4 w-4" /> {t('admin.uploadReplaceImage')}
               </Button>
-              <Button variant="outline" onClick={removeImage}>
+              <Button variant="outline" onClick={() => setConfirmRemoveImageOpen(true)}>
                 <Trash2 className="mr-2 h-4 w-4" /> {t('admin.removeImage')}
               </Button>
             </div>
@@ -225,6 +227,19 @@ const AdminProductProfile = () => {
             <AlertDialogFooter>
               <AlertDialogCancel>{t('common.no')}</AlertDialogCancel>
               <AlertDialogAction onClick={handleDelete}>{t('common.yes')}</AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+
+        <AlertDialog open={confirmRemoveImageOpen} onOpenChange={setConfirmRemoveImageOpen}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>{t('admin.confirmDeleteTitle')}</AlertDialogTitle>
+              <AlertDialogDescription>{t('admin.confirmRemoveImage')}</AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>{t('common.no')}</AlertDialogCancel>
+              <AlertDialogAction onClick={removeImage}>{t('common.yes')}</AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>

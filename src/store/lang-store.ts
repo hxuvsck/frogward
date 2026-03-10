@@ -233,6 +233,8 @@ const translations = {
   'admin.productNotFound': { mn: 'Бүтээгдэхүүн олдсонгүй.', en: 'Product not found.' },
   'admin.confirmDeleteTitle': { mn: 'Устгахдаа итгэлтэй байна уу?', en: 'Are you sure?' },
   'admin.confirmDeleteProduct': { mn: 'Та энэ бүтээгдэхүүнийг устгахдаа итгэлтэй байна уу?', en: 'Are you sure you want to delete this product?' },
+  'admin.confirmDeleteBanner': { mn: 'Та энэ баннерыг устгахдаа итгэлтэй байна уу?', en: 'Are you sure you want to delete this banner?' },
+  'admin.confirmRemoveImage': { mn: 'Та энэ зургийг устгахдаа итгэлтэй байна уу?', en: 'Are you sure you want to remove this image?' },
   'admin.addBanner': { mn: 'Баннер нэмэх', en: 'Add Banner' },
   'admin.searchBanners': { mn: 'Гарчиг, тайлбараар хайх...', en: 'Search by title or description...' },
   'admin.noBanners': { mn: 'Баннер олдсонгүй.', en: 'No banners found.' },
@@ -260,6 +262,11 @@ const translations = {
   'admin.removeImage': { mn: 'Зураг устгах', en: 'Remove Image' },
   'admin.imageUpdated': { mn: 'Зураг шинэчлэгдлээ', en: 'Image updated' },
   'admin.imageRemoved': { mn: 'Зураг устгагдлаа', en: 'Image removed' },
+
+  // Cart
+  'cart.confirmDeleteTitle': { mn: 'Устгахдаа итгэлтэй байна уу?', en: 'Are you sure?' },
+  'cart.confirmRemoveItem': { mn: 'Та энэ барааг сагснаас хасахдаа итгэлтэй байна уу?', en: 'Are you sure you want to remove this item from your cart?' },
+  'cart.confirmClearCart': { mn: 'Та сагсыг бүхэлд нь хоослохдоо итгэлтэй байна уу?', en: 'Are you sure you want to clear your cart?' },
 
   // Admin Customers
   'admin.searchCustomers': { mn: 'Нэр, утас, имэйлээр хайх...', en: 'Search by name, phone, or email...' },

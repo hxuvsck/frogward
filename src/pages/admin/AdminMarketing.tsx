@@ -4,6 +4,16 @@ import { ArrowLeft, Megaphone, Pencil, Plus, Trash2, Upload } from 'lucide-react
 import Layout from '@/components/layout/Layout';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
@@ -35,6 +45,8 @@ const AdminMarketing = () => {
   const [editing, setEditing] = useState<MarketingBanner | null>(null);
   const [isNew, setIsNew] = useState(false);
   const [form, setForm] = useState(EMPTY_FORM);
+  const [bannerToDelete, setBannerToDelete] = useState<MarketingBanner | null>(null);
+  const [confirmRemoveImageOpen, setConfirmRemoveImageOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   if (!isAuthenticated || !user || user.role !== 'admin') return <Navigate to="/login" replace />;
@@ -104,9 +116,11 @@ const AdminMarketing = () => {
     resetForm();
   };
 
-  const handleDelete = (id: string) => {
-    deleteBanner(id);
+  const handleDelete = () => {
+    if (!bannerToDelete) return;
+    deleteBanner(bannerToDelete.id);
     toast({ title: t('admin.bannerDeleted') });
+    setBannerToDelete(null);
   };
 
   const onPickImage = () => {
@@ -131,6 +145,7 @@ const AdminMarketing = () => {
   const removeImage = () => {
     setForm((state) => ({ ...state, image: '' }));
     toast({ title: t('admin.imageRemoved') });
+    setConfirmRemoveImageOpen(false);
   };
 
   return (
@@ -188,7 +203,7 @@ const AdminMarketing = () => {
                 <Button variant="ghost" size="icon" onClick={() => openEdit(banner)}>
                   <Pencil className="h-4 w-4" />
                 </Button>
-                <Button variant="ghost" size="icon" onClick={() => handleDelete(banner.id)} className="text-destructive hover:text-destructive">
+                <Button variant="ghost" size="icon" onClick={() => setBannerToDelete(banner)} className="text-destructive hover:text-destructive">
                   <Trash2 className="h-4 w-4" />
                 </Button>
               </div>
@@ -259,7 +274,7 @@ const AdminMarketing = () => {
                     <Upload className="mr-2 h-4 w-4" /> {t('admin.uploadReplaceImage')}
                   </Button>
                   {form.image ? (
-                    <Button type="button" variant="outline" onClick={removeImage}>
+                    <Button type="button" variant="outline" onClick={() => setConfirmRemoveImageOpen(true)}>
                       <Trash2 className="mr-2 h-4 w-4" /> {t('admin.removeImage')}
                     </Button>
                   ) : null}
@@ -283,6 +298,32 @@ const AdminMarketing = () => {
             </div>
           </DialogContent>
         </Dialog>
+
+        <AlertDialog open={!!bannerToDelete} onOpenChange={(open) => { if (!open) setBannerToDelete(null); }}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>{t('admin.confirmDeleteTitle')}</AlertDialogTitle>
+              <AlertDialogDescription>{t('admin.confirmDeleteBanner')}</AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>{t('common.no')}</AlertDialogCancel>
+              <AlertDialogAction onClick={handleDelete}>{t('common.yes')}</AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+
+        <AlertDialog open={confirmRemoveImageOpen} onOpenChange={setConfirmRemoveImageOpen}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>{t('admin.confirmDeleteTitle')}</AlertDialogTitle>
+              <AlertDialogDescription>{t('admin.confirmRemoveImage')}</AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>{t('common.no')}</AlertDialogCancel>
+              <AlertDialogAction onClick={removeImage}>{t('common.yes')}</AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </div>
     </Layout>
   );

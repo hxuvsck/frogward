@@ -57,6 +57,7 @@ const AdminProducts = () => {
   const [formInStock, setFormInStock] = useState(true);
   const [formImage, setFormImage] = useState('');
   const [productToDelete, setProductToDelete] = useState<Product | null>(null);
+  const [confirmRemoveImageOpen, setConfirmRemoveImageOpen] = useState(false);
 
   if (!isAuthenticated || !user || user.role !== 'admin') return <Navigate to="/login" replace />;
 
@@ -155,6 +156,7 @@ const AdminProducts = () => {
   const removeImage = () => {
     setFormImage('');
     toast({ title: t('admin.imageRemoved') });
+    setConfirmRemoveImageOpen(false);
   };
 
   return (
@@ -276,7 +278,7 @@ const AdminProducts = () => {
                   <Button type="button" variant="outline" onClick={onPickImage}>
                     <Upload className="mr-2 h-4 w-4" /> {t('admin.uploadReplaceImage')}
                   </Button>
-                  <Button type="button" variant="outline" onClick={removeImage}>
+                  <Button type="button" variant="outline" onClick={() => setConfirmRemoveImageOpen(true)}>
                     <Trash2 className="mr-2 h-4 w-4" /> {t('admin.removeImage')}
                   </Button>
                 </div>
@@ -337,6 +339,19 @@ const AdminProducts = () => {
             <AlertDialogFooter>
               <AlertDialogCancel>{t('common.no')}</AlertDialogCancel>
               <AlertDialogAction onClick={handleDelete}>{t('common.yes')}</AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+
+        <AlertDialog open={confirmRemoveImageOpen} onOpenChange={setConfirmRemoveImageOpen}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>{t('admin.confirmDeleteTitle')}</AlertDialogTitle>
+              <AlertDialogDescription>{t('admin.confirmRemoveImage')}</AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>{t('common.no')}</AlertDialogCancel>
+              <AlertDialogAction onClick={removeImage}>{t('common.yes')}</AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>
