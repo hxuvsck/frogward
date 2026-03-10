@@ -46,7 +46,7 @@ const translations = {
   'product.items': { mn: 'бүтээгдэхүүн', en: 'items' },
 
   // Products page
-  'products.title': { mn: 'Бүх бүтээгдэхүүн', en: 'All Products' },
+  'products.title': { mn: 'Бүтээгдэхүүнүүд', en: 'All Products' },
   'products.all': { mn: 'Бүгд', en: 'All' },
   'products.default': { mn: 'Анхдагч', en: 'Default' },
   'products.priceAsc': { mn: 'Үнэ: Бага → Их', en: 'Price: Low → High' },
@@ -131,7 +131,7 @@ const translations = {
   // Footer
   'footer.desc': { mn: 'Үйлдвэрийн ажлын хувцас & аюулгүйн тоног төхөөрөмж. Хамгийн хатуу нөхцөлд зориулсан.', en: 'Industrial workwear & safety equipment. Built for the toughest conditions.' },
   'footer.shop': { mn: 'Дэлгүүр', en: 'Shop' },
-  'footer.allProducts': { mn: 'Бүх бүтээгдэхүүн', en: 'All Products' },
+  'footer.allProducts': { mn: 'Бүтээгдэхүүнүүд', en: 'All Products' },
   'footer.support': { mn: 'Тусламж', en: 'Support' },
   'footer.rights': { mn: '© 2026 FrogWard. Бүх эрх хуулиар хамгаалагдсан.', en: '© 2026 FrogWard. All rights reserved.' },
 
