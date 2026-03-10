@@ -9,9 +9,8 @@ import { useT } from '@/store/lang-store';
 const VerifyOtp = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const state = (location.state as { phone?: string; redirectTo?: string } | null) || {};
+  const state = (location.state as { phone?: string } | null) || {};
   const phone = state.phone || '';
-  const redirectTo = state.redirectTo;
   const { loginWithOtp, isAuthenticated, user } = useAuthStore();
   const t = useT();
   const [code, setCode] = useState('');
@@ -31,9 +30,9 @@ const VerifyOtp = () => {
 
   useEffect(() => {
     if (isAuthenticated && user) {
-      navigate(user.role === 'admin' ? '/admin' : redirectTo || '/account', { replace: true });
+      navigate('/', { replace: true });
     }
-  }, [isAuthenticated, user, navigate, redirectTo]);
+  }, [isAuthenticated, user, navigate]);
 
   const handleVerify = (e: React.FormEvent) => {
     e.preventDefault();

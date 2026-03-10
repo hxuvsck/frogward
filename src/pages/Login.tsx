@@ -18,8 +18,8 @@ const Login = () => {
 
   useEffect(() => {
     if (!isAuthenticated || !user) return;
-    navigate(user.role === 'admin' ? '/admin' : redirectTo || '/account', { replace: true });
-  }, [isAuthenticated, user, navigate, redirectTo]);
+    navigate('/', { replace: true });
+  }, [isAuthenticated, user, navigate]);
 
   const handleFacebook = () => {
     loginWithFacebook();
@@ -28,7 +28,7 @@ const Login = () => {
   const handlePhoneSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (phone.trim()) {
-      navigate('/verify-otp', { state: { phone, redirectTo } });
+      navigate('/verify-otp', { state: { phone } });
     }
   };
 
