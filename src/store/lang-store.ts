@@ -6,8 +6,8 @@ export type Lang = 'mn' | 'en';
 const translations = {
   // Navbar
   'nav.products': { mn: 'Бүтээгдэхүүн', en: 'Products' },
-  'nav.about': { mn: 'Бидний тухай', en: 'About Us' },
-  'nav.contact': { mn: 'Холбоо барих', en: 'Contact Us' },
+  'nav.about': { mn: 'Бидний тухай', en: 'About us' },
+  'nav.contact': { mn: 'Холбоо барих', en: 'Contact us' },
   'nav.cart': { mn: 'Сагс', en: 'Cart' },
   'nav.signIn': { mn: 'Нэвтрэх', en: 'Sign In' },
   'nav.admin': { mn: 'Админ', en: 'Admin' },
