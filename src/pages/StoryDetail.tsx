@@ -1,6 +1,7 @@
 import { Link, Navigate, useParams } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 import Layout from '@/components/layout/Layout';
+import { resolveMarketingImage } from '@/lib/marketing-image';
 import { useMarketingStore } from '@/store/marketing-store';
 
 const StoryDetail = () => {
@@ -20,7 +21,7 @@ const StoryDetail = () => {
         </Link>
 
         <div className="overflow-hidden rounded-3xl border border-border bg-card">
-          <img src={story.image} alt={story.title} className="h-[340px] w-full object-cover md:h-[460px]" />
+          <img src={resolveMarketingImage(story.image)} alt={story.title} className="h-[340px] w-full object-cover md:h-[460px]" />
         </div>
 
         <div className="mt-8 space-y-6">

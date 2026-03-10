@@ -21,6 +21,7 @@ import { useAuthStore } from '@/store/auth-store';
 import { useMarketingStore } from '@/store/marketing-store';
 import { useT } from '@/store/lang-store';
 import { useToast } from '@/hooks/use-toast';
+import { resolveMarketingImage } from '@/lib/marketing-image';
 import type { MarketingBanner } from '@/types/marketing-banner';
 
 const EMPTY_FORM = {
@@ -82,7 +83,7 @@ const AdminMarketing = () => {
   };
 
   const handleSave = () => {
-    if (!form.title || !form.summary || !form.content || !form.image) return;
+    if (!form.title || !form.summary || !form.content) return;
 
     const slug = form.title
       .toLowerCase()
@@ -176,7 +177,7 @@ const AdminMarketing = () => {
           {filtered.map((banner) => (
             <article key={banner.id} className="grid gap-4 overflow-hidden rounded-2xl border border-border bg-card p-4 md:grid-cols-[240px_1fr_auto] md:items-center">
               <div className="overflow-hidden rounded-xl bg-muted">
-                <img src={banner.image} alt={banner.title} className="h-40 w-full object-cover md:h-32" />
+                <img src={resolveMarketingImage(banner.image)} alt={banner.title} className="h-40 w-full object-cover md:h-32" />
               </div>
               <div className="space-y-2">
                 <div className="flex flex-wrap items-center gap-2">
@@ -262,7 +263,7 @@ const AdminMarketing = () => {
                 <Label>{t('admin.bannerImage')}</Label>
                 {form.image ? (
                   <div className="overflow-hidden rounded-xl border border-border bg-muted">
-                    <img src={form.image} alt={form.title || 'Banner preview'} className="h-48 w-full object-cover" />
+                    <img src={resolveMarketingImage(form.image)} alt={form.title || 'Banner preview'} className="h-48 w-full object-cover" />
                   </div>
                 ) : (
                   <div className="rounded-xl border border-dashed border-border bg-muted/40 px-4 py-10 text-center text-sm text-muted-foreground">

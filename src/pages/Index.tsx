@@ -4,10 +4,10 @@ import Layout from '@/components/layout/Layout';
 import ProductCard from '@/components/product/ProductCard';
 import HomeMarketingCarousel from '@/components/home/HomeMarketingCarousel';
 import { categories } from '@/data/mock-products';
+import { DEFAULT_MARKETING_IMAGE } from '@/lib/marketing-image';
 import { useT } from '@/store/lang-store';
 import { useMarketingStore } from '@/store/marketing-store';
 import { useProductStore } from '@/store/product-store';
-import heroBg from '@/assets/hero-bg.jpg';
 import { getCategoryLabel } from '@/lib/category-label';
 
 const Index = () => {
@@ -21,7 +21,7 @@ const Index = () => {
       <section className="relative h-[72vh] min-h-[440px] overflow-hidden">
         <HomeMarketingCarousel
           banners={banners.filter((banner) => banner.active)}
-          fallbackImage={heroBg}
+          fallbackImage={DEFAULT_MARKETING_IMAGE}
         />
       </section>
 

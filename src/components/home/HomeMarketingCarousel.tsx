@@ -8,6 +8,7 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from '@/components/ui/carousel';
+import { resolveMarketingImage } from '@/lib/marketing-image';
 import type { MarketingBanner } from '@/types/marketing-banner';
 
 const AUTO_ADVANCE_MS = 5000;
@@ -60,10 +61,10 @@ const HomeMarketingCarousel = ({
           <CarouselItem key={banner.id} className="pl-0">
             {'slug' in banner && banner.slug ? (
               <Link to={`/stories/${banner.slug}`} className="block h-full">
-                <img src={banner.image} alt={banner.title} className="h-full w-full object-cover" />
+                <img src={resolveMarketingImage(banner.image)} alt={banner.title} className="h-full w-full object-cover" />
               </Link>
             ) : (
-              <img src={banner.image} alt={banner.title} className="h-full w-full object-cover" />
+              <img src={resolveMarketingImage(banner.image)} alt={banner.title} className="h-full w-full object-cover" />
             )}
           </CarouselItem>
         ))}
