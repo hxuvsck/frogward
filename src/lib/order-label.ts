@@ -28,3 +28,16 @@ export const getPaymentStatusLabel = (
   t: (key: TranslationKey) => string
 ) => t(paymentStatusKeys[status]);
 
+export const getPaymentStatusClassName = (
+  status: 'unpaid' | 'paid' | 'failed'
+) => {
+  if (status === 'paid') {
+    return 'inline-flex items-center rounded-full border border-accent/30 bg-accent/15 px-2.5 py-0.5 text-xs font-semibold text-accent';
+  }
+
+  if (status === 'failed') {
+    return 'inline-flex items-center rounded-full border border-destructive/30 bg-destructive/15 px-2.5 py-0.5 text-xs font-semibold text-destructive';
+  }
+
+  return 'inline-flex items-center rounded-full border border-border bg-muted px-2.5 py-0.5 text-xs font-semibold text-destructive';
+};

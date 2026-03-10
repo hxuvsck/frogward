@@ -28,9 +28,15 @@ const slugifyBanner = (title: string, fallbackId: string) => {
 
 const normalizeBanner = (banner: MarketingBanner): MarketingBanner => ({
   ...banner,
-  title: banner.title || 'Untitled banner',
-  summary: banner.summary || '',
-  content: banner.content || '',
+  title: banner.title?.trim() || banner.titleEn?.trim() || banner.titleMn?.trim() || 'Untitled banner',
+  titleEn: banner.titleEn?.trim() || banner.title?.trim() || 'Untitled banner',
+  titleMn: banner.titleMn?.trim() || undefined,
+  summary: banner.summary?.trim() || banner.summaryEn?.trim() || banner.summaryMn?.trim() || '',
+  summaryEn: banner.summaryEn?.trim() || banner.summary?.trim() || '',
+  summaryMn: banner.summaryMn?.trim() || undefined,
+  content: banner.content?.trim() || banner.contentEn?.trim() || banner.contentMn?.trim() || '',
+  contentEn: banner.contentEn?.trim() || banner.content?.trim() || '',
+  contentMn: banner.contentMn?.trim() || undefined,
   image: typeof banner.image === 'string' ? banner.image : '',
   slug: banner.slug?.trim() || slugifyBanner(banner.title, banner.id),
   focalX: typeof banner.focalX === 'number' ? banner.focalX : 50,
@@ -126,7 +132,7 @@ export const useMarketingStore = create<MarketingStore>()(
     {
       name: 'frogward-marketing',
       storage: safeStorage,
-      version: 2,
+      version: 3,
       migrate: (persistedState) => {
         const state = persistedState as Partial<MarketingStore> | undefined;
         if (!state) return { banners: ensureUniqueSlugs(initialBanners) } as MarketingStore;

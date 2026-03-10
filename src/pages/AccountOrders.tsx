@@ -5,7 +5,7 @@ import Layout from '@/components/layout/Layout';
 import { useAuthStore } from '@/store/auth-store';
 import { useOrderStore } from '@/store/order-store';
 import { useT } from '@/store/lang-store';
-import { getOrderStatusLabel, getPaymentStatusLabel } from '@/lib/order-label';
+import { getOrderStatusLabel, getPaymentStatusClassName, getPaymentStatusLabel } from '@/lib/order-label';
 import { useProductStore } from '@/store/product-store';
 import { resolveProductImage } from '@/lib/product-image';
 
@@ -51,7 +51,7 @@ const AccountOrders = () => {
                       {getOrderStatusLabel(order.status, t)}
                     </span>
                     <p className="text-xs text-muted-foreground">
-                      {t('accountOrders.payment')}: <span className={order.paymentStatus === 'paid' ? 'text-accent' : 'text-destructive'}>{getPaymentStatusLabel(order.paymentStatus, t)}</span>
+                      {t('accountOrders.payment')}: <span className={getPaymentStatusClassName(order.paymentStatus)}>{getPaymentStatusLabel(order.paymentStatus, t)}</span>
                     </p>
                   </div>
                 </div>

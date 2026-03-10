@@ -4,7 +4,7 @@ import Layout from '@/components/layout/Layout';
 import { useAuthStore } from '@/store/auth-store';
 import { useOrderStore } from '@/store/order-store';
 import { useT } from '@/store/lang-store';
-import { getOrderStatusLabel, getPaymentStatusLabel } from '@/lib/order-label';
+import { getOrderStatusLabel, getPaymentStatusClassName, getPaymentStatusLabel } from '@/lib/order-label';
 import { useProductStore } from '@/store/product-store';
 import { resolveProductImage } from '@/lib/product-image';
 import type { OrderStatus } from '@/types/order';
@@ -55,7 +55,11 @@ const AdminOrderProfile = () => {
             </div>
             <div><span className="text-muted-foreground">{t('admin.phone')}:</span> {order.customerPhone}</div>
             <div className="col-span-2"><span className="text-muted-foreground">{t('admin.address')}:</span> {order.deliveryAddress}</div>
-            <div><span className="text-muted-foreground">{t('admin.payment')}:</span> {order.paymentMethod} ({getPaymentStatusLabel(order.paymentStatus, t)})</div>
+            <div className="flex items-center gap-2">
+              <span className="text-muted-foreground">{t('admin.payment')}:</span>
+              <span>{order.paymentMethod}</span>
+              <span className={getPaymentStatusClassName(order.paymentStatus)}>{getPaymentStatusLabel(order.paymentStatus, t)}</span>
+            </div>
             <div><span className="text-muted-foreground">{t('admin.created')}:</span> {new Date(order.createdAt).toLocaleString()}</div>
           </div>
 

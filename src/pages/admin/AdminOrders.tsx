@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input';
 import { useAuthStore } from '@/store/auth-store';
 import { useOrderStore } from '@/store/order-store';
 import { useT } from '@/store/lang-store';
-import { getOrderStatusLabel, getPaymentStatusLabel } from '@/lib/order-label';
+import { getOrderStatusLabel, getPaymentStatusClassName, getPaymentStatusLabel } from '@/lib/order-label';
 import type { OrderStatus } from '@/types/order';
 
 const formatPrice = (p: number) => `₮${p.toLocaleString()}`;
@@ -125,7 +125,7 @@ const AdminOrders = () => {
                     <td className="px-4 py-3 font-heading font-semibold text-primary">{formatPrice(order.totalAmount)}</td>
                     <td className="px-4 py-3">
                       <span className="text-xs uppercase tracking-wider">{order.paymentMethod}</span>
-                      <span className={`ml-2 text-xs ${order.paymentStatus === 'paid' ? 'text-accent' : 'text-destructive'}`}>{getPaymentStatusLabel(order.paymentStatus, t)}</span>
+                      <span className={`ml-2 ${getPaymentStatusClassName(order.paymentStatus)}`}>{getPaymentStatusLabel(order.paymentStatus, t)}</span>
                     </td>
                     <td className="px-4 py-3">
                       <span className={`text-xs px-2 py-0.5 rounded-full ${statusColor(order.status)}`}>{getOrderStatusLabel(order.status, t)}</span>

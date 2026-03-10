@@ -19,8 +19,9 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { useAuthStore } from '@/store/auth-store';
 import { useMarketingStore } from '@/store/marketing-store';
-import { useT } from '@/store/lang-store';
+import { useLangStore, useT } from '@/store/lang-store';
 import { useToast } from '@/hooks/use-toast';
+import { getLocalizedBannerSummary, getLocalizedBannerTitle, matchesBannerSearch } from '@/lib/marketing-localization';
 import { resolveMarketingImage } from '@/lib/marketing-image';
 import type { MarketingBanner } from '@/types/marketing-banner';
 
@@ -28,8 +29,11 @@ const MAX_BANNER_IMAGE_BYTES = 350 * 1024;
 const MAX_BANNER_IMAGE_DIMENSION = 1600;
 const EMPTY_FORM = {
   title: '',
+  titleMn: '',
   summary: '',
+  summaryMn: '',
   content: '',
+  contentMn: '',
   image: '',
   focalX: 50,
   focalY: 50,
@@ -108,6 +112,7 @@ const AdminMarketing = () => {
   const { user, isAuthenticated } = useAuthStore();
   const { toast } = useToast();
   const t = useT();
+  const lang = useLangStore((s) => s.lang);
   const banners = useMarketingStore((s) => s.banners);
   const addBanner = useMarketingStore((s) => s.addBanner);
   const updateBanner = useMarketingStore((s) => s.updateBanner);
@@ -125,11 +130,7 @@ const AdminMarketing = () => {
 
   if (!isAuthenticated || !user || user.role !== 'admin') return <Navigate to="/login" replace />;
 
-  const filtered = banners.filter((banner) =>
-    [banner.title, banner.summary, banner.content, banner.image]
-      .filter(Boolean)
-      .some((value) => value!.toLowerCase().includes(search.toLowerCase()))
-  );
+  const filtered = banners.filter((banner) => matchesBannerSearch(banner, search));
 
   const resetForm = () => {
     setEditing(null);
@@ -147,9 +148,12 @@ const AdminMarketing = () => {
     setEditing(banner);
     setIsNew(false);
     setForm({
-      title: banner.title,
-      summary: banner.summary,
-      content: banner.content,
+      title: banner.titleEn || banner.title,
+      titleMn: banner.titleMn || '',
+      summary: banner.summaryEn || banner.summary,
+      summaryMn: banner.summaryMn || '',
+      content: banner.contentEn || banner.content,
+      contentMn: banner.contentMn || '',
       image: banner.image,
       focalX: banner.focalX ?? 50,
       focalY: banner.focalY ?? 50,
@@ -159,9 +163,13 @@ const AdminMarketing = () => {
   };
 
   const handleSave = () => {
-    if (!form.title || !form.summary || !form.content) return;
+    if ((!form.title && !form.titleMn) || (!form.summary && !form.summaryMn) || (!form.content && !form.contentMn)) return;
 
-    const baseSlug = slugifyBanner(form.title, isNew ? `banner-${Date.now()}` : editing?.id || `banner-${Date.now()}`);
+    const primaryTitle = form.title.trim() || form.titleMn.trim();
+    const primarySummary = form.summary.trim() || form.summaryMn.trim();
+    const primaryContent = form.content.trim() || form.contentMn.trim();
+
+    const baseSlug = slugifyBanner(primaryTitle, isNew ? `banner-${Date.now()}` : editing?.id || `banner-${Date.now()}`);
     const existingSlugs = new Set(
       banners
         .filter((banner) => banner.id !== editing?.id)
@@ -178,10 +186,16 @@ const AdminMarketing = () => {
     if (isNew) {
       addBanner({
         id: `banner-${Date.now()}`,
-        title: form.title,
+        title: primaryTitle,
+        titleEn: form.title.trim() || undefined,
+        titleMn: form.titleMn.trim() || undefined,
         slug,
-        summary: form.summary,
-        content: form.content,
+        summary: primarySummary,
+        summaryEn: form.summary.trim() || undefined,
+        summaryMn: form.summaryMn.trim() || undefined,
+        content: primaryContent,
+        contentEn: form.content.trim() || undefined,
+        contentMn: form.contentMn.trim() || undefined,
         image: form.image,
         focalX: form.focalX,
         focalY: form.focalY,
@@ -191,10 +205,16 @@ const AdminMarketing = () => {
       toast({ title: t('admin.bannerCreated') });
     } else if (editing) {
       updateBanner(editing.id, {
-        title: form.title,
+        title: primaryTitle,
+        titleEn: form.title.trim() || undefined,
+        titleMn: form.titleMn.trim() || undefined,
         slug,
-        summary: form.summary,
-        content: form.content,
+        summary: primarySummary,
+        summaryEn: form.summary.trim() || undefined,
+        summaryMn: form.summaryMn.trim() || undefined,
+        content: primaryContent,
+        contentEn: form.content.trim() || undefined,
+        contentMn: form.contentMn.trim() || undefined,
         image: form.image,
         focalX: form.focalX,
         focalY: form.focalY,
@@ -327,7 +347,7 @@ const AdminMarketing = () => {
               <div className="overflow-hidden rounded-xl bg-muted">
                 <img
                   src={resolveMarketingImage(banner.image)}
-                  alt={banner.title}
+                  alt={getLocalizedBannerTitle(banner, lang)}
                   className="h-40 w-full object-cover md:h-32"
                   style={{
                     objectPosition: `${banner.focalX ?? 50}% ${banner.focalY ?? 50}%`,
@@ -343,8 +363,8 @@ const AdminMarketing = () => {
                   </span>
                 </div>
                 <div>
-                  <h2 className="font-heading text-xl font-bold">{banner.title}</h2>
-                  <p className="mt-1 max-w-2xl text-sm leading-6 text-muted-foreground">{banner.summary}</p>
+                  <h2 className="font-heading text-xl font-bold">{getLocalizedBannerTitle(banner, lang)}</h2>
+                  <p className="mt-1 max-w-2xl text-sm leading-6 text-muted-foreground">{getLocalizedBannerSummary(banner, lang)}</p>
                 </div>
               </div>
               <div className="flex items-center gap-2 md:flex-col">
@@ -388,12 +408,17 @@ const AdminMarketing = () => {
               />
 
               <div className="space-y-2">
-                <Label>{t('admin.bannerTitle')}</Label>
+                <Label>{t('admin.bannerTitle')} (EN)</Label>
                 <Input value={form.title} onChange={(e) => setForm((state) => ({ ...state, title: e.target.value }))} />
               </div>
 
               <div className="space-y-2">
-                <Label>{t('admin.bannerSummary')}</Label>
+                <Label>{t('admin.bannerTitle')} (MN)</Label>
+                <Input value={form.titleMn} onChange={(e) => setForm((state) => ({ ...state, titleMn: e.target.value }))} />
+              </div>
+
+              <div className="space-y-2">
+                <Label>{t('admin.bannerSummary')} (EN)</Label>
                 <Textarea
                   value={form.summary}
                   onChange={(e) => setForm((state) => ({ ...state, summary: e.target.value }))}
@@ -403,10 +428,30 @@ const AdminMarketing = () => {
               </div>
 
               <div className="space-y-2">
-                <Label>{t('admin.bannerContent')}</Label>
+                <Label>{t('admin.bannerSummary')} (MN)</Label>
+                <Textarea
+                  value={form.summaryMn}
+                  onChange={(e) => setForm((state) => ({ ...state, summaryMn: e.target.value }))}
+                  rows={3}
+                  className="min-h-24 resize-y"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label>{t('admin.bannerContent')} (EN)</Label>
                 <Textarea
                   value={form.content}
                   onChange={(e) => setForm((state) => ({ ...state, content: e.target.value }))}
+                  rows={8}
+                  className="min-h-40 resize-y"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label>{t('admin.bannerContent')} (MN)</Label>
+                <Textarea
+                  value={form.contentMn}
+                  onChange={(e) => setForm((state) => ({ ...state, contentMn: e.target.value }))}
                   rows={8}
                   className="min-h-40 resize-y"
                 />
@@ -425,7 +470,7 @@ const AdminMarketing = () => {
                     >
                       <img
                         src={resolveMarketingImage(form.image)}
-                        alt={form.title || 'Banner preview'}
+                        alt={form.title || form.titleMn || 'Banner preview'}
                         className="h-full w-full object-cover"
                         style={{
                           objectPosition: `${form.focalX}% ${form.focalY}%`,

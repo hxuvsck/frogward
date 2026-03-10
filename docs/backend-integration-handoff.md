@@ -73,6 +73,7 @@ Important observations:
 - `Order` currently stores denormalized customer fields directly on the order
 - `Product.category` is a string enum-like id, not a normalized relation
 - `Product` now supports optional bilingual fields: `nameEn`, `nameMn`, `descriptionEn`, `descriptionMn`
+- `MarketingBanner` now supports optional bilingual fields: `titleEn`, `titleMn`, `summaryEn`, `summaryMn`, `contentEn`, `contentMn`
 - `MarketingBanner.image` is currently just a string and should become a storage URL
 
 ## Existing Frontend Flows
@@ -178,6 +179,7 @@ Reference:
 Current behavior:
 
 - banners are browser-local
+- banner content now supports English and Mongolian fields with fallback behavior
 - banner image upload is compressed client-side to avoid browser storage corruption
 - story detail pages are rendered from banner content
 
@@ -185,6 +187,7 @@ Production recommendation:
 
 - banner image should be uploaded to object storage
 - banner records should live in database
+- model localized marketing text explicitly and preserve the same locale fallback behavior used in the frontend
 - story/banner content should have server-managed publish state
 - consider separate content model if marketing stories become richer than banner cards
 

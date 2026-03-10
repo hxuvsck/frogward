@@ -8,8 +8,9 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from '@/components/ui/carousel';
+import { getLocalizedBannerTitle } from '@/lib/marketing-localization';
 import { resolveMarketingImage } from '@/lib/marketing-image';
-import { useT } from '@/store/lang-store';
+import { useLangStore, useT } from '@/store/lang-store';
 import type { MarketingBanner } from '@/types/marketing-banner';
 
 const AUTO_ADVANCE_MS = 5000;
@@ -30,6 +31,7 @@ const HomeMarketingCarousel = ({
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [isHeroHovered, setIsHeroHovered] = useState(false);
   const t = useT();
+  const lang = useLangStore((s) => s.lang);
 
   useEffect(() => {
     if (!api || banners.length <= 1) return;
@@ -92,7 +94,7 @@ const HomeMarketingCarousel = ({
               <Link to={`/stories/${banner.slug}`} className="group block h-full overflow-hidden">
                 <img
                   src={resolveMarketingImage(banner.image)}
-                  alt={banner.title}
+                  alt={getLocalizedBannerTitle(banner, lang)}
                   className="h-full w-full object-cover transition duration-300 ease-out"
                   style={getHeroImageStyle(banner, isHeroHovered && index === selectedIndex)}
                 />
@@ -101,7 +103,7 @@ const HomeMarketingCarousel = ({
               <div className="h-full overflow-hidden">
                 <img
                   src={resolveMarketingImage(banner.image)}
-                  alt={banner.title}
+                  alt={getLocalizedBannerTitle(banner, lang)}
                   className="h-full w-full object-cover transition duration-300 ease-out"
                   style={getHeroImageStyle(banner, isHeroHovered && index === selectedIndex)}
                 />
