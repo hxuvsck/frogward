@@ -30,8 +30,26 @@ const Footer = () => {
             </div>
           </div>
         </div>
-        <div className="mt-8 pt-8 border-t border-border text-center text-xs text-muted-foreground">
-          {t('footer.rights')}
+        <div className="mt-8 flex flex-col gap-4 border-t border-border pt-8 text-xs text-muted-foreground md:flex-row md:items-end md:justify-between">
+          <p>{t('footer.rights')}</p>
+          <a
+            href="https://www.biotain.solutions"
+            target="_blank"
+            rel="noreferrer"
+            className="flex flex-wrap items-center justify-end gap-3 self-start transition-opacity hover:opacity-85 md:self-auto"
+          >
+            <div className="text-right">
+              <p className="text-[10px] uppercase tracking-[0.22em] text-muted-foreground">Developed by</p>
+              <p className="text-[11px] font-medium uppercase tracking-[0.16em] text-foreground">
+                Biotain Solutions Mongolia LLC.
+              </p>
+            </div>
+            <img
+              src="/biotain_%20logo_notxt_nobg.png"
+              alt="Biotain Solutions Mongolia LLC."
+              className="relative z-10 h-11 w-auto shrink-0 object-contain"
+            />
+          </a>
         </div>
       </div>
     </footer>
