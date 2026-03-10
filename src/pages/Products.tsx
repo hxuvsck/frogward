@@ -3,7 +3,7 @@ import { useSearchParams } from 'react-router-dom';
 import { Search } from 'lucide-react';
 import Layout from '@/components/layout/Layout';
 import ProductCard from '@/components/product/ProductCard';
-import { categories, getCategoriesWithCounts } from '@/data/mock-products';
+import { getCategoriesWithCounts, getLocalizedCategoryName } from '@/lib/category-localization';
 import { useProductStore } from '@/store/product-store';
 import { Input } from '@/components/ui/input';
 import {
@@ -13,8 +13,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { useT } from '@/store/lang-store';
-import { getCategoryLabel } from '@/lib/category-label';
+import { useCategoryStore } from '@/store/category-store';
+import { useLangStore, useT } from '@/store/lang-store';
 import { matchesProductSearch } from '@/lib/product-localization';
 
 const Products = () => {
@@ -23,8 +23,10 @@ const Products = () => {
   const [search, setSearch] = useState(searchParams.get('search') || '');
   const [sortBy, setSortBy] = useState<'default' | 'price-asc' | 'price-desc'>('default');
   const t = useT();
+  const lang = useLangStore((s) => s.lang);
   const products = useProductStore((s) => s.products);
-  const categoryCounts = useMemo(() => getCategoriesWithCounts(products), [products]);
+  const categories = useCategoryStore((s) => s.categories);
+  const categoryCounts = useMemo(() => getCategoriesWithCounts(categories, products), [categories, products]);
 
   const filtered = useMemo(() => {
     let result = products;
@@ -72,7 +74,7 @@ const Products = () => {
                   activeCategory === cat.id ? 'border-primary bg-primary text-primary-foreground' : 'border-border text-muted-foreground hover:border-primary/30'
                 }`}
               >
-                {getCategoryLabel(cat.id, t, cat.name)}
+                {getLocalizedCategoryName(cat, lang)}
               </button>
             ))}
           </div>

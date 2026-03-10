@@ -18,6 +18,8 @@ export interface Product {
 export type Category = {
   id: string;
   name: string;
-  icon: string;
-  count: number;
+  nameEn?: string;
+  nameMn?: string;
+  icon?: string;
+  count?: number;
 };

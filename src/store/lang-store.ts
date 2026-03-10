@@ -210,6 +210,8 @@ const translations = {
 
   // Admin Products
   'admin.addProduct': { mn: 'Бүтээгдэхүүн нэмэх', en: 'Add Product' },
+  'admin.addCategory': { mn: 'Ангилал нэмэх', en: 'Add Category' },
+  'admin.manageCategories': { mn: 'Ангилал удирдах', en: 'Manage Categories' },
   'admin.searchProducts': { mn: 'Нэр эсвэл ангиллаар хайх...', en: 'Search by name or category...' },
   'admin.product': { mn: 'Бүтээгдэхүүн', en: 'Product' },
   'admin.category': { mn: 'Ангилал', en: 'Category' },
@@ -232,6 +234,9 @@ const translations = {
   'admin.productCreated': { mn: 'Бүтээгдэхүүн үүсгэгдлээ', en: 'Product created' },
   'admin.productUpdated': { mn: 'Бүтээгдэхүүн шинэчлэгдлээ', en: 'Product updated' },
   'admin.productDeleted': { mn: 'Бүтээгдэхүүн устгагдлаа', en: 'Product deleted' },
+  'admin.categoryDeleted': { mn: 'Ангилал устгагдлаа', en: 'Category deleted' },
+  'admin.categoryInUse': { mn: 'Ангилал ашиглагдаж байна', en: 'Category is in use' },
+  'admin.categoryInUseDesc': { mn: 'Энэ ангилалд бүтээгдэхүүн холбогдсон тул эхлээд бараануудын ангиллыг солино уу.', en: 'This category is still used by products. Reassign those products before deleting it.' },
   'admin.productNotFound': { mn: 'Бүтээгдэхүүн олдсонгүй.', en: 'Product not found.' },
   'admin.confirmDeleteTitle': { mn: 'Устгахдаа итгэлтэй байна уу?', en: 'Are you sure?' },
   'admin.confirmDeleteProduct': { mn: 'Та энэ бүтээгдэхүүнийг устгахдаа итгэлтэй байна уу?', en: 'Are you sure you want to delete this product?' },
@@ -336,7 +341,7 @@ const translations = {
   'profile.address': { mn: 'Хүргэлтийн хаяг', en: 'Default Delivery Address' },
   'profile.notes': { mn: 'Хүргэлтийн тэмдэглэл', en: 'Delivery Notes' },
   'profile.notesPlaceholder': { mn: 'Хаалганы код, давхар г.м.', en: 'Gate code, floor, etc.' },
-  'profile.save': { mn: 'Хадгалах', en: 'Save Changes' },
+  'profile.save': { mn: 'Хадгалсан', en: 'Save Changes' },
   'profile.saved': { mn: 'Профайл шинэчлэгдлээ', en: 'Profile updated' },
   'profile.savedDesc': { mn: 'Таны өөрчлөлт хадгалагдлаа.', en: 'Your changes have been saved.' },
 

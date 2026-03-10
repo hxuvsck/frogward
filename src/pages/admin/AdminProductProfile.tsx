@@ -14,9 +14,9 @@ import {
 } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
-import { categories } from '@/data/mock-products';
 import { useToast } from '@/hooks/use-toast';
 import { useAuthStore } from '@/store/auth-store';
+import { useCategoryStore } from '@/store/category-store';
 import { useLangStore, useT } from '@/store/lang-store';
 import { useProductStore } from '@/store/product-store';
 import {
@@ -29,7 +29,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-import { getCategoryLabel } from '@/lib/category-label';
+import { getCategoryLabelById, getLocalizedCategoryName } from '@/lib/category-localization';
 import { DEFAULT_PRODUCT_IMAGE } from '@/lib/product-image';
 import { getLocalizedProductName } from '@/lib/product-localization';
 
@@ -43,6 +43,7 @@ const AdminProductProfile = () => {
   const { toast } = useToast();
   const { id } = useParams();
   const products = useProductStore((s) => s.products);
+  const categories = useCategoryStore((s) => s.categories);
   const updateProduct = useProductStore((s) => s.updateProduct);
   const deleteProduct = useProductStore((s) => s.deleteProduct);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -177,7 +178,7 @@ const AdminProductProfile = () => {
           <div className="space-y-4">
             <h1 className="font-heading text-3xl font-bold">{getLocalizedProductName(product, lang)}</h1>
             <p className="text-sm text-muted-foreground">
-              {getCategoryLabel(product.category, t, product.category)}
+              {getCategoryLabelById(product.category, categories, lang, product.category)}
             </p>
             <p className="font-heading text-xl text-primary">{formatPrice(product.price)}</p>
 
@@ -200,7 +201,7 @@ const AdminProductProfile = () => {
                   <SelectContent>
                     {categories.map((cat) => (
                       <SelectItem key={cat.id} value={cat.id}>
-                        {getCategoryLabel(cat.id, t, cat.name)}
+                        {getLocalizedCategoryName(cat, lang)}
                       </SelectItem>
                     ))}
                   </SelectContent>

@@ -4,20 +4,22 @@ import { ArrowRight, Shield, Truck, Headphones } from 'lucide-react';
 import Layout from '@/components/layout/Layout';
 import ProductCard from '@/components/product/ProductCard';
 import HomeMarketingCarousel from '@/components/home/HomeMarketingCarousel';
-import { getCategoriesWithCounts } from '@/data/mock-products';
+import { getCategoriesWithCounts, getLocalizedCategoryName } from '@/lib/category-localization';
 import { DEFAULT_MARKETING_IMAGE } from '@/lib/marketing-image';
-import { useT } from '@/store/lang-store';
+import { useCategoryStore } from '@/store/category-store';
+import { useLangStore, useT } from '@/store/lang-store';
 import { useMarketingStore } from '@/store/marketing-store';
 import { useProductStore } from '@/store/product-store';
-import { getCategoryLabel } from '@/lib/category-label';
 
 const Index = () => {
   const products = useProductStore((s) => s.products);
   const banners = useMarketingStore((s) => s.banners);
+  const categoryDefinitions = useCategoryStore((s) => s.categories);
   const t = useT();
+  const lang = useLangStore((s) => s.lang);
   const categories = useMemo(
-    () => getCategoriesWithCounts(products).filter((category) => category.count > 0),
-    [products]
+    () => getCategoriesWithCounts(categoryDefinitions, products).filter((category) => category.count > 0),
+    [categoryDefinitions, products]
   );
 
   return (
@@ -60,7 +62,7 @@ const Index = () => {
               className="group rounded-lg border border-border bg-card p-4 text-center hover:border-primary/30 transition-all"
             >
               <h3 className="font-heading text-sm font-semibold group-hover:text-primary transition-colors">
-                {getCategoryLabel(cat.id, t, cat.name)}
+                {getLocalizedCategoryName(cat, lang)}
               </h3>
               <p className="text-xs text-muted-foreground mt-1">{cat.count} {t('product.items')}</p>
             </Link>

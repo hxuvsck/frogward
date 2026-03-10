@@ -4,10 +4,11 @@ import Layout from '@/components/layout/Layout';
 import ProductCard from '@/components/product/ProductCard';
 import { Button } from '@/components/ui/button';
 import { useAuthStore } from '@/store/auth-store';
+import { useCategoryStore } from '@/store/category-store';
 import { useProductStore } from '@/store/product-store';
 import { useCartStore } from '@/store/cart-store';
 import { useLangStore, useT } from '@/store/lang-store';
-import { getCategoryLabel } from '@/lib/category-label';
+import { getCategoryLabelById } from '@/lib/category-localization';
 import { DEFAULT_PRODUCT_IMAGE } from '@/lib/product-image';
 import { getLocalizedProductDescription, getLocalizedProductName } from '@/lib/product-localization';
 import { useCustomerCart } from '@/hooks/use-customer-cart';
@@ -18,6 +19,7 @@ const ProductDetail = () => {
   const { slug } = useParams();
   const user = useAuthStore((s) => s.user);
   const products = useProductStore((s) => s.products);
+  const categories = useCategoryStore((s) => s.categories);
   const product = products.find((p) => p.slug === (slug || ''));
   const items = useCartStore((s) => s.items);
   const { addCustomerItem } = useCustomerCart();
@@ -55,7 +57,7 @@ const ProductDetail = () => {
           <div className="space-y-6">
             <div className="space-y-2">
               <span className="text-xs uppercase tracking-wider text-muted-foreground">
-                {getCategoryLabel(product.category, t, product.category)}
+                {getCategoryLabelById(product.category, categories, lang, product.category)}
               </span>
               <h1 className="font-heading text-3xl font-bold">{productName}</h1>
             </div>

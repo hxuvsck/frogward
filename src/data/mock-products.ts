@@ -1,13 +1,4 @@
-import type { Product, Category } from '@/types/product';
-
-export const categories: Category[] = [
-  { id: 'helmets', name: 'Safety Helmets', icon: 'HardHat', count: 12 },
-  { id: 'vests', name: 'Hi-Vis Vests', icon: 'Shirt', count: 18 },
-  { id: 'gloves', name: 'Work Gloves', icon: 'Hand', count: 15 },
-  { id: 'boots', name: 'Safety Boots', icon: 'Footprints', count: 20 },
-  { id: 'eyewear', name: 'Eye Protection', icon: 'Glasses', count: 8 },
-  { id: 'coveralls', name: 'Coveralls', icon: 'Shirt', count: 10 },
-];
+import type { Product } from '@/types/product';
 
 export const products: Product[] = [
   {
@@ -126,9 +117,3 @@ export const products: Product[] = [
 
 export const getProductBySlug = (slug: string) => products.find((p) => p.slug === slug);
 export const getProductsByCategory = (category: string) => products.filter((p) => p.category === category);
-
-export const getCategoriesWithCounts = (items: Product[]) =>
-  categories.map((category) => ({
-    ...category,
-    count: items.filter((product) => product.category === category.id).length,
-  }));

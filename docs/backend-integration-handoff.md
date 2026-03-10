@@ -116,6 +116,7 @@ Current behavior:
 - stock state is toggled in browser
 - product content now supports English and Mongolian fields with fallback behavior
 - product image upload still stores data URL in browser state
+- categories should be treated as a managed reference table with bilingual names
 
 Production recommendation:
 
@@ -126,6 +127,7 @@ Production recommendation:
 - validate slug uniqueness server-side
 - add product status/inventory fields beyond `inStock` if inventory matters
 - treat category as a managed lookup table or a constrained enum
+- preserve category locale fallback behavior the same way products and banners do
 
 ### Checkout and Orders
 
@@ -245,6 +247,12 @@ This is a reasonable first-pass backend contract.
 - `PATCH /admin/products/:id`
 - `DELETE /admin/products/:id`
 - `POST /admin/products/:id/image`
+
+### Categories
+
+- `GET /categories`
+- `POST /admin/categories`
+- `PATCH /admin/categories/:id`
 
 ### Orders
 

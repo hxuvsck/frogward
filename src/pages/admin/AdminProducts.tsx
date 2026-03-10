@@ -1,6 +1,6 @@
 import { useRef, useState, type ChangeEvent } from 'react';
 import { Navigate, Link, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Plus, Pencil, Trash2, Upload } from 'lucide-react';
+import { ArrowLeft, Check, Pencil, Plus, Trash2, Upload, X } from 'lucide-react';
 import Layout from '@/components/layout/Layout';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -14,13 +14,13 @@ import {
 } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
-import { categories } from '@/data/mock-products';
 import { useAuthStore } from '@/store/auth-store';
+import { useCategoryStore } from '@/store/category-store';
 import { useOrderStore } from '@/store/order-store';
 import { useLangStore, useT } from '@/store/lang-store';
 import { useProductStore } from '@/store/product-store';
 import type { Product } from '@/types/product';
-import { getCategoryLabel } from '@/lib/category-label';
+import { getCategoryLabelById, getLocalizedCategoryName } from '@/lib/category-localization';
 import { DEFAULT_PRODUCT_IMAGE } from '@/lib/product-image';
 import { getLocalizedProductName, matchesProductSearch } from '@/lib/product-localization';
 import {
@@ -51,6 +51,10 @@ const AdminProducts = () => {
   const navigate = useNavigate();
   const orders = useOrderStore((s) => s.orders);
   const productList = useProductStore((s) => s.products);
+  const categories = useCategoryStore((s) => s.categories);
+  const addCategory = useCategoryStore((s) => s.addCategory);
+  const updateCategory = useCategoryStore((s) => s.updateCategory);
+  const deleteCategory = useCategoryStore((s) => s.deleteCategory);
   const addProduct = useProductStore((s) => s.addProduct);
   const updateProduct = useProductStore((s) => s.updateProduct);
   const deleteProduct = useProductStore((s) => s.deleteProduct);
@@ -70,6 +74,12 @@ const AdminProducts = () => {
   const [formImage, setFormImage] = useState('');
   const [productToDelete, setProductToDelete] = useState<Product | null>(null);
   const [confirmRemoveImageOpen, setConfirmRemoveImageOpen] = useState(false);
+  const [categoryDialogOpen, setCategoryDialogOpen] = useState(false);
+  const [categoryNameEn, setCategoryNameEn] = useState('');
+  const [categoryNameMn, setCategoryNameMn] = useState('');
+  const [editingCategoryId, setEditingCategoryId] = useState<string | null>(null);
+  const [editingCategoryNameEn, setEditingCategoryNameEn] = useState('');
+  const [editingCategoryNameMn, setEditingCategoryNameMn] = useState('');
 
   if (!isAuthenticated || !user || user.role !== 'admin') return <Navigate to="/login" replace />;
 
@@ -99,6 +109,15 @@ const AdminProducts = () => {
     setFormDescMn('');
     setFormInStock(true);
     setFormImage('');
+  };
+
+  const openCategoryDialog = () => {
+    setCategoryNameEn('');
+    setCategoryNameMn('');
+    setEditingCategoryId(null);
+    setEditingCategoryNameEn('');
+    setEditingCategoryNameMn('');
+    setCategoryDialogOpen(true);
   };
 
   const handleSave = () => {
@@ -155,6 +174,81 @@ const AdminProducts = () => {
     setProductToDelete(null);
   };
 
+  const handleAddCategory = () => {
+    const englishName = categoryNameEn.trim();
+    const mongolianName = categoryNameMn.trim();
+    const baseName = englishName || mongolianName;
+
+    if (!baseName) return;
+
+    const category = addCategory({
+      name: baseName,
+      nameEn: englishName || undefined,
+      nameMn: mongolianName || undefined,
+    });
+
+    setFormCategory(category.id);
+    toast({ title: t('admin.addCategory') });
+    setCategoryNameEn('');
+    setCategoryNameMn('');
+  };
+
+  const startCategoryEdit = (categoryId: string) => {
+    const category = categories.find((entry) => entry.id === categoryId);
+    if (!category) return;
+
+    setEditingCategoryId(category.id);
+    setEditingCategoryNameEn(category.nameEn || category.name);
+    setEditingCategoryNameMn(category.nameMn || '');
+  };
+
+  const cancelCategoryEdit = () => {
+    setEditingCategoryId(null);
+    setEditingCategoryNameEn('');
+    setEditingCategoryNameMn('');
+  };
+
+  const saveCategoryEdit = () => {
+    if (!editingCategoryId) return;
+
+    const englishName = editingCategoryNameEn.trim();
+    const mongolianName = editingCategoryNameMn.trim();
+    const baseName = englishName || mongolianName;
+
+    if (!baseName) return;
+
+    updateCategory(editingCategoryId, {
+      name: baseName,
+      nameEn: englishName || undefined,
+      nameMn: mongolianName || undefined,
+    });
+
+    toast({ title: t('admin.saveChanges') });
+    cancelCategoryEdit();
+  };
+
+  const removeCategory = (categoryId: string) => {
+    const isUsed = productList.some((product) => product.category === categoryId);
+    if (isUsed) {
+      toast({
+        title: t('admin.categoryInUse'),
+        description: t('admin.categoryInUseDesc'),
+      });
+      return;
+    }
+
+    deleteCategory(categoryId);
+
+    if (formCategory === categoryId) {
+      setFormCategory(categories.find((category) => category.id !== categoryId)?.id ?? '');
+    }
+
+    toast({ title: t('admin.categoryDeleted') });
+  };
+
+  const getCategoryUsageCount = (categoryId: string) =>
+    productList.filter((product) => product.category === categoryId).length;
+
   const totalSold = (productId: string) =>
     orders
       .flatMap((o) => o.items)
@@ -195,9 +289,14 @@ const AdminProducts = () => {
 
         <div className="flex items-center justify-between mb-6">
           <h1 className="font-heading text-3xl font-bold">{t('admin.products')}</h1>
-          <Button onClick={openCreate} className="font-heading font-semibold">
-            <Plus className="mr-2 h-4 w-4" /> {t('admin.addProduct')}
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button onClick={openCategoryDialog} variant="outline" className="font-heading font-semibold">
+              <Plus className="mr-2 h-4 w-4" /> {t('admin.addCategory')}
+            </Button>
+            <Button onClick={openCreate} className="font-heading font-semibold">
+              <Plus className="mr-2 h-4 w-4" /> {t('admin.addProduct')}
+            </Button>
+          </div>
         </div>
 
         <Input placeholder={t('admin.searchProducts')} value={search} onChange={(e) => setSearch(e.target.value)} className="mb-6 max-w-sm" />
@@ -229,7 +328,7 @@ const AdminProducts = () => {
                       </div>
                     </td>
                     <td className="px-4 py-3 text-muted-foreground capitalize">
-                      {getCategoryLabel(product.category, t, product.category)}
+                      {getCategoryLabelById(product.category, categories, lang, product.category)}
                     </td>
                     <td className="px-4 py-3 font-heading font-semibold text-primary">{formatPrice(product.price)}</td>
                     <td className="px-4 py-3 text-muted-foreground">{totalSold(product.id)}</td>
@@ -333,18 +432,23 @@ const AdminProducts = () => {
                 </div>
                 <div className="space-y-2">
                   <Label>{t('admin.category')}</Label>
-                  <Select value={formCategory} onValueChange={setFormCategory}>
-                    <SelectTrigger>
-                      <SelectValue placeholder={t('profile.selectOption')} />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {categories.map((cat) => (
-                        <SelectItem key={cat.id} value={cat.id}>
-                          {getCategoryLabel(cat.id, t, cat.name)}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <div className="flex gap-2">
+                    <Select value={formCategory} onValueChange={setFormCategory}>
+                      <SelectTrigger className="flex-1">
+                        <SelectValue placeholder={t('profile.selectOption')} />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {categories.map((cat) => (
+                          <SelectItem key={cat.id} value={cat.id}>
+                            {getLocalizedCategoryName(cat, lang)}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <Button type="button" variant="outline" onClick={openCategoryDialog} className="shrink-0">
+                      <Plus className="h-4 w-4" />
+                    </Button>
+                  </div>
                 </div>
               </div>
               <div className="space-y-2">
@@ -429,6 +533,101 @@ const AdminProducts = () => {
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>
+
+        <Dialog open={categoryDialogOpen} onOpenChange={setCategoryDialogOpen}>
+          <DialogContent className="max-h-[88vh] max-w-2xl overflow-hidden p-0">
+            <DialogHeader>
+              <DialogTitle className="border-b border-border px-6 py-4 font-heading">
+                {t('admin.manageCategories')}
+              </DialogTitle>
+            </DialogHeader>
+            <div className="max-h-[calc(88vh-72px)] space-y-6 overflow-y-auto px-6 py-5">
+              <div className="rounded-xl border border-border bg-muted/20 p-4">
+                <div className="grid gap-4 md:grid-cols-[1fr_1fr_auto] md:items-end">
+                  <div className="space-y-2">
+                    <Label>{t('admin.category')} (EN)</Label>
+                    <Input value={categoryNameEn} onChange={(e) => setCategoryNameEn(e.target.value)} />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>{t('admin.category')} (MN)</Label>
+                    <Input value={categoryNameMn} onChange={(e) => setCategoryNameMn(e.target.value)} />
+                  </div>
+                  <Button onClick={handleAddCategory} className="font-heading font-semibold">
+                    <Plus className="mr-2 h-4 w-4" /> {t('admin.addCategory')}
+                  </Button>
+                </div>
+              </div>
+
+              <div className="space-y-3">
+                {categories.map((category) => {
+                  const usageCount = getCategoryUsageCount(category.id);
+                  const isEditing = editingCategoryId === category.id;
+
+                  return (
+                    <div key={category.id} className="rounded-xl border border-border bg-card p-4">
+                      {isEditing ? (
+                        <div className="space-y-4">
+                          <div className="grid gap-4 md:grid-cols-2">
+                            <div className="space-y-2">
+                              <Label>{t('admin.category')} (EN)</Label>
+                              <Input value={editingCategoryNameEn} onChange={(e) => setEditingCategoryNameEn(e.target.value)} />
+                            </div>
+                            <div className="space-y-2">
+                              <Label>{t('admin.category')} (MN)</Label>
+                              <Input value={editingCategoryNameMn} onChange={(e) => setEditingCategoryNameMn(e.target.value)} />
+                            </div>
+                          </div>
+                          <div className="flex flex-wrap items-center justify-between gap-3">
+                            <p className="text-xs text-muted-foreground">
+                              {usageCount} {t('product.items')}
+                            </p>
+                            <div className="flex items-center gap-2">
+                              <Button type="button" variant="outline" onClick={cancelCategoryEdit}>
+                                <X className="mr-2 h-4 w-4" /> {t('common.no')}
+                              </Button>
+                              <Button type="button" onClick={saveCategoryEdit}>
+                                <Check className="mr-2 h-4 w-4" /> {t('admin.saveChanges')}
+                              </Button>
+                            </div>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+                          <div className="space-y-1">
+                            <p className="font-heading font-semibold">{getLocalizedCategoryName(category, lang)}</p>
+                            <p className="text-sm text-muted-foreground">
+                              EN: {category.nameEn || category.name}
+                            </p>
+                            <p className="text-sm text-muted-foreground">
+                              MN: {category.nameMn || category.nameEn || category.name}
+                            </p>
+                            <p className="text-xs text-muted-foreground">
+                              {usageCount} {t('product.items')}
+                            </p>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <Button type="button" variant="outline" onClick={() => startCategoryEdit(category.id)}>
+                              <Pencil className="mr-2 h-4 w-4" /> {t('admin.edit')}
+                            </Button>
+                            <Button
+                              type="button"
+                              variant="outline"
+                              onClick={() => removeCategory(category.id)}
+                              disabled={usageCount > 0}
+                              className="border-destructive/30 bg-destructive/5 text-destructive hover:bg-destructive/15 hover:text-destructive disabled:pointer-events-none disabled:opacity-50"
+                            >
+                              <Trash2 className="mr-2 h-4 w-4" /> {t('admin.delete')}
+                            </Button>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
     </Layout>
   );
