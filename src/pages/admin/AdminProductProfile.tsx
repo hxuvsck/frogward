@@ -5,6 +5,14 @@ import Layout from '@/components/layout/Layout';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
 import { categories } from '@/data/mock-products';
 import { useToast } from '@/hooks/use-toast';
@@ -185,21 +193,28 @@ const AdminProductProfile = () => {
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label>{t('admin.category')}</Label>
-                <select
-                  value={category}
-                  onChange={(e) => setCategory(e.target.value)}
-                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground"
-                >
-                  {categories.map((cat) => (
-                    <option key={cat.id} value={cat.id}>
-                      {getCategoryLabel(cat.id, t, cat.name)}
-                    </option>
-                  ))}
-                </select>
+                <Select value={category} onValueChange={setCategory}>
+                  <SelectTrigger>
+                    <SelectValue placeholder={t('profile.selectOption')} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {categories.map((cat) => (
+                      <SelectItem key={cat.id} value={cat.id}>
+                        {getCategoryLabel(cat.id, t, cat.name)}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
               <div className="space-y-2">
                 <Label>{t('admin.price')} (₮)</Label>
-                <Input type="number" value={price} onChange={(e) => setPrice(e.target.value)} />
+                <Input
+                  type="number"
+                  inputMode="numeric"
+                  value={price}
+                  onChange={(e) => setPrice(e.target.value)}
+                  className="[appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                />
               </div>
             </div>
 
@@ -222,15 +237,34 @@ const AdminProductProfile = () => {
               />
             </div>
 
-            <div className="flex items-center gap-2">
-              <input
-                id="stock"
-                type="checkbox"
-                checked={inStock}
-                onChange={(e) => setInStock(e.target.checked)}
-                className="rounded"
-              />
-              <Label htmlFor="stock">{t('admin.inStock')}</Label>
+            <div className="rounded-xl border border-border bg-muted/30 p-4">
+              <div className="flex items-center justify-between gap-4">
+                <div className="space-y-1">
+                  <Label htmlFor="stock" className="text-sm font-semibold">
+                    {t('admin.stock')}
+                  </Label>
+                  <p className="text-xs text-muted-foreground">
+                    {inStock ? t('admin.inStock') : t('admin.outOfStock')}
+                  </p>
+                </div>
+                <div className="flex items-center gap-3">
+                  <span
+                    className={`inline-flex items-center rounded-full border px-2.5 py-1 text-xs font-semibold ${
+                      inStock
+                        ? 'border-accent/30 bg-accent/15 text-accent'
+                        : 'border-destructive/30 bg-destructive/15 text-destructive'
+                    }`}
+                  >
+                    {inStock ? t('admin.inStock') : t('admin.outOfStock')}
+                  </span>
+                  <Switch
+                    id="stock"
+                    checked={inStock}
+                    onCheckedChange={setInStock}
+                    aria-label={t('admin.stock')}
+                  />
+                </div>
+              </div>
             </div>
 
             <div className="flex gap-2">

@@ -529,16 +529,6 @@ const AdminMarketing = () => {
                 </div>
               </div>
 
-              <label className="flex items-center gap-2 text-sm">
-                <input
-                  type="checkbox"
-                  checked={form.active}
-                  onChange={(e) => setForm((state) => ({ ...state, active: e.target.checked }))}
-                  className="rounded"
-                />
-                {t('admin.active')}
-              </label>
-
               <Button onClick={handleSave} className="w-full font-heading font-semibold">
                 {isNew ? t('admin.createBanner') : t('admin.saveChanges')}
               </Button>

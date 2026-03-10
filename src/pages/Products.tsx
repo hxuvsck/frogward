@@ -6,6 +6,13 @@ import ProductCard from '@/components/product/ProductCard';
 import { categories, getCategoriesWithCounts } from '@/data/mock-products';
 import { useProductStore } from '@/store/product-store';
 import { Input } from '@/components/ui/input';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { useT } from '@/store/lang-store';
 import { getCategoryLabel } from '@/lib/category-label';
 import { matchesProductSearch } from '@/lib/product-localization';
@@ -73,15 +80,18 @@ const Products = () => {
 
         <div className="flex justify-between items-center mb-6">
           <p className="text-sm text-muted-foreground">{filtered.length} {t('products.items')}</p>
-          <select
-            value={sortBy}
-            onChange={(e) => setSortBy(e.target.value as typeof sortBy)}
-            className="text-sm bg-card border border-border rounded-md px-3 py-1.5 text-foreground"
-          >
-            <option value="default">{t('products.default')}</option>
-            <option value="price-asc">{t('products.priceAsc')}</option>
-            <option value="price-desc">{t('products.priceDesc')}</option>
-          </select>
+          <div className="w-[190px]">
+            <Select value={sortBy} onValueChange={(value) => setSortBy(value as typeof sortBy)}>
+              <SelectTrigger>
+                <SelectValue placeholder={t('products.default')} />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="default">{t('products.default')}</SelectItem>
+                <SelectItem value="price-asc">{t('products.priceAsc')}</SelectItem>
+                <SelectItem value="price-desc">{t('products.priceDesc')}</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">

@@ -88,12 +88,6 @@ npm test
 npm run build
 ```
 
-## Backend Handoff
-
-For backend integration guidance and production-readiness notes, see:
-
-- [docs/backend-integration-handoff.md](/home/khusln/biotain/frogward/docs/backend-integration-handoff.md)
-
 ## License
 
 This project is private and maintained by the Biotain Solutions team.
