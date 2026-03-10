@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { useCartStore } from '@/store/cart-store';
+import { useCustomerStore } from '@/store/customer-store';
 import type { User } from '@/types/user';
 
 interface AuthStore {
@@ -39,6 +40,24 @@ const mockFacebookCustomer: User = {
   updatedAt: '2026-03-05T11:15:00Z',
 };
 
+const createOtpCustomer = (phone: string): User => {
+  const normalized = phone.replace(/[\s+\-()]/g, '');
+  const suffix = normalized.slice(-4) || '0000';
+  const now = new Date().toISOString();
+
+  return {
+    id: `cust-otp-${normalized || suffix}`,
+    name: `Customer ${suffix}`,
+    phone,
+    role: 'customer',
+    defaultAddress: 'Ulaanbaatar, Mongolia',
+    isPhoneVerified: true,
+    isEmailVerified: false,
+    createdAt: now,
+    updatedAt: now,
+  };
+};
+
 const mockAdmin: User = {
   id: 'admin-001',
   name: 'Admin Frogward',
@@ -58,6 +77,7 @@ export const useAuthStore = create<AuthStore>()(
       isAuthenticated: false,
       loginWithFacebook: () => {
         // Mock: Facebook login uses a distinct demo customer
+        useCustomerStore.getState().syncFromUser(mockFacebookCustomer);
         set({ user: mockFacebookCustomer, isAuthenticated: true });
       },
       loginWithOtp: (phone: string) => {
@@ -66,7 +86,9 @@ export const useAuthStore = create<AuthStore>()(
           useCartStore.getState().clearCart();
           set({ user: mockAdmin, isAuthenticated: true });
         } else {
-          set({ user: { ...mockCustomer, phone }, isAuthenticated: true });
+          const customer = createOtpCustomer(phone);
+          useCustomerStore.getState().syncFromUser(customer);
+          set({ user: customer, isAuthenticated: true });
         }
       },
       logout: () => {
@@ -77,6 +99,10 @@ export const useAuthStore = create<AuthStore>()(
         set((state) => ({
           user: state.user ? { ...state.user, ...updates, updatedAt: new Date().toISOString() } : null,
         }));
+        const nextUser = useAuthStore.getState().user;
+        if (nextUser?.role === 'customer') {
+          useCustomerStore.getState().syncFromUser(nextUser);
+        }
       },
     }),
     { name: 'frogward-auth' }

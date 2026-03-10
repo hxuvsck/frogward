@@ -2,12 +2,12 @@ import { Navigate, Link, useParams } from 'react-router-dom';
 import { ArrowLeft, User, ShoppingCart, Phone, Mail, MapPin } from 'lucide-react';
 import Layout from '@/components/layout/Layout';
 import { useAuthStore } from '@/store/auth-store';
+import { useCustomerStore } from '@/store/customer-store';
 import { useOrderStore } from '@/store/order-store';
 import { useT } from '@/store/lang-store';
 import { useProductStore } from '@/store/product-store';
 import { resolveProductImage } from '@/lib/product-image';
 import { getOrderStatusLabel } from '@/lib/order-label';
-import { mockCustomers } from '@/data/mock-orders';
 
 const formatPrice = (p: number) => `₮${p.toLocaleString()}`;
 
@@ -24,10 +24,11 @@ const AdminCustomerProfile = () => {
   const { id } = useParams();
   const orders = useOrderStore((s) => s.orders);
   const products = useProductStore((s) => s.products);
+  const customers = useCustomerStore((s) => s.customers);
 
   if (!isAuthenticated || !user || user.role !== 'admin') return <Navigate to="/login" replace />;
 
-  const customer = mockCustomers.find((c) => c.id === id);
+  const customer = customers.find((c) => c.id === id);
 
   if (!customer) {
     return (

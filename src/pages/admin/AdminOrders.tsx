@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Navigate, Link, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Eye, User, Download } from 'lucide-react';
+import { ArrowLeft, User, Download } from 'lucide-react';
 import { motion } from 'framer-motion';
 import Layout from '@/components/layout/Layout';
 import { Button } from '@/components/ui/button';
@@ -98,7 +98,6 @@ const AdminOrders = () => {
                   <th className="text-left px-4 py-3 font-heading font-semibold text-xs uppercase tracking-wider text-muted-foreground">{t('admin.payment')}</th>
                   <th className="text-left px-4 py-3 font-heading font-semibold text-xs uppercase tracking-wider text-muted-foreground">{t('admin.status')}</th>
                   <th className="text-left px-4 py-3 font-heading font-semibold text-xs uppercase tracking-wider text-muted-foreground">{t('admin.date')}</th>
-                  <th className="px-4 py-3"></th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-border">
@@ -132,18 +131,6 @@ const AdminOrders = () => {
                       <span className={`text-xs px-2 py-0.5 rounded-full ${statusColor(order.status)}`}>{getOrderStatusLabel(order.status, t)}</span>
                     </td>
                     <td className="px-4 py-3 text-muted-foreground text-xs">{new Date(order.createdAt).toLocaleDateString()}</td>
-                    <td className="px-4 py-3">
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          navigate(`/admin/orders/${order.id}`);
-                        }}
-                      >
-                        <Eye className="h-4 w-4" />
-                      </Button>
-                    </td>
                   </motion.tr>
                 ))}
               </tbody>

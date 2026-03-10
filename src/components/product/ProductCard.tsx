@@ -34,9 +34,13 @@ const ProductCard = ({ product }: { product: Product }) => {
         <div className="flex items-center justify-between">
           <span className="font-heading text-lg font-bold text-primary">{formatPrice(product.price)}</span>
           {product.inStock ? (
-            <span className="text-xs text-accent">{t('product.inStock')}</span>
+            <span className="rounded-full bg-accent/15 px-2.5 py-1 text-xs font-semibold text-accent">
+              {t('product.inStock')}
+            </span>
           ) : (
-            <span className="text-xs text-destructive">{t('product.outOfStock')}</span>
+            <span className="rounded-full bg-destructive/15 px-2.5 py-1 text-xs font-semibold text-destructive">
+              {t('product.outOfStock')}
+            </span>
           )}
         </div>
         <Button

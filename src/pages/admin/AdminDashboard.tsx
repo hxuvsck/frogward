@@ -3,10 +3,10 @@ import { Package, ShoppingCart, Users, AlertTriangle, Megaphone, CheckCircle } f
 import { motion } from 'framer-motion';
 import Layout from '@/components/layout/Layout';
 import { useAuthStore } from '@/store/auth-store';
+import { useCustomerStore } from '@/store/customer-store';
 import { useMarketingStore } from '@/store/marketing-store';
 import { useOrderStore } from '@/store/order-store';
 import { useProductStore } from '@/store/product-store';
-import { mockCustomers } from '@/data/mock-orders';
 import { useT } from '@/store/lang-store';
 
 const AdminDashboard = () => {
@@ -16,6 +16,7 @@ const AdminDashboard = () => {
 
   const orders = useOrderStore((s) => s.orders);
   const products = useProductStore((s) => s.products);
+  const customers = useCustomerStore((s) => s.customers);
   const banners = useMarketingStore((s) => s.banners);
   const totalOrders = orders.length;
   const pendingPayment = orders.filter((o) => o.paymentStatus !== 'paid').length;
@@ -33,7 +34,7 @@ const AdminDashboard = () => {
     { label: t('admin.availableProducts'), value: inStockProducts, icon: Package, color: 'text-primary' },
     { label: t('admin.lowStock'), value: lowStock, icon: AlertTriangle, color: 'text-destructive' },
     { label: t('admin.marketing'), value: banners.length, icon: Megaphone, color: 'text-primary' },
-    { label: t('admin.customers'), value: mockCustomers.length, icon: Users, color: 'text-foreground' },
+    { label: t('admin.customers'), value: customers.length, icon: Users, color: 'text-foreground' },
   ];
 
   const navCards = [

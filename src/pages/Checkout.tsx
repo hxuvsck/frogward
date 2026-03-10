@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useCartStore } from '@/store/cart-store';
 import { useAuthStore } from '@/store/auth-store';
+import { useCustomerStore } from '@/store/customer-store';
 import { useOrderStore } from '@/store/order-store';
 import { useT } from '@/store/lang-store';
 import { useProductStore } from '@/store/product-store';
@@ -19,6 +20,7 @@ const Checkout = () => {
   const { items, totalPrice, clearCart } = useCartStore();
   const { user } = useAuthStore();
   const addOrder = useOrderStore((s) => s.addOrder);
+  const syncFromOrder = useCustomerStore((s) => s.syncFromOrder);
   const products = useProductStore((s) => s.products);
   const t = useT();
   const [payment, setPayment] = useState<PaymentMethod>('qpay');
@@ -85,6 +87,7 @@ const Checkout = () => {
     };
 
     addOrder(order);
+    syncFromOrder(order);
     clearCart();
     setSubmitted(true);
   };

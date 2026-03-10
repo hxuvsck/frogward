@@ -1,14 +1,14 @@
 import { useState } from 'react';
 import { Navigate, Link, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Eye, User, Download } from 'lucide-react';
+import { ArrowLeft, User, Download } from 'lucide-react';
 import { motion } from 'framer-motion';
 import Layout from '@/components/layout/Layout';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useAuthStore } from '@/store/auth-store';
+import { useCustomerStore } from '@/store/customer-store';
 import { useOrderStore } from '@/store/order-store';
 import { useT } from '@/store/lang-store';
-import { mockCustomers } from '@/data/mock-orders';
 
 const formatPrice = (p: number) => `₮${p.toLocaleString()}`;
 
@@ -28,11 +28,12 @@ const AdminCustomers = () => {
   const t = useT();
   const navigate = useNavigate();
   const orders = useOrderStore((s) => s.orders);
+  const customers = useCustomerStore((s) => s.customers);
   const [search, setSearch] = useState('');
 
   if (!isAuthenticated || !user || user.role !== 'admin') return <Navigate to="/login" replace />;
 
-  const filtered = mockCustomers.filter((c) =>
+  const filtered = customers.filter((c) =>
     c.name.toLowerCase().includes(search.toLowerCase()) ||
     c.phone.includes(search) ||
     (c.email?.toLowerCase().includes(search.toLowerCase()) ?? false)
@@ -83,7 +84,6 @@ const AdminCustomers = () => {
                   <th className="text-left px-4 py-3 font-heading font-semibold text-xs uppercase tracking-wider text-muted-foreground">{t('admin.ordersCount')}</th>
                   <th className="text-left px-4 py-3 font-heading font-semibold text-xs uppercase tracking-wider text-muted-foreground">{t('admin.totalSpent')}</th>
                   <th className="text-left px-4 py-3 font-heading font-semibold text-xs uppercase tracking-wider text-muted-foreground">{t('admin.lastActive')}</th>
-                  <th className="px-4 py-3"></th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-border">
@@ -110,18 +110,6 @@ const AdminCustomers = () => {
                     <td className="px-4 py-3">{getCustomerOrders(c.id).length}</td>
                     <td className="px-4 py-3 font-heading font-semibold text-primary">{formatPrice(getCustomerTotal(c.id))}</td>
                     <td className="px-4 py-3 text-muted-foreground text-xs">{new Date(c.lastActive).toLocaleDateString()}</td>
-                    <td className="px-4 py-3">
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          navigate(`/admin/customers/${c.id}`);
-                        }}
-                      >
-                        <Eye className="h-4 w-4" />
-                      </Button>
-                    </td>
                   </motion.tr>
                 ))}
               </tbody>
