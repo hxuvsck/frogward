@@ -65,6 +65,8 @@ const translations = {
   'cart.total': { mn: 'Нийт', en: 'Total' },
   'cart.checkout': { mn: 'Төлбөр төлөх', en: 'Proceed to Checkout' },
   'cart.clear': { mn: 'Сагс хоослох', en: 'Clear Cart' },
+  'cart.loginRequiredTitle': { mn: 'Сагсанд нэмэхийн тулд нэвтэрнэ үү', en: 'Sign in to add items to cart' },
+  'cart.loginRequiredDesc': { mn: 'Бүтээгдэхүүн сагслахын өмнө хэрэглэгчийн эрхтэй нэвтэрнэ үү.', en: 'You need to log in as a customer before adding products to the cart.' },
 
   // Checkout
   'checkout.title': { mn: 'Захиалга', en: 'Checkout' },
@@ -90,6 +92,7 @@ const translations = {
   'login.or': { mn: 'эсвэл', en: 'or' },
   'login.phoneLabel': { mn: 'Утасны дугаар', en: 'Phone Number' },
   'login.phoneOtp': { mn: 'Утасны OTP-ээр нэвтрэх', en: 'Continue with Phone OTP' },
+  'login.customerRequired': { mn: 'Сагсанд бараа нэмэхийн тулд хэрэглэгчээр нэвтрэх шаардлагатай.', en: 'You must sign in as a customer before adding items to the cart.' },
 
   // Verify OTP
   'otp.title': { mn: 'Утасаа баталгаажуулна уу', en: 'Verify Your Phone' },
@@ -169,6 +172,8 @@ const translations = {
   'admin.manageOrdersDesc': { mn: 'Захиалга харах, шүүх, төлөв шинэчлэх', en: 'View, filter, and update order statuses' },
   'admin.manageProducts': { mn: 'Бүтээгдэхүүн удирдах', en: 'Manage Products' },
   'admin.manageProductsDesc': { mn: 'Бүтээгдэхүүн үүсгэх, засах, нөөц удирдах', en: 'Create, edit, and manage inventory' },
+  'admin.marketing': { mn: 'Маркетинг баннер', en: 'Marketing Banners' },
+  'admin.marketingDesc': { mn: 'Нүүр хуудасны cover зураг carousel-ийг удирдах', en: 'Manage homepage cover image carousel' },
   'admin.customersDesc': { mn: 'Харилцагчдын жагсаалт, идэвх харах', en: 'View customer list and activity' },
 
   // Admin Orders
@@ -212,6 +217,26 @@ const translations = {
   'admin.productUpdated': { mn: 'Бүтээгдэхүүн шинэчлэгдлээ', en: 'Product updated' },
   'admin.productDeleted': { mn: 'Бүтээгдэхүүн устгагдлаа', en: 'Product deleted' },
   'admin.productNotFound': { mn: 'Бүтээгдэхүүн олдсонгүй.', en: 'Product not found.' },
+  'admin.addBanner': { mn: 'Баннер нэмэх', en: 'Add Banner' },
+  'admin.searchBanners': { mn: 'Гарчиг, тайлбараар хайх...', en: 'Search by title or description...' },
+  'admin.noBanners': { mn: 'Баннер олдсонгүй.', en: 'No banners found.' },
+  'admin.createBanner': { mn: 'Баннер үүсгэх', en: 'Create Banner' },
+  'admin.editBanner': { mn: 'Баннер засах', en: 'Edit Banner' },
+  'admin.bannerCreated': { mn: 'Баннер үүсгэгдлээ', en: 'Banner created' },
+  'admin.bannerUpdated': { mn: 'Баннер шинэчлэгдлээ', en: 'Banner updated' },
+  'admin.bannerDeleted': { mn: 'Баннер устгагдлаа', en: 'Banner deleted' },
+  'admin.bannerEyebrow': { mn: 'Дээд шошго', en: 'Eyebrow Label' },
+  'admin.bannerTitle': { mn: 'Баннер гарчиг', en: 'Banner Title' },
+  'admin.bannerImage': { mn: 'Зургийн холбоос', en: 'Image URL' },
+  'admin.bannerCta': { mn: 'Үйлдлийн товч', en: 'Call to action' },
+  'admin.bannerCtaLabel': { mn: 'Товчны текст', en: 'CTA Label' },
+  'admin.bannerCtaHref': { mn: 'Товчны холбоос', en: 'CTA Link' },
+  'admin.bannerLink': { mn: 'Зургийн дараах холбоос', en: 'Image Link' },
+  'admin.noBannerLink': { mn: 'Холбоосгүй', en: 'No link' },
+  'admin.enableBanner': { mn: 'Идэвхжүүлэх', en: 'Enable' },
+  'admin.disableBanner': { mn: 'Идэвхгүй болгох', en: 'Disable' },
+  'admin.active': { mn: 'Идэвхтэй', en: 'Active' },
+  'admin.inactive': { mn: 'Идэвхгүй', en: 'Inactive' },
   'admin.uploadReplaceImage': { mn: 'Зураг оруулах / солих', en: 'Upload / Replace Image' },
   'admin.removeImage': { mn: 'Зураг устгах', en: 'Remove Image' },
   'admin.imageUpdated': { mn: 'Зураг шинэчлэгдлээ', en: 'Image updated' },

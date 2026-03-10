@@ -9,6 +9,7 @@ import { useLangStore, useT } from '@/store/lang-store';
 import { getCategoryLabel } from '@/lib/category-label';
 import { DEFAULT_PRODUCT_IMAGE } from '@/lib/product-image';
 import { getLocalizedProductDescription } from '@/lib/product-description';
+import { useCustomerCart } from '@/hooks/use-customer-cart';
 
 const formatPrice = (price: number) => `₮${price.toLocaleString()}`;
 
@@ -16,8 +17,8 @@ const ProductDetail = () => {
   const { slug } = useParams();
   const products = useProductStore((s) => s.products);
   const product = products.find((p) => p.slug === (slug || ''));
-  const addItem = useCartStore((s) => s.addItem);
   const items = useCartStore((s) => s.items);
+  const { addCustomerItem } = useCustomerCart();
   const t = useT();
   const lang = useLangStore((s) => s.lang);
 
@@ -74,7 +75,7 @@ const ProductDetail = () => {
               className="w-full md:w-auto font-heading font-semibold"
               disabled={!product.inStock}
               onClick={() =>
-                addItem({
+                addCustomerItem({
                   id: product.id,
                   name: product.name,
                   price: product.price,

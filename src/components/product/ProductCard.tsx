@@ -5,12 +5,13 @@ import { useCartStore } from '@/store/cart-store';
 import { useT } from '@/store/lang-store';
 import { Button } from '@/components/ui/button';
 import { DEFAULT_PRODUCT_IMAGE } from '@/lib/product-image';
+import { useCustomerCart } from '@/hooks/use-customer-cart';
 
 const formatPrice = (price: number) => `₮${price.toLocaleString()}`;
 
 const ProductCard = ({ product }: { product: Product }) => {
-  const addItem = useCartStore((s) => s.addItem);
   const items = useCartStore((s) => s.items);
+  const { addCustomerItem } = useCustomerCart();
   const inCart = items.some((i) => i.id === product.id);
   const t = useT();
 
@@ -44,7 +45,7 @@ const ProductCard = ({ product }: { product: Product }) => {
           className="w-full"
           disabled={!product.inStock}
           onClick={() =>
-            addItem({
+            addCustomerItem({
               id: product.id,
               name: product.name,
               price: product.price,

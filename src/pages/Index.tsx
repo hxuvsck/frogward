@@ -1,47 +1,29 @@
 import { Link } from 'react-router-dom';
 import { ArrowRight, Shield, Truck, Headphones } from 'lucide-react';
-import { Button } from '@/components/ui/button';
 import Layout from '@/components/layout/Layout';
 import ProductCard from '@/components/product/ProductCard';
+import HomeMarketingCarousel from '@/components/home/HomeMarketingCarousel';
 import { categories } from '@/data/mock-products';
 import { useT } from '@/store/lang-store';
+import { useMarketingStore } from '@/store/marketing-store';
 import { useProductStore } from '@/store/product-store';
 import heroBg from '@/assets/hero-bg.jpg';
 import { getCategoryLabel } from '@/lib/category-label';
 
 const Index = () => {
   const products = useProductStore((s) => s.products);
+  const banners = useMarketingStore((s) => s.banners);
   const featured = products.slice(0, 4);
   const t = useT();
 
   return (
     <Layout>
       {/* Hero */}
-      <section className="relative h-[85vh] flex items-center overflow-hidden">
-        <div className="absolute inset-0">
-          <img src={heroBg} alt="Industrial workspace" className="h-full w-full object-cover" />
-          <div className="absolute inset-0 bg-gradient-to-r from-background via-background/85 to-background/40" />
-        </div>
-        <div className="container relative z-10">
-          <div className="max-w-xl space-y-6">
-            <div className="inline-block rounded-full border border-primary/30 bg-primary/10 px-4 py-1.5">
-              <span className="text-xs font-medium text-primary">{t('hero.badge')}</span>
-            </div>
-            <h1 className="font-heading text-5xl md:text-6xl font-bold leading-[1.1] tracking-tight">
-              {t('hero.title1')}<span className="text-primary">{t('hero.titleHighlight')}</span>{t('hero.title2')}
-            </h1>
-            <p className="text-lg text-muted-foreground leading-relaxed">
-              {t('hero.desc')}
-            </p>
-            <div className="flex gap-3">
-              <Button asChild size="lg" className="font-heading font-semibold">
-                <Link to="/products">
-                  {t('hero.shopNow')} <ArrowRight className="ml-2 h-4 w-4" />
-                </Link>
-              </Button>
-            </div>
-          </div>
-        </div>
+      <section className="relative h-[72vh] min-h-[440px] overflow-hidden">
+        <HomeMarketingCarousel
+          banners={banners.filter((banner) => banner.active)}
+          fallbackImage={heroBg}
+        />
       </section>
 
       {/* Features */}

@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { Phone } from 'lucide-react';
 import Layout from '@/components/layout/Layout';
 import { Button } from '@/components/ui/button';
@@ -10,24 +10,25 @@ import { useT } from '@/store/lang-store';
 
 const Login = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { loginWithFacebook, isAuthenticated, user } = useAuthStore();
   const [phone, setPhone] = useState('');
   const t = useT();
+  const redirectTo = (location.state as { redirectTo?: string } | null)?.redirectTo;
 
-  if (isAuthenticated && user) {
-    navigate(user.role === 'admin' ? '/admin' : '/account');
-    return null;
-  }
+  useEffect(() => {
+    if (!isAuthenticated || !user) return;
+    navigate(user.role === 'admin' ? '/admin' : redirectTo || '/account', { replace: true });
+  }, [isAuthenticated, user, navigate, redirectTo]);
 
   const handleFacebook = () => {
     loginWithFacebook();
-    navigate('/account');
   };
 
   const handlePhoneSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (phone.trim()) {
-      navigate('/verify-otp', { state: { phone } });
+      navigate('/verify-otp', { state: { phone, redirectTo } });
     }
   };
 
@@ -37,6 +38,9 @@ const Login = () => {
         <div className="text-center mb-8">
           <h1 className="font-heading text-3xl font-bold">{t('login.title')} <span className="text-primary">FROG</span>WARD</h1>
           <p className="text-muted-foreground mt-2 text-sm">{t('login.desc')}</p>
+          {redirectTo && (
+            <p className="mt-3 text-sm text-destructive">{t('login.customerRequired')}</p>
+          )}
         </div>
 
         <div className="space-y-6">

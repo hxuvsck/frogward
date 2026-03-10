@@ -1,8 +1,9 @@
 import { Navigate, Link } from 'react-router-dom';
-import { Package, ShoppingCart, Users, AlertTriangle } from 'lucide-react';
+import { Package, ShoppingCart, Users, AlertTriangle, Megaphone } from 'lucide-react';
 import { motion } from 'framer-motion';
 import Layout from '@/components/layout/Layout';
 import { useAuthStore } from '@/store/auth-store';
+import { useMarketingStore } from '@/store/marketing-store';
 import { useOrderStore } from '@/store/order-store';
 import { useProductStore } from '@/store/product-store';
 import { mockCustomers } from '@/data/mock-orders';
@@ -15,6 +16,7 @@ const AdminDashboard = () => {
 
   const orders = useOrderStore((s) => s.orders);
   const products = useProductStore((s) => s.products);
+  const banners = useMarketingStore((s) => s.banners);
   const totalOrders = orders.length;
   const pendingPayment = orders.filter((o) => o.paymentStatus !== 'paid').length;
   const paidOrders = orders.filter((o) => o.paymentStatus === 'paid').length;
@@ -25,6 +27,7 @@ const AdminDashboard = () => {
     { label: t('admin.pendingPayment'), value: pendingPayment, icon: AlertTriangle, color: 'text-primary' },
     { label: t('admin.paidOrders'), value: paidOrders, icon: Package, color: 'text-accent' },
     { label: t('admin.products'), value: products.length, icon: Package, color: 'text-foreground' },
+    { label: t('admin.marketing'), value: banners.length, icon: Megaphone, color: 'text-primary' },
     { label: t('admin.lowStock'), value: lowStock, icon: AlertTriangle, color: 'text-destructive' },
     { label: t('admin.customers'), value: mockCustomers.length, icon: Users, color: 'text-foreground' },
   ];
@@ -32,6 +35,7 @@ const AdminDashboard = () => {
   const navCards = [
     { to: '/admin/orders', icon: ShoppingCart, title: t('admin.manageOrders'), desc: t('admin.manageOrdersDesc') },
     { to: '/admin/products', icon: Package, title: t('admin.manageProducts'), desc: t('admin.manageProductsDesc') },
+    { to: '/admin/marketing', icon: Megaphone, title: t('admin.marketing'), desc: t('admin.marketingDesc') },
     { to: '/admin/customers', icon: Users, title: t('admin.customers'), desc: t('admin.customersDesc') },
   ];
 
@@ -40,7 +44,7 @@ const AdminDashboard = () => {
       <div className="container py-10">
         <h1 className="font-heading text-3xl font-bold mb-8">{t('admin.dashboard')}</h1>
 
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-10">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-7 gap-4 mb-10">
           {stats.map((s, i) => (
             <motion.div
               key={s.label}
@@ -57,7 +61,7 @@ const AdminDashboard = () => {
           ))}
         </div>
 
-        <div className="grid md:grid-cols-3 gap-4">
+        <div className="grid md:grid-cols-2 xl:grid-cols-4 gap-4">
           {navCards.map((card, i) => (
             <motion.div
               key={card.to}
