@@ -102,3 +102,9 @@ export const products: Product[] = [
 
 export const getProductBySlug = (slug: string) => products.find((p) => p.slug === slug);
 export const getProductsByCategory = (category: string) => products.filter((p) => p.category === category);
+
+export const getCategoriesWithCounts = (items: Product[]) =>
+  categories.map((category) => ({
+    ...category,
+    count: items.filter((product) => product.category === category.id).length,
+  }));

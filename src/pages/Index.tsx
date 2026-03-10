@@ -1,9 +1,10 @@
+import { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Shield, Truck, Headphones } from 'lucide-react';
 import Layout from '@/components/layout/Layout';
 import ProductCard from '@/components/product/ProductCard';
 import HomeMarketingCarousel from '@/components/home/HomeMarketingCarousel';
-import { categories } from '@/data/mock-products';
+import { getCategoriesWithCounts } from '@/data/mock-products';
 import { DEFAULT_MARKETING_IMAGE } from '@/lib/marketing-image';
 import { useT } from '@/store/lang-store';
 import { useMarketingStore } from '@/store/marketing-store';
@@ -14,6 +15,10 @@ const Index = () => {
   const products = useProductStore((s) => s.products);
   const banners = useMarketingStore((s) => s.banners);
   const t = useT();
+  const categories = useMemo(
+    () => getCategoriesWithCounts(products).filter((category) => category.count > 0),
+    [products]
+  );
 
   return (
     <Layout>

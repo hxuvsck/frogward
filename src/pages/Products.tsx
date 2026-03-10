@@ -3,7 +3,7 @@ import { useSearchParams } from 'react-router-dom';
 import { Search } from 'lucide-react';
 import Layout from '@/components/layout/Layout';
 import ProductCard from '@/components/product/ProductCard';
-import { categories } from '@/data/mock-products';
+import { categories, getCategoriesWithCounts } from '@/data/mock-products';
 import { useProductStore } from '@/store/product-store';
 import { Input } from '@/components/ui/input';
 import { useT } from '@/store/lang-store';
@@ -16,6 +16,7 @@ const Products = () => {
   const [sortBy, setSortBy] = useState<'default' | 'price-asc' | 'price-desc'>('default');
   const t = useT();
   const products = useProductStore((s) => s.products);
+  const categoryCounts = useMemo(() => getCategoriesWithCounts(products), [products]);
 
   const filtered = useMemo(() => {
     let result = products;
@@ -50,7 +51,12 @@ const Products = () => {
             >
               {t('products.all')}
             </button>
-            {categories.map((cat) => (
+            {categories
+              .filter((category) => {
+                const count = categoryCounts.find((entry) => entry.id === category.id)?.count ?? 0;
+                return count > 0;
+              })
+              .map((cat) => (
               <button
                 key={cat.id}
                 onClick={() => setSearchParams({ category: cat.id })}
