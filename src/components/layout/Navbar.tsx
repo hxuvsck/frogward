@@ -122,6 +122,13 @@ const Navbar = () => {
                         <User className="h-3.5 w-3.5" /> {t('account.title')}
                       </Link>
                       <Link
+                        to="/account/profile"
+                        onClick={() => setUserMenuOpen(false)}
+                        className="flex items-center gap-2 px-4 py-2.5 text-sm text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
+                      >
+                        <User className="h-3.5 w-3.5" /> {t('account.editProfile')}
+                      </Link>
+                      <Link
                         to="/account/orders"
                         onClick={() => setUserMenuOpen(false)}
                         className="flex items-center gap-2 px-4 py-2.5 text-sm text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
@@ -223,6 +230,9 @@ const Navbar = () => {
                 <>
                   <Link to="/account" className="block text-sm" onClick={() => setMobileOpen(false)}>
                     <User className="h-3.5 w-3.5 inline mr-1" /> {user.name.split(' ')[0]}
+                  </Link>
+                  <Link to="/account/profile" className="block text-sm" onClick={() => setMobileOpen(false)}>
+                    <User className="h-3.5 w-3.5 inline mr-1" /> {t('account.editProfile')}
                   </Link>
                   <Link to="/account/orders" className="block text-sm" onClick={() => setMobileOpen(false)}>
                     <Package className="h-3.5 w-3.5 inline mr-1" /> {t('accountOrders.title')}
