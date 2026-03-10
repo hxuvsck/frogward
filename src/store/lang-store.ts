@@ -32,7 +32,7 @@ const translations = {
 
   // Categories
   'cat.helmets': { mn: 'Аюулгүйн малгай', en: 'Safety Helmets' },
-  'cat.vests': { mn: 'Тусгаг хантааз', en: 'Hi-Vis Vests' },
+  'cat.vests': { mn: 'Тусгай хантааз', en: 'Hi-Vis Vests' },
   'cat.gloves': { mn: 'Ажлын бээлий', en: 'Work Gloves' },
   'cat.boots': { mn: 'Аюулгүйн гутал', en: 'Safety Boots' },
   'cat.eyewear': { mn: 'Нүдний хамгаалалт', en: 'Eye Protection' },
