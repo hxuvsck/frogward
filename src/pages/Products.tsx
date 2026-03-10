@@ -8,6 +8,7 @@ import { useProductStore } from '@/store/product-store';
 import { Input } from '@/components/ui/input';
 import { useT } from '@/store/lang-store';
 import { getCategoryLabel } from '@/lib/category-label';
+import { matchesProductSearch } from '@/lib/product-localization';
 
 const Products = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -21,11 +22,11 @@ const Products = () => {
   const filtered = useMemo(() => {
     let result = products;
     if (activeCategory) result = result.filter((p) => p.category === activeCategory);
-    if (search) result = result.filter((p) => p.name.toLowerCase().includes(search.toLowerCase()));
+    if (search) result = result.filter((p) => matchesProductSearch(p, search));
     if (sortBy === 'price-asc') result = [...result].sort((a, b) => a.price - b.price);
     if (sortBy === 'price-desc') result = [...result].sort((a, b) => b.price - a.price);
     return result;
-  }, [activeCategory, search, sortBy]);
+  }, [activeCategory, search, sortBy, products]);
 
   return (
     <Layout>

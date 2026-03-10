@@ -9,7 +9,7 @@ import { useCartStore } from '@/store/cart-store';
 import { useLangStore, useT } from '@/store/lang-store';
 import { getCategoryLabel } from '@/lib/category-label';
 import { DEFAULT_PRODUCT_IMAGE } from '@/lib/product-image';
-import { getLocalizedProductDescription } from '@/lib/product-description';
+import { getLocalizedProductDescription, getLocalizedProductName } from '@/lib/product-localization';
 import { useCustomerCart } from '@/hooks/use-customer-cart';
 
 const formatPrice = (price: number) => `₮${price.toLocaleString()}`;
@@ -38,6 +38,7 @@ const ProductDetail = () => {
   const inCart = items.some((i) => i.id === product.id);
   const isAdmin = user?.role === 'admin';
   const related = products.filter((p) => p.category === product.category && p.id !== product.id).slice(0, 4);
+  const productName = getLocalizedProductName(product, lang);
 
   return (
     <Layout>
@@ -48,7 +49,7 @@ const ProductDetail = () => {
 
         <div className="grid md:grid-cols-2 gap-10">
           <div className="aspect-square rounded-lg overflow-hidden bg-muted border border-border">
-            <img src={product.image || DEFAULT_PRODUCT_IMAGE} alt={product.name} className="h-full w-full object-cover" />
+            <img src={product.image || DEFAULT_PRODUCT_IMAGE} alt={productName} className="h-full w-full object-cover" />
           </div>
 
           <div className="space-y-6">
@@ -56,7 +57,7 @@ const ProductDetail = () => {
               <span className="text-xs uppercase tracking-wider text-muted-foreground">
                 {getCategoryLabel(product.category, t, product.category)}
               </span>
-              <h1 className="font-heading text-3xl font-bold">{product.name}</h1>
+              <h1 className="font-heading text-3xl font-bold">{productName}</h1>
             </div>
 
             <p className="text-2xl font-heading font-bold text-primary">{formatPrice(product.price)}</p>
@@ -87,7 +88,7 @@ const ProductDetail = () => {
                 onClick={() =>
                   addCustomerItem({
                     id: product.id,
-                    name: product.name,
+                    name: productName,
                     price: product.price,
                     image: product.image || DEFAULT_PRODUCT_IMAGE,
                   })

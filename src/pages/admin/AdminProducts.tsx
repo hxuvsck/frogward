@@ -9,11 +9,12 @@ import { Textarea } from '@/components/ui/textarea';
 import { categories } from '@/data/mock-products';
 import { useAuthStore } from '@/store/auth-store';
 import { useOrderStore } from '@/store/order-store';
-import { useT } from '@/store/lang-store';
+import { useLangStore, useT } from '@/store/lang-store';
 import { useProductStore } from '@/store/product-store';
 import type { Product } from '@/types/product';
 import { getCategoryLabel } from '@/lib/category-label';
 import { DEFAULT_PRODUCT_IMAGE } from '@/lib/product-image';
+import { getLocalizedProductName, matchesProductSearch } from '@/lib/product-localization';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -38,6 +39,7 @@ const AdminProducts = () => {
   const { user, isAuthenticated } = useAuthStore();
   const { toast } = useToast();
   const t = useT();
+  const lang = useLangStore((s) => s.lang);
   const navigate = useNavigate();
   const orders = useOrderStore((s) => s.orders);
   const productList = useProductStore((s) => s.products);
@@ -51,9 +53,11 @@ const AdminProducts = () => {
   const [editing, setEditing] = useState<Product | null>(null);
   const [isNew, setIsNew] = useState(false);
   const [formName, setFormName] = useState('');
+  const [formNameMn, setFormNameMn] = useState('');
   const [formPrice, setFormPrice] = useState('');
   const [formCategory, setFormCategory] = useState('');
   const [formDesc, setFormDesc] = useState('');
+  const [formDescMn, setFormDescMn] = useState('');
   const [formInStock, setFormInStock] = useState(true);
   const [formImage, setFormImage] = useState('');
   const [productToDelete, setProductToDelete] = useState<Product | null>(null);
@@ -61,18 +65,17 @@ const AdminProducts = () => {
 
   if (!isAuthenticated || !user || user.role !== 'admin') return <Navigate to="/login" replace />;
 
-  const filtered = productList.filter((p) =>
-    p.name.toLowerCase().includes(search.toLowerCase()) ||
-    p.category.toLowerCase().includes(search.toLowerCase())
-  );
+  const filtered = productList.filter((p) => matchesProductSearch(p, search));
 
   const openEdit = (product: Product) => {
     setEditing(product);
     setIsNew(false);
-    setFormName(product.name);
+    setFormName(product.nameEn || product.name);
+    setFormNameMn(product.nameMn || '');
     setFormPrice(String(product.price));
     setFormCategory(product.category);
-    setFormDesc(product.description);
+    setFormDesc(product.descriptionEn || product.description);
+    setFormDescMn(product.descriptionMn || '');
     setFormInStock(product.inStock);
     setFormImage(product.image || '');
   };
@@ -81,24 +84,33 @@ const AdminProducts = () => {
     setEditing(null);
     setIsNew(true);
     setFormName('');
+    setFormNameMn('');
     setFormPrice('');
     setFormCategory(categories[0]?.id ?? '');
     setFormDesc('');
+    setFormDescMn('');
     setFormInStock(true);
     setFormImage('');
   };
 
   const handleSave = () => {
-    if (!formName || !formPrice || !formCategory) return;
+    if ((!formName && !formNameMn) || !formPrice || !formCategory) return;
+    const primaryName = formName.trim() || formNameMn.trim();
+    const primaryDescription = formDesc.trim() || formDescMn.trim();
+    const slugSource = formName.trim() || formNameMn.trim();
 
     if (isNew) {
       const newProduct: Product = {
         id: `new-${Date.now()}`,
-        slug: formName.toLowerCase().replace(/\s+/g, '-'),
-        name: formName,
+        slug: slugSource.toLowerCase().replace(/\s+/g, '-'),
+        name: primaryName,
+        nameEn: formName.trim() || undefined,
+        nameMn: formNameMn.trim() || undefined,
         price: Number(formPrice),
         category: formCategory,
-        description: formDesc,
+        description: primaryDescription,
+        descriptionEn: formDesc.trim() || undefined,
+        descriptionMn: formDescMn.trim() || undefined,
         inStock: formInStock,
         image: formImage || DEFAULT_PRODUCT_IMAGE,
       };
@@ -106,18 +118,25 @@ const AdminProducts = () => {
       toast({ title: t('admin.productCreated') });
     } else if (editing) {
       updateProduct(editing.id, {
-        name: formName,
+        name: primaryName,
+        nameEn: formName.trim() || undefined,
+        nameMn: formNameMn.trim() || undefined,
         price: Number(formPrice),
         category: formCategory,
-        description: formDesc,
+        description: primaryDescription,
+        descriptionEn: formDesc.trim() || undefined,
+        descriptionMn: formDescMn.trim() || undefined,
         inStock: formInStock,
         image: formImage || '',
+        slug: slugSource.toLowerCase().replace(/\s+/g, '-'),
       });
       toast({ title: t('admin.productUpdated') });
     }
 
     setEditing(null);
     setIsNew(false);
+    setFormNameMn('');
+    setFormDescMn('');
     setFormImage('');
   };
 
@@ -197,8 +216,8 @@ const AdminProducts = () => {
                   >
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-3">
-                        <img src={product.image || DEFAULT_PRODUCT_IMAGE} alt={product.name} className="h-10 w-10 rounded object-cover bg-muted" />
-                        <span className="font-heading font-semibold">{product.name}</span>
+                        <img src={product.image || DEFAULT_PRODUCT_IMAGE} alt={getLocalizedProductName(product, lang)} className="h-10 w-10 rounded object-cover bg-muted" />
+                        <span className="font-heading font-semibold">{getLocalizedProductName(product, lang)}</span>
                       </div>
                     </td>
                     <td className="px-4 py-3 text-muted-foreground capitalize">
@@ -286,8 +305,12 @@ const AdminProducts = () => {
                 </div>
               </div>
               <div className="space-y-2">
-                <Label>{t('admin.name')}</Label>
+                <Label>{t('admin.name')} (EN)</Label>
                 <Input value={formName} onChange={(e) => setFormName(e.target.value)} />
+              </div>
+              <div className="space-y-2">
+                <Label>{t('admin.name')} (MN)</Label>
+                <Input value={formNameMn} onChange={(e) => setFormNameMn(e.target.value)} />
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
@@ -310,10 +333,19 @@ const AdminProducts = () => {
                 </div>
               </div>
               <div className="space-y-2">
-                <Label>{t('admin.description')}</Label>
+                <Label>{t('admin.description')} (EN)</Label>
                 <Textarea
                   value={formDesc}
                   onChange={(e) => setFormDesc(e.target.value)}
+                  rows={5}
+                  className="min-h-28 leading-relaxed resize-y"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>{t('admin.description')} (MN)</Label>
+                <Textarea
+                  value={formDescMn}
+                  onChange={(e) => setFormDescMn(e.target.value)}
                   rows={5}
                   className="min-h-28 leading-relaxed resize-y"
                 />

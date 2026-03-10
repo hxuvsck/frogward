@@ -9,7 +9,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { categories } from '@/data/mock-products';
 import { useToast } from '@/hooks/use-toast';
 import { useAuthStore } from '@/store/auth-store';
-import { useT } from '@/store/lang-store';
+import { useLangStore, useT } from '@/store/lang-store';
 import { useProductStore } from '@/store/product-store';
 import {
   AlertDialog,
@@ -23,12 +23,14 @@ import {
 } from '@/components/ui/alert-dialog';
 import { getCategoryLabel } from '@/lib/category-label';
 import { DEFAULT_PRODUCT_IMAGE } from '@/lib/product-image';
+import { getLocalizedProductName } from '@/lib/product-localization';
 
 const formatPrice = (price: number) => `₮${price.toLocaleString()}`;
 
 const AdminProductProfile = () => {
   const { user, isAuthenticated } = useAuthStore();
   const t = useT();
+  const lang = useLangStore((s) => s.lang);
   const navigate = useNavigate();
   const { toast } = useToast();
   const { id } = useParams();
@@ -40,19 +42,23 @@ const AdminProductProfile = () => {
   const product = products.find((p) => p.id === id);
 
   const [name, setName] = useState('');
+  const [nameMn, setNameMn] = useState('');
   const [category, setCategory] = useState('');
   const [price, setPrice] = useState('');
   const [description, setDescription] = useState('');
+  const [descriptionMn, setDescriptionMn] = useState('');
   const [inStock, setInStock] = useState(true);
   const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
   const [confirmRemoveImageOpen, setConfirmRemoveImageOpen] = useState(false);
 
   useEffect(() => {
     if (!product) return;
-    setName(product.name);
+    setName(product.nameEn || product.name);
+    setNameMn(product.nameMn || '');
     setCategory(product.category);
     setPrice(String(product.price));
-    setDescription(product.description);
+    setDescription(product.descriptionEn || product.description);
+    setDescriptionMn(product.descriptionMn || '');
     setInStock(product.inStock);
   }, [product]);
 
@@ -72,15 +78,22 @@ const AdminProductProfile = () => {
   }
 
   const handleSave = () => {
-    if (!name || !price || !category) return;
+    if ((!name && !nameMn) || !price || !category) return;
+    const primaryName = name.trim() || nameMn.trim();
+    const primaryDescription = description.trim() || descriptionMn.trim();
+    const slugSource = name.trim() || nameMn.trim();
 
     updateProduct(product.id, {
-      name,
+      name: primaryName,
+      nameEn: name.trim() || undefined,
+      nameMn: nameMn.trim() || undefined,
       category,
-      description,
+      description: primaryDescription,
+      descriptionEn: description.trim() || undefined,
+      descriptionMn: descriptionMn.trim() || undefined,
       price: Number(price),
       inStock,
-      slug: name.toLowerCase().replace(/\s+/g, '-'),
+      slug: slugSource.toLowerCase().replace(/\s+/g, '-'),
     });
 
     toast({ title: t('admin.productUpdated') });
@@ -128,7 +141,7 @@ const AdminProductProfile = () => {
             <div className="aspect-square rounded-lg overflow-hidden bg-muted border border-border">
               <img
                 src={product.image || DEFAULT_PRODUCT_IMAGE}
-                alt={product.name}
+                alt={getLocalizedProductName(product, lang)}
                 className="h-full w-full object-cover"
               />
             </div>
@@ -154,15 +167,19 @@ const AdminProductProfile = () => {
           </div>
 
           <div className="space-y-4">
-            <h1 className="font-heading text-3xl font-bold">{product.name}</h1>
+            <h1 className="font-heading text-3xl font-bold">{getLocalizedProductName(product, lang)}</h1>
             <p className="text-sm text-muted-foreground">
               {getCategoryLabel(product.category, t, product.category)}
             </p>
             <p className="font-heading text-xl text-primary">{formatPrice(product.price)}</p>
 
             <div className="space-y-2">
-              <Label>{t('admin.name')}</Label>
+              <Label>{t('admin.name')} (EN)</Label>
               <Input value={name} onChange={(e) => setName(e.target.value)} />
+            </div>
+            <div className="space-y-2">
+              <Label>{t('admin.name')} (MN)</Label>
+              <Input value={nameMn} onChange={(e) => setNameMn(e.target.value)} />
             </div>
 
             <div className="grid grid-cols-2 gap-4">
@@ -187,10 +204,19 @@ const AdminProductProfile = () => {
             </div>
 
             <div className="space-y-2">
-              <Label>{t('admin.description')}</Label>
+              <Label>{t('admin.description')} (EN)</Label>
               <Textarea
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
+                rows={7}
+                className="min-h-36 leading-relaxed resize-y"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label>{t('admin.description')} (MN)</Label>
+              <Textarea
+                value={descriptionMn}
+                onChange={(e) => setDescriptionMn(e.target.value)}
                 rows={7}
                 className="min-h-36 leading-relaxed resize-y"
               />

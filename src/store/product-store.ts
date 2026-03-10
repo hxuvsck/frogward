@@ -11,15 +11,34 @@ interface ProductStore {
   toggleStock: (id: string) => void;
 }
 
+const normalizeProduct = (product: Product): Product => {
+  const name = product.name?.trim() || product.nameEn?.trim() || product.nameMn?.trim() || 'Untitled Product';
+  const description =
+    product.description?.trim() ||
+    product.descriptionEn?.trim() ||
+    product.descriptionMn?.trim() ||
+    '';
+
+  return {
+    ...product,
+    name,
+    nameEn: product.nameEn?.trim() || name,
+    nameMn: product.nameMn?.trim() || undefined,
+    description,
+    descriptionEn: product.descriptionEn?.trim() || description,
+    descriptionMn: product.descriptionMn?.trim() || undefined,
+  };
+};
+
 export const useProductStore = create<ProductStore>()(
   persist(
     (set) => ({
-      products: initialProducts,
-      addProduct: (product) => set((state) => ({ products: [product, ...state.products] })),
+      products: initialProducts.map(normalizeProduct),
+      addProduct: (product) => set((state) => ({ products: [normalizeProduct(product), ...state.products] })),
       updateProduct: (id, updates) =>
         set((state) => ({
           products: state.products.map((product) =>
-            product.id === id ? { ...product, ...updates } : product
+            product.id === id ? normalizeProduct({ ...product, ...updates }) : product
           ),
         })),
       deleteProduct: (id) =>
@@ -33,6 +52,28 @@ export const useProductStore = create<ProductStore>()(
           ),
         })),
     }),
-    { name: 'frogward-products' }
+    {
+      name: 'frogward-products',
+      version: 2,
+      migrate: (persistedState) => {
+        const state = persistedState as ProductStore | undefined;
+        if (!state?.products) return persistedState;
+
+        return {
+          ...state,
+          products: state.products.map((product) => normalizeProduct(product)),
+        };
+      },
+      merge: (persistedState, currentState) => {
+        const persisted = persistedState as Partial<ProductStore> | undefined;
+        const current = currentState as ProductStore;
+
+        return {
+          ...current,
+          ...persisted,
+          products: (persisted?.products ?? current.products).map((product) => normalizeProduct(product)),
+        };
+      },
+    }
   )
 );

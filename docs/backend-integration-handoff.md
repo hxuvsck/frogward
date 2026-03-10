@@ -72,6 +72,7 @@ Important observations:
 - `User` currently mixes auth identity, customer profile, and company profile fields
 - `Order` currently stores denormalized customer fields directly on the order
 - `Product.category` is a string enum-like id, not a normalized relation
+- `Product` now supports optional bilingual fields: `nameEn`, `nameMn`, `descriptionEn`, `descriptionMn`
 - `MarketingBanner.image` is currently just a string and should become a storage URL
 
 ## Existing Frontend Flows
@@ -112,11 +113,14 @@ Current behavior:
 
 - products are created/updated/deleted in browser storage
 - stock state is toggled in browser
+- product content now supports English and Mongolian fields with fallback behavior
 - product image upload still stores data URL in browser state
 
 Production recommendation:
 
 - move products to database-backed CRUD
+- model localized product text explicitly instead of relying on a single `name` / `description`
+- preserve frontend fallback behavior: if one locale is missing, use the other locale's value
 - upload images to object storage and store only URLs in product records
 - validate slug uniqueness server-side
 - add product status/inventory fields beyond `inStock` if inventory matters
