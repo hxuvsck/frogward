@@ -42,8 +42,8 @@ const Products = () => {
       <div className="container py-10">
         <h1 className="font-heading text-3xl font-bold mb-8">{t('products.title')}</h1>
 
-        <div className="flex flex-col md:flex-row gap-4 mb-8">
-          <div className="relative flex-1">
+        <div className="mb-8 space-y-4">
+          <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
               placeholder={t('products.searchPlaceholder')}
@@ -52,31 +52,28 @@ const Products = () => {
               className="pl-9"
             />
           </div>
-          <div className="flex gap-2 flex-wrap">
-            <button
-              onClick={() => setSearchParams({})}
-              className={`rounded-full border px-3 py-1.5 text-xs font-medium transition-all ${
-                !activeCategory ? 'border-primary bg-primary text-primary-foreground' : 'border-border text-muted-foreground hover:border-primary/30'
-              }`}
-            >
-              {t('products.all')}
-            </button>
-            {categories
-              .filter((category) => {
-                const count = categoryCounts.find((entry) => entry.id === category.id)?.count ?? 0;
-                return count > 0;
-              })
-              .map((cat) => (
+          <div className="-mx-1 overflow-x-auto pb-2">
+            <div className="flex min-w-max gap-2 px-1">
               <button
-                key={cat.id}
-                onClick={() => setSearchParams({ category: cat.id })}
-                className={`rounded-full border px-3 py-1.5 text-xs font-medium transition-all ${
-                  activeCategory === cat.id ? 'border-primary bg-primary text-primary-foreground' : 'border-border text-muted-foreground hover:border-primary/30'
+                onClick={() => setSearchParams({})}
+                className={`shrink-0 rounded-full border px-3 py-1.5 text-xs font-medium transition-all ${
+                  !activeCategory ? 'border-primary bg-primary text-primary-foreground' : 'border-border text-muted-foreground hover:border-primary/30'
                 }`}
               >
-                {getLocalizedCategoryName(cat, lang)}
+                {t('products.all')}
               </button>
-            ))}
+              {categoryCounts.map((cat) => (
+                <button
+                  key={cat.id}
+                  onClick={() => setSearchParams({ category: cat.id })}
+                  className={`shrink-0 rounded-full border px-3 py-1.5 text-xs font-medium transition-all ${
+                    activeCategory === cat.id ? 'border-primary bg-primary text-primary-foreground' : 'border-border text-muted-foreground hover:border-primary/30'
+                  }`}
+                >
+                  {getLocalizedCategoryName(cat, lang)}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
 

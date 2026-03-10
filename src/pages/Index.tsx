@@ -18,7 +18,7 @@ const Index = () => {
   const t = useT();
   const lang = useLangStore((s) => s.lang);
   const categories = useMemo(
-    () => getCategoriesWithCounts(categoryDefinitions, products).filter((category) => category.count > 0),
+    () => getCategoriesWithCounts(categoryDefinitions, products),
     [categoryDefinitions, products]
   );
 

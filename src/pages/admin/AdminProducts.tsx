@@ -188,7 +188,7 @@ const AdminProducts = () => {
     });
 
     setFormCategory(category.id);
-    toast({ title: t('admin.addCategory') });
+    toast({ title: t('admin.categoryCreated') });
     setCategoryNameEn('');
     setCategoryNameMn('');
   };
