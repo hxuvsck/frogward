@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 import { marketingBanners as initialBanners } from '@/data/mock-marketing-banners';
+import { sanitizeMarketingImage } from '@/lib/marketing-image';
 import type { MarketingBanner } from '@/types/marketing-banner';
 
 interface MarketingStore {
@@ -37,7 +38,7 @@ const normalizeBanner = (banner: MarketingBanner): MarketingBanner => ({
   content: banner.content?.trim() || banner.contentEn?.trim() || banner.contentMn?.trim() || '',
   contentEn: banner.contentEn?.trim() || banner.content?.trim() || '',
   contentMn: banner.contentMn?.trim() || undefined,
-  image: typeof banner.image === 'string' ? banner.image : '',
+  image: typeof banner.image === 'string' ? sanitizeMarketingImage(banner.image) : sanitizeMarketingImage(),
   slug: banner.slug?.trim() || slugifyBanner(banner.title, banner.id),
   focalX: typeof banner.focalX === 'number' ? banner.focalX : 50,
   focalY: typeof banner.focalY === 'number' ? banner.focalY : 50,
@@ -132,7 +133,7 @@ export const useMarketingStore = create<MarketingStore>()(
     {
       name: 'frogward-marketing',
       storage: safeStorage,
-      version: 3,
+      version: 4,
       migrate: (persistedState) => {
         const state = persistedState as Partial<MarketingStore> | undefined;
         if (!state) return { banners: ensureUniqueSlugs(initialBanners) } as MarketingStore;

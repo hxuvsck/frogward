@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { products as initialProducts } from '@/data/mock-products';
+import { sanitizeProductImage } from '@/lib/product-image';
 import type { Product } from '@/types/product';
 
 interface ProductStore {
@@ -21,6 +22,7 @@ const normalizeProduct = (product: Product): Product => {
 
   return {
     ...product,
+    image: sanitizeProductImage(product.image),
     name,
     nameEn: product.nameEn?.trim() || name,
     nameMn: product.nameMn?.trim() || undefined,
@@ -54,7 +56,7 @@ export const useProductStore = create<ProductStore>()(
     }),
     {
       name: 'frogward-products',
-      version: 2,
+      version: 3,
       migrate: (persistedState) => {
         const state = persistedState as ProductStore | undefined;
         if (!state?.products) return persistedState;

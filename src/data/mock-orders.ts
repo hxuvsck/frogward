@@ -1,4 +1,5 @@
 import type { Order } from '@/types/order';
+import { DEFAULT_PRODUCT_IMAGE } from '@/lib/product-image';
 
 export const mockOrders: Order[] = [
   {
@@ -9,8 +10,8 @@ export const mockOrders: Order[] = [
     customerEmail: 'bat@example.com',
     deliveryAddress: 'Ulaanbaatar, Khan-Uul District, 15th Khoroo',
     items: [
-      { id: 'oi-1', productId: '1', name: 'Industrial Safety Helmet Pro', price: 45000, quantity: 2, image: 'https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=100&h=100&fit=crop' },
-      { id: 'oi-2', productId: '3', name: 'Cut-Resistant Work Gloves', price: 18000, quantity: 5, image: 'https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?w=100&h=100&fit=crop' },
+      { id: 'oi-1', productId: '1', name: 'Industrial Safety Helmet Pro', price: 45000, quantity: 2, image: DEFAULT_PRODUCT_IMAGE },
+      { id: 'oi-2', productId: '3', name: 'Cut-Resistant Work Gloves', price: 18000, quantity: 5, image: DEFAULT_PRODUCT_IMAGE },
     ],
     totalAmount: 180000,
     paymentMethod: 'qpay',
@@ -26,7 +27,7 @@ export const mockOrders: Order[] = [
     customerPhone: '+976 9911 2233',
     deliveryAddress: 'Ulaanbaatar, Khan-Uul District, 15th Khoroo',
     items: [
-      { id: 'oi-3', productId: '4', name: 'Steel Toe Safety Boots', price: 89000, quantity: 1, image: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=100&h=100&fit=crop' },
+      { id: 'oi-3', productId: '4', name: 'Steel Toe Safety Boots', price: 89000, quantity: 1, image: DEFAULT_PRODUCT_IMAGE },
     ],
     totalAmount: 89000,
     paymentMethod: 'storepay',
@@ -43,8 +44,8 @@ export const mockOrders: Order[] = [
     customerEmail: 'munkh@example.com',
     deliveryAddress: 'Darkhan, Central District',
     items: [
-      { id: 'oi-4', productId: '6', name: 'Flame Resistant Coverall', price: 125000, quantity: 3, image: 'https://images.unsplash.com/photo-1621600411688-4be93cd68504?w=100&h=100&fit=crop' },
-      { id: 'oi-5', productId: '2', name: 'Hi-Vis Safety Vest Class III', price: 32000, quantity: 10, image: 'https://images.unsplash.com/photo-1618517048289-4e04bae8b3a7?w=100&h=100&fit=crop' },
+      { id: 'oi-4', productId: '6', name: 'Flame Resistant Coverall', price: 125000, quantity: 3, image: DEFAULT_PRODUCT_IMAGE },
+      { id: 'oi-5', productId: '2', name: 'Hi-Vis Safety Vest Class III', price: 32000, quantity: 10, image: DEFAULT_PRODUCT_IMAGE },
     ],
     totalAmount: 695000,
     paymentMethod: 'qpay',
@@ -60,7 +61,7 @@ export const mockOrders: Order[] = [
     customerPhone: '+976 9933 4455',
     deliveryAddress: 'Erdenet, Bayan-Undur District',
     items: [
-      { id: 'oi-6', productId: '5', name: 'Anti-Fog Safety Glasses', price: 12000, quantity: 20, image: 'https://images.unsplash.com/photo-1574258495973-f010dfbb5371?w=100&h=100&fit=crop' },
+      { id: 'oi-6', productId: '5', name: 'Anti-Fog Safety Glasses', price: 12000, quantity: 20, image: DEFAULT_PRODUCT_IMAGE },
     ],
     totalAmount: 240000,
     paymentMethod: 'qpay',
@@ -76,8 +77,8 @@ export const mockOrders: Order[] = [
     customerPhone: '+976 9944 5566',
     deliveryAddress: 'Ulaanbaatar, Bayanzurkh District',
     items: [
-      { id: 'oi-7', productId: '7', name: 'Insulated Winter Work Jacket', price: 156000, quantity: 1, image: 'https://images.unsplash.com/photo-1551028719-00167b16eac5?w=100&h=100&fit=crop' },
-      { id: 'oi-8', productId: '8', name: 'Heavy Duty Leather Gloves', price: 28000, quantity: 2, image: 'https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=100&h=100&fit=crop' },
+      { id: 'oi-7', productId: '7', name: 'Insulated Winter Work Jacket', price: 156000, quantity: 1, image: DEFAULT_PRODUCT_IMAGE },
+      { id: 'oi-8', productId: '8', name: 'Heavy Duty Leather Gloves', price: 28000, quantity: 2, image: DEFAULT_PRODUCT_IMAGE },
     ],
     totalAmount: 212000,
     paymentMethod: 'storepay',
