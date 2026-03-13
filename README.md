@@ -91,3 +91,7 @@ npm run build
 ## License
 
 This project is private and maintained by the Biotain Solutions team.
+
+Reminder:
+
+Change of Bidnii tuhai
