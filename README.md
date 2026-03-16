@@ -1,57 +1,116 @@
 # FrogWard
 
-FrogWard is a React + TypeScript storefront and admin demo for industrial workwear and safety products.
+FrogWard is a React + TypeScript storefront and admin demo for industrial workwear and safety products. It includes a customer-facing shopping flow, a mock authentication experience, and an admin area for managing products, customers, orders, and homepage marketing content.
 
-## Current Scope
+## Highlights
 
-Implemented in the current demo:
-
-- Customer storefront with product list, product detail, cart, checkout, about, contact, and account pages
-- Mock customer login via OTP and Facebook
-- Mock admin login and admin dashboard
-- Admin product management
-- Admin customer and order viewing
-- Admin-managed hero marketing banners with story pages
-- Mongolian / English language switching
-- Local persistence via Zustand `persist`
-- Admin auto logout after 15 minutes of inactivity
-
-## Important Demo Limitations
-
-Not fully implemented yet:
-
-- No real backend or database
-- No real authentication provider
-- No real OTP delivery or Facebook OAuth
-- No payment gateway integration such as qPay
-- No server-side order processing
-- No shipment or delivery tracking integration
-- No role-based API security
-- No real file upload service; images are stored as local data URLs in browser storage
-- No shared multi-user persistence; data is device/browser-local
-- No audit log, analytics, or reporting backend
-- No automated admin permission granularity beyond the simple mock admin role
-
-Behavior to be aware of:
-
-- Customer, product, order, cart, and banner data are mock/demo data stored in local browser storage
-- Clearing browser storage resets most app state
-- Admin session timeout is client-side inactivity handling, not server-enforced session invalidation
+- Storefront pages for home, products, product detail, cart, checkout, about, contact, and account
+- Mock login flow with phone OTP and Facebook sign-in
+- Admin dashboard plus product, customer, order, and marketing management screens
+- Mongolian and English localization
+- Browser-persisted demo state using Zustand `persist`
+- Client-side admin auto logout after 15 minutes of inactivity
+- Unit and component tests with Vitest and Testing Library
 
 ## Tech Stack
 
-- Frontend: React + TypeScript
-- Build tool: Vite
-- UI: shadcn/ui
-- Styling: Tailwind CSS
-- State: Zustand
-- Routing: React Router
-- Testing: Vitest + Testing Library
+- React 18
+- TypeScript
+- Vite
+- React Router
+- Zustand
+- TanStack Query
+- Tailwind CSS
+- shadcn/ui
+- Vitest
+
+## Demo Behavior
+
+This project is a frontend demo. App data is stored in browser local storage rather than a backend.
+
+- Products, cart, customers, orders, categories, and marketing banners are persisted per browser
+- Clearing browser storage resets the demo state
+- Admin session timeout is enforced on the client only
+- Image uploads are stored as local data URLs in browser storage
+
+### Demo Sign-In
+
+- Admin phone: `99112233`
+- Demo OTP: `123456`
+- Any other phone number signs in as a customer
+- Facebook sign-in creates a separate mock customer profile
+
+## Current Scope
+
+### Customer experience
+
+- Browse products by category
+- View product detail pages
+- Add items to cart and proceed through checkout
+- Read marketing story pages from homepage banners
+- View account overview, profile, and order history
+
+### Admin experience
+
+- View dashboard summary
+- Create, edit, and delete products
+- View customers and customer profiles
+- View orders and order detail pages
+- Manage homepage marketing banners
+
+## Known Limitations
+
+- No real backend, database, or API integration
+- No real OTP delivery or Facebook OAuth provider
+- No payment gateway integration
+- No server-side order processing
+- No shipment or delivery tracking
+- No role-based API authorization
+- No multi-user shared persistence
+- No analytics, audit logs, or reporting backend
+
+## Getting Started
+
+### Prerequisites
+
+- Node.js 18+
+- npm
+
+### Install
+
+```bash
+npm install
+```
+
+### Run locally
+
+```bash
+npm run dev
+```
+
+Default local URL:
+
+```text
+http://localhost:5173
+```
+
+## Available Scripts
+
+```bash
+npm run dev
+npm run build
+npm run build:dev
+npm run preview
+npm run lint
+npm test
+npm run test:watch
+```
 
 ## Project Structure
 
 ```text
 frogward/
+├── docs/
 ├── public/
 ├── src/
 │   ├── components/
@@ -68,30 +127,14 @@ frogward/
 └── README.md
 ```
 
-## Local Development
+## Testing
 
-```bash
-npm install
-npm run dev
-```
-
-Default local URL:
-
-```text
-http://localhost:5173
-```
-
-## Build and Test
+Run the test suite with:
 
 ```bash
 npm test
-npm run build
 ```
 
 ## License
 
 This project is private and maintained by the Biotain Solutions team.
-
-Reminder:
-
-Change of Bidnii tuhai
